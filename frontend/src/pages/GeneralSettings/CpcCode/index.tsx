@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState, Fragment } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
@@ -16,36 +16,43 @@ import IconX from '../../../components/Icon/IconX';
 import IconSend from '../../../components/Icon/IconSend';
 import axios from 'axios';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
-import AddCPC from './components/cpcAdd';
+// import CPCAdd from './components/cpcAdd';
+import UserContex from '../../../context/UserContex';
+// import CpcAdd  from './components/cpcAdd';
+
+import AddCPC from './components/addCpc';
 
 
 
+    const index = () => {
 
-const index = () => {
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const token = localStorage.getItem('Token');
-
-        if(token){
-            const bearer =  token.slice(1,-1); 
-            // const bearer1 = JSON.parse(token);
-
-        const headers= { Authorization: `Bearer ${bearer}` }
-
-        axios.get('http://localhost:8080/bmitvat/api/cpc/all_cpc',{headers})
-            .then((response) => {
-                setInitialRecords(response.data);
-
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-
-            });
-
-        }
-    }, []);
+        const navigate = useNavigate();
+        const [showAlert, setShowAlert] = useState(false);
+        const user = useContext(UserContex);
+            const headers= user.headers;
+            const baseUrl= user.base_url;
+            const token = user.token;
+        
+    
+        useEffect(() => {
+            const token = localStorage.getItem('Token');
+    
+            if(user){
+        
+            axios.get(`${baseUrl}/cpc/all_cpc`,{headers})
+                .then((response) => {
+                    setInitialRecords(response.data);
+                    //console.log(response.data);
+    
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+    
+                });
+    
+            }
+        }, [user]);
 
 
 
@@ -80,7 +87,11 @@ const index = () => {
             return initialRecords.filter((cpc: any) => {
                 return (
                     cpc.id.toString().includes(search.toLowerCase()) ||
-                    cpc.cpcDescription.toLowerCase().includes(search.toLowerCase())
+                    cpc.cpc_name.toLowerCase().includes(search.toLowerCase())||
+                    cpc.cpc_code.toLowerCase().includes(search.toLowerCase())||
+                    cpc.cpc_status.toLowerCase().includes(search.toLowerCase())||
+                    cpc.action.toLowerCase().includes(search.toLowerCase())
+
                 );
             });
         });
@@ -123,7 +134,9 @@ const index = () => {
      const headers= { Authorization: `Bearer ${bearer}`,'content-type': 'multipart/form-data' }
      // console.log(headers);
 
-   await axios.post('http://localhost:8080/bmitvat/api/cpc/upload_cpc_excel', file, {headers})
+   //await axios.post('http://localhost:8080/bmitvat/api/cpc/upload_cpc_excel', file, {headers})
+
+   await axios.post(`${baseUrl}/cpc/upload_cpc_excel`, file, {headers})
    .then(function (response){
      console.log("Data Inserted");
      if(response.status==200){
@@ -284,7 +297,7 @@ const index = () => {
                 <div className="panel col-span-2 " >
                     <AddCPC />
                 </div>
-                {/*----------------- Costing list start ---------------*/}
+                {/*----------------- Cpc list start ---------------*/}
                 <div className="panel col-span-3 " id="stack_form">
                     <div className="flex items-center justify-between mb-2">
                         <h5 className="font-semibold text-lg dark:text-white-light">CPC Code List</h5>
@@ -301,7 +314,9 @@ const index = () => {
                             records={recordsData}
                             columns={[
                                 { accessor: 'id', title: 'Id', sortable: true },
-                                { accessor: 'cpcDescription', title: 'CPC Code Description', sortable: true },
+                                { accessor: 'cpc_name', title: 'CPC Name', sortable: true },
+                                { accessor: 'cpc_code', title: 'CPC Code', sortable: true},
+                                { accessor: 'cpc_status', title:'CPC Status', sortable: true},
                                 {
                                     accessor: 'action',
                                     title: 'Action',

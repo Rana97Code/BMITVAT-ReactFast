@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, NavLink, useNavigate }  from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState, Fragment } from 'react';
@@ -9,6 +9,8 @@ import IconPlus from '../../../components/Icon/IconPlus';
 
 import IconEdit from '../../../components/Icon/IconEdit';
 import axios from 'axios';
+import personAdd from './component/authorisedAdd';
+import UserContex from '../../../context/UserContex';
 
 
 
@@ -16,28 +18,28 @@ import axios from 'axios';
 const index = () => {
 
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
 
-        if(token){
-            const bearer =  token.slice(1,-1); 
-            // const bearer1 = JSON.parse(token);
-
-        const headers= { Authorization: `Bearer ${bearer}` }
-
-        axios.get('http://localhost:8080/bmitvat/api/authorised_person/all_person',{headers})
+        if(user){
+    
+        axios.get(`${baseUrl}/authorised_person/all_person`,{headers})
             .then((response) => {
                 setInitialRecords(response.data);
-
+                
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
-
+    
             });
-
+    
         }
-    }, []);
+    }, [user]);
 
 
 
@@ -66,14 +68,17 @@ const index = () => {
 
     useEffect(() => {
         setInitialRecords(() => {
-            return initialRecords.filter((person: any) => {
+            return initialRecords.filter((person:any) => {
                 return (
-                    person.id.toString().includes(search.toLowerCase()) ||
-                    person.personName.toLowerCase().includes(search.toLowerCase()) ||
-                    person.description.toString().toLowerCase().includes(search.toLowerCase()) ||
-                    person.phoneNumber.toLowerCase().includes(search.toLowerCase()) ||
-                    person.signature.toLowerCase().includes(search.toLowerCase()) ||
-                    person.action.toLowerCase().includes(search.toLowerCase())
+                    person.authorised_person.id.toString().includes(search.toLowerCase()) ||
+                    person.authorised_person_name.toLowerCase().includes(search.toLowerCase()) ||
+                    person.authorised_person.authorised_person_description.toString().toLowerCase().includes(search.toLowerCase()) ||
+                    person.authorised_person.authorised_person_phone.toLowerCase().includes(search.toLowerCase()) ||
+                    person.authorised_person.authorised_person_nid_number.toLowerCase().includes(search.toLowerCase()) ||
+                    person.authorised_person.authorised_person_email_address.toLowerCase().includes(search.toLowerCase()) ||
+                    person.authorised_person.authorised_person_signature.toLowerCase().includes(search.toLowerCase()) ||
+                    // for created_at
+                    person.authorised_person.action.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
@@ -84,10 +89,6 @@ const index = () => {
         setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
     }, [sortStatus]);
- 
- 
-   
-
    
 
     return (
@@ -113,10 +114,11 @@ const index = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'id', title: 'Id', sortable: true },
-                            { accessor: 'personName', title: 'Authorised Person Name', sortable: true },
-                            { accessor: 'description', title: 'Person Description', sortable: true },
-                            { accessor: 'phoneNumber', title: 'Person Phone Number', sortable: true },
-                            { accessor: 'image', title: 'Person Signature', sortable: false,
+                            { accessor: 'authorised_person_name', title: 'Authorised Person Name', sortable: false },
+                            { accessor: 'authorised_person_description', title: 'Person Description', sortable: true },
+                            { accessor: 'authorised_person_phone', title: 'Person Phone Number', sortable: true },
+                            // { accessor: 'authorised_person_nid_number', title: 'Person Nid', sortable: false},
+                            { accessor: 'authorised_person_signature', title: 'Person Signature', sortable: false,
                              render: ({ signature })=>( <img src={'/assets/images/authorised_person/'+ signature} className="h-16 w-40" />) },
                             {
                                 accessor: 'action',

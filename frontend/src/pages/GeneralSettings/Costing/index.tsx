@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useEffect, useState, Fragment } from 'react';
+import {useContext, useEffect, useState, Fragment } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { Dialog, Transition } from '@headlessui/react';
 import sortBy from 'lodash/sortBy';
@@ -17,26 +17,31 @@ import IconSend from '../../../components/Icon/IconSend';
 import axios from 'axios';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 import CostingAdd from './components/costingAdd';
+import UserContex from '../../../context/UserContex';
 
 
 
 
 const index = () => {
 
+
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+    
 
     useEffect(() => {
         const token = localStorage.getItem('Token');
 
-        if(token){
-            const bearer =  token.slice(1,-1); 
-            // const bearer1 = JSON.parse(token);
-
-        const headers= { Authorization: `Bearer ${bearer}` }
-
-        axios.get('http://localhost:8080/bmitvat/api/costing/all_costing',{headers})
+        if(user){
+    
+        axios.get(`${baseUrl}/costing/all_costing`,{headers})
             .then((response) => {
                 setInitialRecords(response.data);
+                //console.log(response.data);
 
             })
             .catch((error) => {
@@ -45,9 +50,7 @@ const index = () => {
             });
 
         }
-    }, []);
-
-
+    }, [user]);
 
 
 
@@ -55,6 +58,9 @@ const index = () => {
     useEffect(() => {
         dispatch(setPageTitle('Export Table'));
     });
+
+
+
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -69,19 +75,23 @@ const index = () => {
         setPage(1);
     }, [pageSize]);
 
+
+
     useEffect(() => {
         const from = (page - 1) * pageSize;
         const to = from + pageSize;
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
+
+
     useEffect(() => {
         setInitialRecords(() => {
             return initialRecords.filter((item: any) => {
                 return (
                     item.id.toString().includes(search.toLowerCase()) ||
-                    item.costingName.toLowerCase().includes(search.toLowerCase()) ||
-                    item.costingType.toLowerCase().includes(search.toLowerCase()) ||
+                    item.costing_name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.costing_type.toLowerCase().includes(search.toLowerCase()) ||
                     item.action.toLowerCase().includes(search.toLowerCase())
                 );
             });
@@ -303,12 +313,12 @@ const index = () => {
                             records={recordsData}
                             columns={[
                                 { accessor: 'id', title: 'Id', sortable: true },
-                                { accessor: 'costingName', title: 'Costing Name', sortable: true },
+                                { accessor: 'costing_name', title: 'Costing Name', sortable: true },
                                 {
-                                    accessor: 'costingType',
+                                    accessor: 'costing_type',
                                     title: 'Costing Type',
                                     sortable: true,
-                                    render: ({ costingType }) => <span className={`p-2 badge ${costingType == "direct" ? 'badge-outline-success' : 'badge-outline-danger'} `}>{costingType == 'direct' ? 'Direct' : 'Indirect'}</span>,
+                                    render: ({ costing_type }) => <span className={`p-2 badge ${costing_type == "direct" ? 'badge-outline-success' : 'badge-outline-danger'} `}>{costing_type == 'direct' ? 'Direct' : 'Indirect'}</span>,
                                 },
                                 {
                                     accessor: 'action',

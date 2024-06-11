@@ -1,18 +1,21 @@
-import React, { useState, useEffect, useRef  } from 'react';
+import React, { useState, useEffect, useRef, useContext  } from 'react';
 import { Link, NavLink, useNavigate, useParams }  from 'react-router-dom';
 import IconFile from '../../../components/Icon/IconFile';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import axios from 'axios';
+import UserContex from '../../../context/UserContex';
 
 
 const index = () => {
-    const [company_name,setComName]=useState("");
+    const [companyName,setComName]=useState("");
     const [com_short_name,setComStName]=useState("");
     const [com_email,setComEmail]=useState("");
     const [com_phone,setComPhone]=useState("");
     const [login_logo, setLoginLogo] = useState<File | null>(null);
     const [com_address,setComAddress]=useState("");
     const [com_country,setComCountry]=useState("");
+    const [ifs_code,setifsCode]=useState("");
+    const [zip_code,setzipCode]=useState("");
     const [com_tin,setComTin]=useState("");
     const [com_bin,setComBin]=useState("");
     const [com_bank,setComBank]=useState("");
@@ -25,13 +28,13 @@ const index = () => {
     const [com_auth_person,setComAuthPerson]=useState("");
     const [com_vat_type,setComVatType]=useState("");
     const [com_status,setComStatus]=useState("");
-
+    
 
 
     interface authorisedPerson {
         // Define the structure of your require
         id: number;
-        personName: string;
+        authorised_person_name: string;
       }
     const [initialRecords, setInitialRecords] = useState<authorisedPerson[]>([]);
 
@@ -39,26 +42,32 @@ const index = () => {
 
     const params = useParams();
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+
 
     const getCompanyDetails = async()=>{
         const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}`, 'Content-Type': 'multipart/form-data' }
-
+        if(user){
             const c_id = 1;
 
-        await axios.get(`http://localhost:8080/bmitvat/api/company/get-company/${c_id}`,{headers})
+        await axios.get(`${baseUrl}/company/get-company/${c_id}`,{headers})
             .then((response) => {
                 const data = response.data;
-                // console.log(data);
-                setComName(data.companyName)
+                setComName(data.company_name)
                 setComStName(data.comSortName)
                 setComEmail(data.comEmail)
                 setComPhone(data.comPhone)
                 setLoginLogo(data.loginLogo)
-                setComAddress(data.street)
+                setComAddress(data.address)
                 setComCountry(data.countryId)
+                // setcityId(data.com_city_id)
+                // setstateId(data.state_id)
+                setzipCode(data.zip_code)
+                setifsCode(data.ifs_code)
                 setComTin(data.comTin)
                 setComBin(data.comBin)
                 setComBank(data.comBank)
@@ -78,15 +87,25 @@ const index = () => {
 
             });
 
-            // for Authorised Person
-        await axios.get('http://localhost:8080/bmitvat/api/authorised_person/all_person',{headers})
+            //for Authorised person
+            
+        await axios.get(`${baseUrl}/authorised_person/all_person`, {headers})
+            
             .then((response) => {
-                setInitialRecords(response.data);
+                if (Array.isArray(response.data)) {
+                    setInitialRecords(response.data);
+                  } else {
+                    throw new Error('Response data is not an array');
+                }
+                
+
+                //console.log(response);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
 
             });
+            
         }
 
         // console.log(initialRecords);
@@ -95,47 +114,51 @@ const index = () => {
 
     useEffect(()=>{
         getCompanyDetails();   
-    },[])  
+    },[user])  
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
         const isFile1 = invoice_logo instanceof File;
         const isFile = login_logo instanceof File;
-        console.log(isFile);
+        //console.log(isFile);
         if(isFile && isFile1){
 
             const company = {
-            companyName: company_name,
-            comSortName:com_short_name,
-            comEmail: com_email,
-            comPhone: com_phone,
-            loginLogo: login_logo,
-            street: com_address,
-            countryId: com_country,
-            comTin: com_tin,
-            comBin: com_bin,
-            comBank: com_bank,
-            comBankBranch: com_b_branch,
-            comBankAcc: com_acc_no,
-            invoiceLogo: invoice_logo,
-            comCurrency: com_currency,
-            businessNature: com_buss_nature,
-            businessEconomics: com_buss_eco,
-            authorisedPersonId: com_auth_person,
-            vatType: com_vat_type,
+            company_name: companyName,
+            short_name:com_short_name,
+            email: com_email,
+            phone: com_phone,
+            loginpage_image: login_logo,
+            address: com_address,
+            country_id: com_country,
+            // city_id:city_id ,
+            // state_id: state_id,
+            zip_code:zip_code,
+            ifs_code:ifs_code,
+            tin: com_tin,
+            bin: com_bin,
+            bank_name: com_bank,
+            bank_branch: com_b_branch,
+            ac_no: com_acc_no,
+            invoice_image: invoice_logo,
+            com_currency: com_currency,
+            business_nature: com_buss_nature,
+            business_economics: com_buss_eco,
+            authorised_person: com_auth_person,
+            company_vat_type: com_vat_type,
             status: com_status,
             }
         
         const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
+        if(user.token){
+            const bearer = JSON.parse(user.token);
             const headers= { Authorization: `Bearer ${bearer}`, 'Content-Type': 'multipart/form-data' }
             const c_id = 1;
 
         try {
             // console.log(company);
-           await axios.put(`http://localhost:8080/bmitvat/api/company/update-company/${c_id}`, company, {headers})
+           await axios.put(`${baseUrl}/company/update-company/${c_id}`, company, {headers})
           .then(function (response){
             if(response.status== 200){
               alert("Update Successfull");
@@ -169,37 +192,41 @@ const index = () => {
                     const fileExtension2 = src2.split('.').pop() || 'jpg';
                     const invoice_file2 = new File([blob2], `${img_name2}`, { type: `image/${fileExtension2}` });
 
-                const company = {
-                    companyName: company_name,
-                    comSortName:com_short_name,
-                    comEmail: com_email,
-                    comPhone: com_phone,
-                    loginLogo: logo_file1,
-                    street: com_address,
-                    countryId: com_country,
-                    comTin: com_tin,
-                    comBin: com_bin,
-                    comBank: com_bank,
-                    comBankBranch: com_b_branch,
-                    comBankAcc: com_acc_no,
-                    invoiceLogo: invoice_file2,
-                    comCurrency: com_currency,
-                    businessNature: com_buss_nature,
-                    businessEconomics: com_buss_eco,
-                    authorisedPersonId: com_auth_person,
-                    vatType: com_vat_type,
-                    status: com_status,
-                    }
+                    const company = {
+                        company_name: companyName,
+                        short_name:com_short_name,
+                        email: com_email,
+                        phone: com_phone,
+                        loginpage_image: login_logo,
+                        address: com_address,
+                        country_id: com_country,
+                        zip_code:zip_code,
+                        ifs_code:ifs_code,
+                        tin: com_tin,
+                        bin: com_bin,
+                        bank_name: com_bank,
+                        bank_branch: com_b_branch,
+                        ac_no: com_acc_no,
+                        invoice_image: invoice_logo,
+                        com_currency: com_currency,
+                        business_nature: com_buss_nature,
+                        business_economics: com_buss_eco,
+                        authorised_person: com_auth_person,
+                        company_vat_type: com_vat_type,
+                        status: com_status,
+                        // city_id:city_id ,
+                        // state_id: state_id,
+                        }
                 
-                const token = localStorage.getItem('Token');
-                if(token){
-                    const bearer = JSON.parse(token);
+
+                if(user.token){
+                    const bearer = JSON.parse(user.token);
                     const headers= { Authorization: `Bearer ${bearer}`, 'Content-Type': 'multipart/form-data' }
                     const c_id = 1;
 
                 try {
-                    // console.log(company);
-                await axios.put(`http://localhost:8080/bmitvat/api/company/update-company/${c_id}`, company, {headers})
+                    console.log(company);
+                await axios.put(`${baseUrl}/company/update-company/${c_id}`, company, {headers})
                 .then(function (response){
                     if(response.status== 200){
                     alert("Update Successfull");
@@ -214,18 +241,9 @@ const index = () => {
 
             }
 
-
         }
 
-
-
       };
-
-
-
-
-
-
     return (
         <div>
             <div className="panel flex items-center justify-between flex-wrap gap-4">
@@ -242,7 +260,7 @@ const index = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="coName">Company Name</label>
-                                    <input id="coName" type="text" className="form-input" placeholder="Enter Company Name" value={company_name} onChange={(e) => setComName(e.target.value)} required />
+                                    <input id="coName" type="text" className="form-input" placeholder="Enter Company Name" value={companyName} onChange={(e) => setComName(e.target.value)} required />
                                 </div>
                                 <div>
                                     <label htmlFor="countryId">Country</label>
@@ -250,8 +268,8 @@ const index = () => {
                                         <select className="form-select text-dark" value={com_country} onChange={(e) => setComCountry(e.target.value)} required >
                                             <option value="">Select Country</option>
                                             <option value="1">Afganistan</option>
-                                            <option value="0">American Samoa</option>
-                                            <option value="0">Australia</option>
+                                            <option value="2">American Samoa</option>
+                                            <option value="3">Australia</option>
                                             <option value="0">Bangladesh</option>
                                             <option value="0">Bhutan</option>
                                             <option value="0">China</option>
@@ -270,6 +288,23 @@ const index = () => {
                                     <label htmlFor="coAddress">Address</label>
                                     <input id="coAddress" type="text" placeholder="Enter Address" className="form-input" value={com_address} onChange={(e) => setComAddress(e.target.value)} required />
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="ifsCode">IFS-Code</label>
+                                    <input id="ifs" type="text" placeholder="Enter IFS Code" className="form-input" value={ifs_code} onChange={(e) => setifsCode(e.target.value)} />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="ZIP"> ZIP Code</label>
+                                    <input id="ZIP"type="text" placeholder='Enter ZIP Code' className='form-input' value={zip_code} onChange={(e) => setzipCode(e.target.value)}/>
+                                </div>
+
+
+
+
+
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" id="tagging">
@@ -381,7 +416,7 @@ const index = () => {
                                             <option value="">Select Authorised Person</option>
                                             {initialRecords.map((option, index) => (
                                                 <option key={index} value={option.id}>
-                                                    {option.personName}
+                                                    {option.authorised_person_name}
                                                 </option>
                                             ))}
                                             
@@ -389,6 +424,20 @@ const index = () => {
                                     </div>
                                 </div>
                             </div>
+                            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                <div>
+                                    <label htmlFor="status">Company Status</label>
+                                    <div>
+                                        <select className="form-select text-dark" value={com_status} onChange={(e) => setComVatType(e.target.value)} required >
+                                            <option value="">Please Select Company Status</option>
+                                            <option value="1">Active</option>
+                                            <option value="0">Deactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                            </div> */}
 
                             <div className="flex items-center justify-center gap-6 pt-10">
                                 <button type="submit" className="btn btn-success gap-2">

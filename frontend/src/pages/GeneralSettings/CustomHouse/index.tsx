@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, NavLink, useNavigate }  from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
-import { useEffect, useState, Fragment } from 'react';
+import { useContext, useEffect, useState, Fragment } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
@@ -17,6 +17,8 @@ import IconX from '../../../components/Icon/IconX';
 import IconSend from '../../../components/Icon/IconSend';
 import axios from 'axios';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
+import UserContex from '../../../context/UserContex';
+
 
 
 
@@ -24,28 +26,49 @@ import ImageUploading, { ImageListType } from 'react-images-uploading';
 const index = () => {
 
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
 
     useEffect(() => {
         const token = localStorage.getItem('Token');
 
-        if(token){
-            const bearer =  token.slice(1,-1); 
-            // const bearer1 = JSON.parse(token);
+        if(user){
+    
+            axios.get(`${baseUrl}/customhouse/all_custom_house`,{headers})
+                .then((response) => {
+                    setInitialRecords(response.data);
+                    //console.log(response.data);
+    
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+    
+                });
+    
+            }
+        }, [user]);
 
-        const headers= { Authorization: `Bearer ${bearer}` }
+    //     if(token){
+    //         const bearer =  token.slice(1,-1); 
+    //         // const bearer1 = JSON.parse(token);
 
-        axios.get('http://localhost:8080/bmitvat/api/customhouse/all_customhouse',{headers})
-            .then((response) => {
-                setInitialRecords(response.data);
+    //     const headers= { Authorization: `Bearer ${bearer}` }
 
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
+    //     axios.get('http://localhost:8080/bmitvat/api/customhouse/all_custom_house',{headers})
+    //         .then((response) => {
+    //             setInitialRecords(response.data);
 
-            });
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error fetching data:', error);
 
-        }
-    }, []);
+    //         });
+
+    //     }
+    // }, []);
 
 
 
@@ -80,6 +103,7 @@ const index = () => {
                     item.houseName.toLowerCase().includes(search.toLowerCase()) ||
                     item.houseCode.toString().toLowerCase().includes(search.toLowerCase()) ||
                     item.houseAddress.toLowerCase().includes(search.toLowerCase()) ||
+                    item.houseStatus.toLowerCase().includes(search.toLowerCase()) ||
                     item.action.toLowerCase().includes(search.toLowerCase())
                 );
             });
@@ -123,7 +147,7 @@ const index = () => {
            const headers= { Authorization: `Bearer ${bearer}`,'content-type': 'multipart/form-data' }
            // console.log(headers);
    
-         await axios.post('http://localhost:8080/bmitvat/api/customhouse/upload_customhouse_excel', file, {headers})
+         await axios.post('http://localhost:8080/bmitvat/api/customhouse/upload_custom_house_excel', file, {headers})
          .then(function (response){
            console.log("Data Inserted");
            if(response.status==200){
@@ -280,9 +304,10 @@ const index = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'id', title: 'Id', sortable: true },
-                            { accessor: 'houseName', title: 'Custom House Name', sortable: true },
-                            { accessor: 'houseCode', title: 'Custom House Code', sortable: true },
-                            { accessor: 'houseAddress', title: 'Custom House Address', sortable: true },
+                            { accessor: 'custom_house_name', title: 'Custom House Name', sortable: true },
+                            { accessor: 'custom_house_code', title: 'Custom House Code', sortable: true },
+                            { accessor: 'custom_house_address', title: 'Custom House Address', sortable: true },
+                            { accessor: 'custom_house_status', title: 'Custom House Status', sortable: true},
                             {
                                 accessor: 'action',
                                 title: 'Action',

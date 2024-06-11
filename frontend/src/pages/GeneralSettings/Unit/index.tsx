@@ -48,16 +48,22 @@ const index = () => {
         }
     }, [user]);
 
+
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Export Table'));
     });
+
+
+
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100, 500];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState([]);
     const [recordsData, setRecordsData] = useState(initialRecords);
     // console.warn(initialRecords);
+
 
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'asc' });
@@ -66,12 +72,16 @@ const index = () => {
         setPage(1);
     }, [pageSize]);
 
+
+
     useEffect(() => {
         const from = (page - 1) * pageSize;
         const to = from + pageSize;
         setRecordsData([...initialRecords.slice(from, to)]);
     }, [page, pageSize, initialRecords]);
 
+
+    
     useEffect(() => {
         setInitialRecords(() => {
             return initialRecords.filter((item: any) => {

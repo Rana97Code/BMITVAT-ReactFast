@@ -9,6 +9,8 @@ const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // const [base_url, setBaseUrl] = useState<string>('http://127.0.0.1:8000');
     const [token, setToken] = useState<string | null>(null);
     const [headers, setHeaders] = useState<any | null>(null);
+    const [multipartHeader, setUsermultipartHeader] = useState<any | null>(null);
+
     const [email, setUserEmail] = useState<string | null>(null);
 
     useEffect(() => {
@@ -27,10 +29,12 @@ const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const userEmail = jwt.user_email;
             const jsonToken = JSON.parse(storedUser);
             const authHeaders = { Authorization: `Bearer ${jsonToken}` };
+            const multipartHeader= { Authorization: `Bearer ${jsonToken}`, 'Content-Type': 'multipart/form-data' }
 
             setToken(jsonToken);
             setHeaders(authHeaders);
             setUserEmail(userEmail);
+            setUsermultipartHeader(multipartHeader);
         } else {
             navigate("/");
             return;
@@ -66,7 +70,7 @@ const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [navigate]);
 
     return (
-        <UserContext.Provider value={{ base_url, token, headers, email }}>
+        <UserContext.Provider value={{ base_url, token, headers,multipartHeader, email }}>
             {children}
         </UserContext.Provider>
     );
