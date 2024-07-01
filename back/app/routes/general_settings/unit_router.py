@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
-from app.models.unit_model import UnitCreateSchema,UnitSchema,Unit 
+from app.models.general_settings.unit_model import UnitCreateSchema,UnitSchema,Unit 
 from app.config import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
@@ -37,20 +37,16 @@ async def get_itm(unit_id:int,db:Session=Depends(get_db)):
 @unit_router.put("/bmitvat/api/update_unit/{unit_id}", dependencies=[Depends(get_current_active_user)])
 async def update(unit_id:int,unit:UnitCreateSchema,db:Session=Depends(get_db)):
     try:
-        print(unit)
         u=db.query(Unit).filter(Unit.id==unit_id).first()
         u.unit_name=unit.unit_name
         u.unit_details=unit.unit_details
         u.unit_status=unit.unit_status
-        # print(u.unit_name)
+        # print(jsonable_encoder(u))
         db.add(u)
         db.commit()
         return {"Message":"Successfully Update"}
     except:
         return HTTPException(status_code=404,detail="Update Uncessfull")
-
-
-    
 
 @unit_router.delete("/bmitvat/api/delete_unit/{unit_id}",response_class=JSONResponse, dependencies=[Depends(get_current_active_user)])
 async def get_itm(unit_id:int,db:Session=Depends(get_db)):
@@ -75,15 +71,15 @@ async def create(unit:List[UnitCreateSchema], request: Request, db:Session=Depen
     i = []
     unt = []
     for i in range(len(name)):
-        print(i)
+        # print(i)
         unt.append({
           'unit_name': name[i]["unit_name"],
           'unit_details': name[i]["unit_details"],
           'unit_status': name[i]["unit_status"]
         })
-        print(unt)
+        # print(unt)
     for row in unt:
-        print(row)
+        # print(row)
         unit_list = [Unit(**row)]
         db.add_all(unit_list)
         db.commit()
@@ -119,7 +115,7 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
         with open(file_path, "wb") as f:
             f.write(await file.read())
 
-        import openpyxl # type: ignore
+        import openpyxl
         wb = openpyxl.load_workbook(file_path)
         sheet = wb.active
         data = []

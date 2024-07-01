@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
-from app.models.costing_model import CostingCreateSchema,CostingSchema,Costing 
+from app.models.general_settings.costing_model import CostingCreateSchema,CostingSchema,Costing 
 from app.config import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
