@@ -208,7 +208,7 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
                                 <option >Select Finish Goods</option>
                                 {OpeningStock.map((option, index) => ( 
                                      <option key={index} value={option.id}> 
-                                         {option.itemName+ ' (' +option.hsCode +')'} 
+                                         {option.itemName} 
                                    </option> 
                                 ))} 
                             </select>

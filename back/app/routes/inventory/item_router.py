@@ -63,10 +63,12 @@ async def get_itm(item_id:int,db:Session=Depends(get_db)):
 async def update(item_id:int,item:ItemCreateSchema,db:Session=Depends(get_db)):
     try:
         u=db.query(Item).filter(Item.id==item_id).first()
-        u.item_name=item.item_name,
+        print(u)
+        print(item)
+        u.item_name=item.item_name
         u.item_type=item.item_type
         u.hs_code=item.hs_code
-        u.hs_code_id=item.hs_code_id,
+        u.hs_code_id=item.hs_code_id
         u.unit_id=item.unit_id
         u.stock_status=item.stock_status
         u.status=item.status
@@ -124,7 +126,7 @@ async def create(item:List[ItemCreateSchema], request: Request, db:Session=Depen
 
 
 @item_route.put("/bmitvat/api/item/update_item_array/{item_id}", dependencies=[Depends(get_current_active_user)])
-async def update_array(item_id: str, request: Request, db:Session=Depends(get_db)): 
+async def update_array(item_id: str, item:ItemCreateSchema, request: Request, db:Session=Depends(get_db)): 
     y = item_id.split(",")
     u=db.query(Item).filter(Item.id.in_(y)).all()
     name= jsonable_encoder(u)
@@ -140,6 +142,7 @@ async def update_array(item_id: str, request: Request, db:Session=Depends(get_db
         calculate_year = x["calculate_year"],
         created_by = x["created_by"],
         updated_by = x["updated_by"]
+ 
 
         uu=db.query(Item).filter(Item.id == x["id"]).first()
         uu.item_name=item_name

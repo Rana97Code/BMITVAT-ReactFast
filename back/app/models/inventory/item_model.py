@@ -9,7 +9,7 @@ class Item(Base):
     __tablename__="items"
     id=Column(Integer,primary_key=True,index=True)
     item_name = Column(String(255),index=True)
-    item_type = Column(String(255),index=True)
+    item_type = Column(Integer,index=True)
     hs_code = Column(String(255), nullable=True)
     hs_code_id = Column(Integer, nullable=True)
     unit_id = Column(Integer, nullable=True)
@@ -26,7 +26,7 @@ Base.metadata.create_all(bind=engine)
 
 class ItemCreateSchema(BaseModel):
     item_name:str
-    item_type:str
+    item_type:int
     hs_code:str
     hs_code_id:int
     unit_id:int
@@ -43,7 +43,7 @@ class ItemSchema(BaseModel):
     id:int
     item_name:str
     description:str
-    item_type:str
+    item_type:int
     hs_code:str
     unit_name:int | None
     stock_status:int | None
@@ -56,8 +56,9 @@ class ItemSchema(BaseModel):
         from_attributes = True
 
 class ItemBase(BaseModel):
+    id : int
     item_name:str
-    item_type:str
+    item_type:int
     hs_code:str
     hs_code_id:int | None
     unit_id:int | None
@@ -69,3 +70,5 @@ class ItemBase(BaseModel):
 
     class Config:
         from_attributes = True
+
+    
