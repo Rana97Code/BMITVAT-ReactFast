@@ -19,7 +19,39 @@ from app.models.inventory.item_model import Item, ItemBase
 
 # route define
 FinishGoods_router = APIRouter()
+#For Raw_Materials::
+@FinishGoods_router.get("/bmitvat/api/item/all_raw_materials", response_model=List[ItemBase], dependencies=[Depends(get_current_active_user)])
+async def index(db: Session = Depends(get_db)):  
+    return db.query(Item).filter(Item.item_type == 1, Item.status == 1).all()
 
+
+@FinishGoods_router.get("/bmitvat/api/opening_stock/all_raw_stock", response_model=List[OpeningStockSchema], dependencies=[Depends(get_current_active_user)])
+async def index(db: Session = Depends(get_db)):
+    tt = db.query(OpeningStock, Item).join(Item, OpeningStock.item_id == Item.id).filter(OpeningStock.item_type == 1)\
+        .add_columns(OpeningStock.id, OpeningStock.item_id, OpeningStock.item_type, Item.item_name, Item.hs_code, OpeningStock.opening_date, 
+                     OpeningStock.opening_quantity, OpeningStock.opening_rate, OpeningStock.opening_value, OpeningStock.closing_date).all()
+    raw_goods = []
+    for y in tt:
+        raw_goods.append({
+            'id' : y.id,
+            'item_id': y.item_id,
+            'item_name': y.item_name,
+            'hs_code': y.hs_code,
+            'item_type': y.item_type,
+            'opening_date': y.opening_date,
+            'opening_quantity': y.opening_quantity,
+            'opening_rate': y.opening_rate,
+            'opening_value': y.opening_value,
+            'closing_date': y.closing_date
+        })
+    
+    json_raw_goods = jsonable_encoder(raw_goods)
+    return JSONResponse(content=json_raw_goods)
+
+
+
+
+#for Finishing_Goods::
 @FinishGoods_router.get("/bmitvat/api/item/all_finish_goods", response_model=List[ItemBase], dependencies=[Depends(get_current_active_user)])
 async def index(db: Session = Depends(get_db)):  
     return db.query(Item).filter(Item.item_type == 2, Item.status == 1).all()
@@ -35,15 +67,40 @@ async def create(openingStock:OpeningInsertSchema, db:Session=Depends(get_db)):
 
 
 @FinishGoods_router.get("/bmitvat/api/opening_stock/all_finish_stock", response_model=List[OpeningStockSchema], dependencies=[Depends(get_current_active_user)])
-async def index(db:Session = Depends(get_db)):
-    return db.query(OpeningStock).all()
+async def index(db: Session = Depends(get_db)):
+    pp = db.query(OpeningStock, Item).join(Item, OpeningStock.item_id == Item.id)\
+        .add_columns(OpeningStock.id, OpeningStock.item_id, OpeningStock.item_type, Item.item_name, Item.hs_code, OpeningStock.opening_date, 
+                     OpeningStock.opening_quantity, OpeningStock.opening_rate, OpeningStock.opening_value, OpeningStock.closing_date).all()
 
-    # x=db.query(OpeningStock,Item).join(Item, OpeningStock.item_id == Item.id)\
-    #     .add_column(OpeningStock.item_id, OpeningStock.item_type,Item.item_name, Item.hs_code, OpeningStock.opening_date, OpeningStock.opening_quantity, 
+    finish_goods = []
+    for x in pp:
+        finish_goods.append({
+            'id' : x.id,
+            'item_id': x.item_id,
+            'item_name': x.item_name,
+            'hs_code': x.hs_code,
+            'item_type': x.item_type,
+            'opening_date': x.opening_date,
+            'opening_quantity': x.opening_quantity,
+            'opening_rate': x.opening_rate,
+            'opening_value': x.opening_value,
+            'closing_date': x.closing_date
+        })
+    
+    json_finish_goods = jsonable_encoder(finish_goods)
+    return JSONResponse(content=json_finish_goods)
+
+
+# @FinishGoods_router.get("/bmitvat/api/opening_stock/all_finish_stock", response_model=List[OpeningStockSchema], dependencies=[Depends(get_current_active_user)])
+# async def index(db:Session = Depends(get_db)):
+     #return db.query(OpeningStock).all()
+
+    # x=db.query(OpeningStock, Item).join(Item, OpeningStock.item_id == Item.id)\
+    #     .add_column(OpeningStock.item_id, OpeningStock.item_type, Item.item_name, Item.hs_code, OpeningStock.opening_date, OpeningStock.opening_quantity, 
     #                 OpeningStock.opening_rate, OpeningStock.opening_value, OpeningStock.closing_date).all()
-    # p_Finishgoods = []
+    # finish_goods = []
     # for y in x:
-    #     p_Finishgoods.append({
+    #     finish_goods.append({
     #         'item_id': y.item_id,
     #         'item_name': y.item_name,
     #         'hs_code' : y.hs_code,
@@ -55,5 +112,6 @@ async def index(db:Session = Depends(get_db)):
     #         'closing_date' : y.closing_date
     #     })
     
-    # junit = jsonable_encoder(p_Finishgoods)
-    # return JSONResponse(content=junit)
+#     junit = jsonable_encoder(p_Finishgoods)
+#     return JSONResponse(content=junit)
+
