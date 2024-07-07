@@ -13,11 +13,10 @@ from app.routes.inventory.item_router import item_route;
 from app.routes.general_settings.custom_house_router import custom_house_router;
 from app.routes.general_settings.authorised_person_router import authorised_person_router;
 from app.routes.general_settings.company_settings_router import company_settings_router;
-
-
-
+from app.routes.production.purchase_route import router
 
 Base.metadata.create_all(bind=engine)
+
 
 def include_router(app):
     app.include_router(auth_router)
@@ -32,10 +31,11 @@ def include_router(app):
     app.include_router(custom_house_router)
     app.include_router(authorised_person_router)
     app.include_router(company_settings_router)
+    app.include_router(router)
 
 
 origins = [
-        "http://localhost:5173",
+    "http://localhost:5173",
 ]
 
 
@@ -50,6 +50,7 @@ def start_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
     # Custom middleware for security headers
     @app.middleware("http")
     async def add_security_headers(request, call_next):
@@ -59,7 +60,8 @@ def start_application():
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
-    
+
     return app
+
 
 app = start_application()

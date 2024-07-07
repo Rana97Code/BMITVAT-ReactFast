@@ -29,7 +29,7 @@ const addCustomers = () => {
   const user = useContext(UserContex);
   const headers= user.headers;
 
-  const getCustomerDetails = async()=>{ 
+  const getCustomerDetails = async()=>{
     if(user){
 
       axios.get(`${user.base_url}/country/all_country`,{headers})
@@ -44,7 +44,7 @@ const addCustomers = () => {
               console.error('Error fetching data:', error);
           });
       }
-  
+
   }
 
 
@@ -131,24 +131,24 @@ const addCustomers = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" id="tagging">
-              
+
                 <div>
                   <label htmlFor="suAddress">Customer Address</label>
-                  <input id="suAddress" type="text" placeholder="Enter Address" defaultValue="1234 Main St" className="form-input" onChange={(e) => setAddress(e.target.value)} required />
+                  <input id="suAddress" type="text" placeholder="Enter Address" aria-placeholder="1234 Main St" className="form-input" onChange={(e) => setAddress(e.target.value)} required />
                 </div>
                 <div>
                   <label htmlFor="countryId">Country</label>
                     <select className="form-select text-dark " defaultValue="active" onChange={(e) => setCountry(e.target.value)} required >
                       <option value="1">Select Countries</option>
-                      {countries.map((option, index) => ( 
-                          <option key={index} value={option.id}> 
-                              {option.country_name} 
-                      </option> 
-                      ))} 
+                      {countries.map((option, index) => (
+                          <option key={index} value={option.id}>
+                              {option.country_name}
+                      </option>
+                      ))}
                     </select>
               </div>
               </div>
-             
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="suBinNid">BIN/NID</label>
@@ -173,11 +173,11 @@ const addCustomers = () => {
                   <div>
                     <select className="form-select text-dark " onChange={(e) => setScId(e.target.value)} required >
                     <option value="1">Select Countries</option>
-                      {countries.map((option, index) => ( 
-                          <option key={index} value={option.id}> 
-                              {option.country_name} 
-                      </option> 
-                      ))} 
+                      {countries.map((option, index) => (
+                          <option key={index} value={option.id}>
+                              {option.country_name}
+                      </option>
+                      ))}
                     </select>
                   </div>
                 </div>

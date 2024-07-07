@@ -1,15 +1,14 @@
-import React, { ChangeEvent, ChangeEventHandler } from 'react';
-import {  useEffect, useState, useRef } from 'react';
+import React, { useContext, useState, useEffect, ChangeEventHandler } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import IconFile from '../../../../../components/Icon/IconFile';
 import IconTrashLines from '../../../../../components/Icon/IconTrashLines';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { exists } from 'i18next';
+import axios, { all } from 'axios';
+import UserContext from '../../../../../context/UserContex';
+
+
 
 
 const addLocalPurchase: React.FC = () => {
-    const navigate = useNavigate();
-
 
     // Function to get today's date in the format "YYYY-MM-DD"
     const getTodayDate = () => {
@@ -20,27 +19,35 @@ const addLocalPurchase: React.FC = () => {
         return `${year}-${month}-${day}`;
       };
 
+    const navigate = useNavigate();
+    // const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+        const user = useContext(UserContext);
+            const headers= user.headers;
+            const baseUrl= user.baseURL;
+            const token= user.token;
+
 
     interface suppliers {
         id: number;
-        supplierName: string;
-        supplierAddress: string;
+        supplier_name: string;
+        s_address: string;
       }
 
     interface suggestItem {
         id: number;
-        itemName: string;
+        item_name: string;
       }
 
     interface detailsItem {
         id: number;
-        itemName: string;
-        hsCodeId: number;
-        hsCode: string;
+        item_name: string;
+        hs_code_id: number;
+        hs_code: string;
         sd: number;
         vat: number;
       }
-    
+
     const [all_suppliers, setAllSupplier] = useState<suppliers[]>([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
     const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
@@ -57,23 +64,22 @@ const addLocalPurchase: React.FC = () => {
 
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
-        if(token){
-        const bearer =  token.slice(1,-1); 
-  
-        const headers= { Authorization: `Bearer ${bearer}` }
-  
-        axios.get('http://localhost:8080/bmitvat/api/supplier/all_supplier',{headers})
+        if(user){
+
+        axios.get(`${user.base_url}/supplier/all_supplier`,{headers})
             .then((response) => {
-                setAllSupplier(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-  
+               if (Array.isArray(response.data)) {
+              setAllSupplier(response.data);
+            } else {
+              throw new Error('Response data is not an array');
+          }
+          })
+          .catch((error) => {
+              console.error('Error fetching data:', error);
+          });
         }
-    }, []);
-  
+    }, [user]);
+
 
 
     const getSupplierId: ChangeEventHandler<HTMLSelectElement> = (event) => {
@@ -83,13 +89,13 @@ const addLocalPurchase: React.FC = () => {
         if(token){
             const bearer = JSON.parse(token);
             const headers= { Authorization: `Bearer ${bearer}` }
-  
+
          axios.get(`http://localhost:8080/bmitvat/api/supplier/get_supplier/${selectedOptionId}`,{headers})
             .then((response) => {
                 const data = response.data;
                 setSupplier(data.id)
                 setAddress(data.supplierAddress)
-  
+
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -110,11 +116,11 @@ const addLocalPurchase: React.FC = () => {
         if (suggestionsList) {
             suggestionsList.style.display = 'block';
         }
-      
+
         if (!suggestionsList) {
           return;
         }
-      
+
         if (searchInput.value.trim() === '') {
           suggestionsList.innerHTML = '';
           return;
@@ -141,9 +147,9 @@ const addLocalPurchase: React.FC = () => {
                     const listItem = document.createElement('li');
                     listItem.style.width = '500px';
                     listItem.style.padding = '10px';
-                    listItem.className = 'suggestion-item'; 
+                    listItem.className = 'suggestion-item';
                     listItem.value = suggestion.id;
-                    listItem.textContent = suggestion.itemName;
+                    listItem.textContent = suggestion.item_name;
                     suggestionsList.appendChild(listItem);
                     });
 
@@ -155,7 +161,7 @@ const addLocalPurchase: React.FC = () => {
                           const clickedValue = (liElement as HTMLLIElement).value;
                           const liElementTyped = liElement as HTMLElement;
                           liElementTyped.style.backgroundColor = 'green';
-                   
+
                           // Now 'clickedValue' contains the value of the clicked li element
                           console.log('Clicked Item ID:', clickedValue);
                           if (suggestionsList) {
@@ -169,7 +175,7 @@ const addLocalPurchase: React.FC = () => {
                             if(token){
                                 const bearer = JSON.parse(token);
                                 const headers= { Authorization: `Bearer ${bearer}` }
-                    
+
                             axios.get(`http://localhost:8080/bmitvat/api/purchase/get_item_details/${clickedValue}`,{headers})
                                 .then((response) => {
                                     const data = response.data;
@@ -225,13 +231,13 @@ const addLocalPurchase: React.FC = () => {
 
                                     input1.addEventListener('keyup', calculateValue);
                                     input2.addEventListener('keyup', calculateValue);
-                                   
+
 
                                     function calculateValue() {
                                         const value1 = parseFloat(input1.value) || 0;
                                         const value2 = parseFloat(input2.value) || 0;
-                                        const value4 = parseFloat(input4.value) || 0;  
-                                        const value8 = parseFloat(input8.value) || 0;  
+                                        const value4 = parseFloat(input4.value) || 0;
+                                        const value8 = parseFloat(input8.value) || 0;
 
                                         const onlyValue = value1 * value2;
                                         input3.value = onlyValue.toString();
@@ -240,11 +246,11 @@ const addLocalPurchase: React.FC = () => {
                                         const sdWithValue = (onlyValue * value4)/100;
                                         input5.value = sdWithValue.toString();
 
-                                        const vatAblValue = onlyValue + sdWithValue; 
+                                        const vatAblValue = onlyValue + sdWithValue;
                                         input6.value = vatAblValue.toString();
 
                                         // vat
-                                        const vatAmout = (vatAblValue * value8)/100; 
+                                        const vatAmout = (vatAblValue * value8)/100;
                                         input9.value = vatAmout.toString();
 
                                         const totalAmount = (parseFloat(input6.value) + vatAmout);
@@ -300,46 +306,46 @@ const addLocalPurchase: React.FC = () => {
                                     selectElement.style.cssText = 'border: 1px solid black; width: 180px;';
 
                                         const option0 = document.createElement('option');
-                                        option0.value = ''; 
-                                        option0.selected= true; 
-                                        option0.textContent = 'Select Vat %'; 
+                                        option0.value = '';
+                                        option0.selected= true;
+                                        option0.textContent = 'Select Vat %';
                                         selectElement.appendChild(option0);
-                                    
+
                                         const option1 = document.createElement('option');
-                                        option1.value = '1'; 
-                                        option1.textContent = 'Standard Rate(15%)'; 
+                                        option1.value = '1';
+                                        option1.textContent = 'Standard Rate(15%)';
                                         selectElement.appendChild(option1);
-                                        
+
                                         const option2 = document.createElement('option');
-                                        option2.value = '2'; 
-                                        option2.textContent = 'Zero Rate(0%)'; 
+                                        option2.value = '2';
+                                        option2.textContent = 'Zero Rate(0%)';
                                         selectElement.appendChild(option2);
 
                                         const option3 = document.createElement('option');
-                                        option3.value = '3'; 
-                                        option3.textContent = 'Exempted'; 
+                                        option3.value = '3';
+                                        option3.textContent = 'Exempted';
                                         selectElement.appendChild(option3);
-                                        
+
                                         const option4 = document.createElement('option');
-                                        option4.value = '4'; 
-                                        option4.textContent = 'Specific'; 
+                                        option4.value = '4';
+                                        option4.textContent = 'Specific';
                                         selectElement.appendChild(option4);
 
                                         const option5 = document.createElement('option');
-                                        option5.value = '5'; 
-                                        option5.textContent = 'Other Than Standard Rate'; 
+                                        option5.value = '5';
+                                        option5.textContent = 'Other Than Standard Rate';
                                         selectElement.appendChild(option5);
-                                        
+
                                         const option6 = document.createElement('option');
-                                        option6.value = '6'; 
-                                        option6.textContent = 'Unregistered Entities'; 
+                                        option6.value = '6';
+                                        option6.textContent = 'Unregistered Entities';
                                         selectElement.appendChild(option6);
 
                                         const option7 = document.createElement('option');
-                                        option7.value = '7'; 
-                                        option7.textContent = 'Turnover TAX'; 
+                                        option7.value = '7';
+                                        option7.textContent = 'Turnover TAX';
                                         selectElement.appendChild(option7);
-                                    
+
                                         selectElement.addEventListener('change', () => {
                                             const selectedValue = selectElement.value;
                                             if(selectedValue=='1'){
@@ -389,60 +395,60 @@ const addLocalPurchase: React.FC = () => {
                                     selectStandard.style.cssText = 'border: 1px solid black; width: 100px; display:none;';
 
                                         const optionSt0 = document.createElement('option');
-                                        optionSt0.value = ''; 
-                                        optionSt0.selected= true; 
-                                        optionSt0.textContent = 'Select Vat'; 
+                                        optionSt0.value = '';
+                                        optionSt0.selected= true;
+                                        optionSt0.textContent = 'Select Vat';
                                         selectStandard.appendChild(optionSt0);
-                                    
+
                                         const optionSt1 = document.createElement('option');
-                                        optionSt1.value = '2'; 
-                                        optionSt1.textContent = '2'; 
+                                        optionSt1.value = '2';
+                                        optionSt1.textContent = '2';
                                         selectStandard.appendChild(optionSt1);
-                                        
+
                                         const optionSt2 = document.createElement('option');
-                                        optionSt2.value = '2.4'; 
-                                        optionSt2.textContent = '2.4'; 
+                                        optionSt2.value = '2.4';
+                                        optionSt2.textContent = '2.4';
                                         selectStandard.appendChild(optionSt2);
 
                                         const optionSt3 = document.createElement('option');
-                                        optionSt3.value = '3'; 
-                                        optionSt3.textContent = '3'; 
+                                        optionSt3.value = '3';
+                                        optionSt3.textContent = '3';
                                         selectStandard.appendChild(optionSt3);
 
                                         const optionSt4 = document.createElement('option');
-                                        optionSt4.value = '5'; 
-                                        optionSt4.textContent = '5'; 
+                                        optionSt4.value = '5';
+                                        optionSt4.textContent = '5';
                                         selectStandard.appendChild(optionSt4);
 
                                         const optionSt5 = document.createElement('option');
-                                        optionSt5.value = '7.5'; 
-                                        optionSt5.textContent = '7.5'; 
+                                        optionSt5.value = '7.5';
+                                        optionSt5.textContent = '7.5';
                                         selectStandard.appendChild(optionSt5);
 
                                         const optionSt6 = document.createElement('option');
-                                        optionSt6.value = '10'; 
-                                        optionSt6.textContent = '10'; 
+                                        optionSt6.value = '10';
+                                        optionSt6.textContent = '10';
                                         selectStandard.appendChild(optionSt6);
 
                                         selectStandard.addEventListener('change', () => {
                                             const selectedValue = selectStandard.value;
                                             if(selectedValue=='2'){
-                                                input8.value = '2'; 
+                                                input8.value = '2';
                                             }
                                             if(selectedValue=='2.4'){
-                                                input8.value = '2.4'; 
+                                                input8.value = '2.4';
                                             }
                                             if(selectedValue=='3'){
-                                                input8.value = '3'; 
+                                                input8.value = '3';
                                             }
                                             if(selectedValue=='5'){
-                                                input8.value = '5'; 
+                                                input8.value = '5';
                                             }
                                             if(selectedValue=='7.5'){
-                                                input8.value = '7.5'; 
+                                                input8.value = '7.5';
                                             }
                                             if(selectedValue=='10'){
-                                                input8.value = '10'; 
+                                                input8.value = '10';
                                             }
                                         })
 
@@ -453,7 +459,7 @@ const addLocalPurchase: React.FC = () => {
 
                                             const vat = (parseFloat(input6.value) * value1)/100;
                                             input9.value = vat.toString();
-        
+
                                             const totalAmout = (parseFloat(input6.value) + vat);
                                             input10.value = totalAmout.toString();
                                         }
@@ -464,10 +470,10 @@ const addLocalPurchase: React.FC = () => {
                                         const value2 = parseFloat(selectStandard.value) || 0;
                                         const vat = (parseFloat(input6.value) * value2)/100;
                                         input9.value = vat.toString();
-    
+
                                         const totalAmout = (parseFloat(input6.value) + vat);
                                         input10.value = totalAmout.toString();
-                                       
+
                                     }
 
                                     const input9 = document.createElement('input');
@@ -485,15 +491,15 @@ const addLocalPurchase: React.FC = () => {
                                     selectVds.name = 'vds';
                                     selectVds.className = '';
                                     selectVds.style.cssText = 'border: 1px solid black; width: 180px;';
-                                    
+
                                         const optionV = document.createElement('option');
-                                        optionV.value = '1'; 
-                                        optionV.textContent = 'Yes'; 
+                                        optionV.value = '1';
+                                        optionV.textContent = 'Yes';
                                         selectVds.appendChild(optionV);
-                                        
+
                                         const optionV1 = document.createElement('option');
-                                        optionV1.value = '2'; 
-                                        optionV1.textContent = 'No'; 
+                                        optionV1.value = '2';
+                                        optionV1.textContent = 'No';
                                         selectVds.appendChild(optionV1);
 
 
@@ -501,20 +507,20 @@ const addLocalPurchase: React.FC = () => {
                                     selectReb.name = 'rebate';
                                     selectReb.className = '';
                                     selectReb.style.cssText = 'border: 1px solid black; width: 180px;';
-                                        
+
                                         const optionR = document.createElement('option');
-                                        optionR.value = '1'; 
-                                        optionR.textContent = 'Yes'; 
+                                        optionR.value = '1';
+                                        optionR.textContent = 'Yes';
                                         selectReb.appendChild(optionR);
-                                        
+
                                         const optionR1 = document.createElement('option');
-                                        optionR1.value = '2'; 
-                                        optionR1.textContent = 'No'; 
+                                        optionR1.value = '2';
+                                        optionR1.textContent = 'No';
                                         selectReb.appendChild(optionR1);
 
                                         const optionR2 = document.createElement('option');
-                                        optionR2.value = '3'; 
-                                        optionR2.textContent = 'Zero/Exmptd/Turn/unreg'; 
+                                        optionR2.value = '3';
+                                        optionR2.textContent = 'Zero/Exmptd/Turn/unreg';
                                         selectReb.appendChild(optionR2);
 
                                     const input10 = document.createElement('input');
@@ -552,13 +558,13 @@ const addLocalPurchase: React.FC = () => {
                                         // Grand Total VAT Calculation
                                         let grandTotalVat = 0;
                                         const VatInput = document.querySelectorAll(`.total_vat`) as NodeListOf<HTMLInputElement>;
-                                    
-                                        if (VatInput) {                                        
+
+                                        if (VatInput) {
                                             VatInput.forEach((input: HTMLInputElement) => {
-                                                const value = parseFloat(input.value) || 0; 
+                                                const value = parseFloat(input.value) || 0;
                                                 grandTotalVat += value;
                                             });
-                                            
+
                                             const grandTotalVatId = document.getElementById('vatTotal') as HTMLInputElement | null;
                                             if (grandTotalVatId !== null) {
                                                 grandTotalVatId.value = grandTotalVat.toString();
@@ -568,29 +574,29 @@ const addLocalPurchase: React.FC = () => {
                                          // Grand Total SD Calculation
                                          let grandTotalSd = 0;
                                          const SdInput = document.querySelectorAll(`.total_sd`) as NodeListOf<HTMLInputElement>;
-                                        
-                                         if (SdInput) {                                        
+
+                                         if (SdInput) {
                                              SdInput.forEach((input: HTMLInputElement) => {
-                                                 const value = parseFloat(input.value) || 0; 
+                                                 const value = parseFloat(input.value) || 0;
                                                  grandTotalSd += value;
                                                });
-                                                             
+
                                              const grandTotalSdInput = document.getElementById('sdTotal') as HTMLInputElement | null;
                                              if (grandTotalSdInput !== null) {
                                                 grandTotalSdInput.value = grandTotalSd.toString();
                                              }
                                          }
-           
+
                                         // Grand Total Amount Calculation
                                         let grandTotal = 0;
                                         const inputs = document.querySelectorAll(`.total_amount`) as NodeListOf<HTMLInputElement>;
-                                      
-                                        if (inputs) {                                        
+
+                                        if (inputs) {
                                             inputs.forEach((input: HTMLInputElement) => {
-                                                const value = parseFloat(input.value) || 0; 
+                                                const value = parseFloat(input.value) || 0;
                                                 grandTotal += value;
                                               });
-                                                          
+
                                             const grandTotalInput = document.getElementById('grandTotal') as HTMLInputElement | null;
                                             if (grandTotalInput !== null) {
                                             grandTotalInput.value = grandTotal.toString();
@@ -645,7 +651,7 @@ const addLocalPurchase: React.FC = () => {
     };
 
 
-      
+
         const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
 
@@ -674,9 +680,9 @@ const addLocalPurchase: React.FC = () => {
                         rowData[inputElement.name || 'rebate']      = selectValue;
                         rowData[inputElement.name || 'totalAmount'] = inputElement.value;
                     });
-            
+
                     arrayData.push(rowData);
-                  
+
                 });
 
             } else {
@@ -692,7 +698,7 @@ const addLocalPurchase: React.FC = () => {
                 const Vat = TotalVat.value;
                 const SD = TotalSD.value;
                 const ALL = AllTotal.value;
-             
+
 
             const purchase = {
                 supplierId: supplier,
@@ -705,9 +711,9 @@ const addLocalPurchase: React.FC = () => {
                 totalSd: SD,
                 grandTotal: ALL,
                 note: note
-            
+
               }
-        
+
                 console.log(purchase);
 
                 const token = localStorage.getItem('Token');
@@ -721,16 +727,16 @@ const addLocalPurchase: React.FC = () => {
                   .then(function (response){
                     navigate("/pages/procurment/local_purchase/index");
                   })
-          
+
                 } catch (err) {
                   console.log(err);
                 }
                 }
-            } 
+            }
         };
 
-    
-    
+
+
 
     return (
         <div>
@@ -750,11 +756,11 @@ const addLocalPurchase: React.FC = () => {
                                             <label htmlFor="getSupplier">Supplier</label>
                                             <select id="getSupplier" onChange={getSupplierId} className="form-select text-dark col-span-4 text-sm" required >
                                                 <option>Select Supplier</option>
-                                                {all_suppliers.map((option, index) => ( 
-                                                    <option key={index} value={option.id}> 
-                                                        {option.supplierName} 
-                                                    </option> 
-                                                ))} 
+                                                {all_suppliers.map((option, index) => (
+                                                    <option key={index} value={option.id}>
+                                                        {option.supplier_name}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div>
@@ -774,7 +780,7 @@ const addLocalPurchase: React.FC = () => {
                                             <input id="browserLname" type="date" className="form-input" value={chalanDate} onChange={(e) => setChalanDate(e.target.value)} />
                                         </div>
                                         <div>
-    
+
                                             <label htmlFor="fiscalYear">Fiscal Year</label>
                                             <select id="fiscalYear" className="form-select text-dark col-span-4 text-sm" onChange={(e) => setFiscalYear(e.target.value)} required>
                                                 <option >Please Select</option>
@@ -860,5 +866,4 @@ const addLocalPurchase: React.FC = () => {
 };
 
 export default addLocalPurchase;
-
 
