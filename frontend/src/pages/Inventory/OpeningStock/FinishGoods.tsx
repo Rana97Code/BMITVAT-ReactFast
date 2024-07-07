@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, NavLink,useNavigate, useParams } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState, Fragment } from 'react';
 import sortBy from 'lodash/sortBy';
@@ -8,24 +8,32 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconFile from '../../../components/Icon/IconFile';
 import IconEdit from '../../../components/Icon/IconEdit';
 import axios from 'axios';
+import UserContex from '../../../context/UserContex';
 
 
 
-const rawmaterials = () => {
+const finishgoods = () => {
 
 
-  interface Hscode {
+  interface finishgoods {
     id: number;
-    itemName: string;
-    calculateYear: string;
-    hsCode: string;
+    item_name: string;
+    calculate_year: string;
+    hs_code: string;
 
   }
 
-  const [OpeningStock, setOpeningStock] = useState<Hscode[]>([]);
+  const [OpeningStock, setOpeningStock] = useState<finishgoods[]>([]);
 
 
   const navigate = useNavigate();
+  const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+
 
 
     // Function to get today's date in the format "YYYY-MM-DD"
@@ -39,7 +47,7 @@ const rawmaterials = () => {
     // State to manage the date value
     const [dateValue, setDateValue] = useState(getTodayDate());
 
-    const [itemId, setItemId] = useState("");
+    const [id, setItemId] = useState("");
     const [qty, setQty] = useState(0);
     const [rate, setRate] = useState(0);
     const [value, setValue] = useState(0);
@@ -50,9 +58,9 @@ const rawmaterials = () => {
       }, [qty, rate]);
 
   const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
-    // e.preventDefault();
-    
- 
+    e.preventDefault();
+    // alert();
+
     const newDate = new Date(dateValue);
     const openingDate= newDate.setDate(1);
 
@@ -63,57 +71,63 @@ const rawmaterials = () => {
     const itemType = 2;
 
 
-    const items = {
-      itemId: itemId,
-      itemType: itemType,
-      openingQuantity: qty,
-      openingRate: rate,
-      openingValue: value,
-      openingDate: openingDate,
-      closingDate: closingDate
+    const item = {
+      item_id: id,
+      item_type: itemType,
+      opening_quantity: qty,
+      opening_rate: rate,
+      opening_value: value,
+      opening_date: openingDate,
+    //   closing_date: closingDate,
     }
 
-    // console.log(items);
 
-    const token = localStorage.getItem('Token');
-    if(token){
-      const bearer1 = JSON.parse(token);
-    const headers= { Authorization: `Bearer ${bearer1}` }
+    if(user){
+        try {
+            // console.log(item)
+        await axios.post(`${baseUrl}/opening_stock/add-opening-stock`, item, {headers})
+            .then(function (response) {
+            if(response){
+                navigate("/pages/inventory/opening/finishgoods");
+            }
+            })
 
-    try {
-       await axios.post("http://localhost:8080/bmitvat/api/opening_stock/add-opening-stock", items, {headers})
-        .then(function (response) {
-          if(response){
-            navigate("/pages/inventory/opening/finishgoods");
-          }
-        })
-
-    } catch (err) {
-      console.log(err);
+        } catch (err) {
+        console.log(err);
+        }
     }
-  }
   };
 
 
 
   useEffect(() => {
-      const token = localStorage.getItem('Token');
 
-      if(token){
-          const bearer =  token.slice(1,-1); 
+      if(user){
 
-      const headers= { Authorization: `Bearer ${bearer}` }
+      axios.get(`${baseUrl}/item/all_finish_goods`,{headers})
+        .then((response) => {
+            if (Array.isArray(response.data)) {
+                setOpeningStock(response.data);
+                console.log(response.data)
+            } else {
+            throw new Error('Response data is not an array');
+        }
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
 
-      axios.get('http://localhost:8080/bmitvat/api/item/all_finish_goods',{headers})
-          .then((response) => {
-              setOpeningStock(response.data);
+        //   .then((response) => {
+        //       setOpeningStock(response.data);
 
-          })
-          .catch((error) => {
-              console.error('Error fetching data:', error);
+        //   })
+        //   .catch((error) => {
+        //       console.error('Error fetching data:', error);
 
-          });
-          axios.get('http://localhost:8080/bmitvat/api/opening_stock/all_finish_stock',{headers})
+        //   });
+
+
+      axios.get(`${baseUrl}/opening_stock/all_finish_stock`,{headers})
           .then((response) => {
               setInitialRecords(response.data);
 
@@ -124,7 +138,7 @@ const rawmaterials = () => {
           });
 
       }
-  }, []);
+  }, [user]);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -143,12 +157,12 @@ const rawmaterials = () => {
   interface RecordWithIndex {
     [key: string]: any; // Define the type for each property in the record
     index: number; // Add index property
-    itemName: string;
-    hsCode: string;
-    openingQuantity: string;
-    openingRate: string;
-    openingValue: string;
-    openingDate: string;
+    item_name: string;
+    hs_code: string;
+    opening_quantity: string;
+    opening_rate: string;
+    opening_value: string;
+    opening_date: string;
 }
 
 //For Index Number
@@ -172,12 +186,13 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
           return initialRecords.filter((item: any) => {
               return (
                 item.id.toString().includes(search.toLowerCase()) ||
-                item.itemName.toLowerCase().includes(search.toLowerCase()) ||
-                item.hsCode.toLowerCase().includes(search.toLowerCase()) ||
-                item.openingQuantity.toLowerCase().includes(search.toLowerCase()) ||
-                item.openingRate.toLowerCase().includes(search.toLowerCase()) ||
-                item.openingValue.toLowerCase().includes(search.toLowerCase()) ||
-                item.openingDate.toLowerCase().includes(search.toLowerCase())
+                item.item_id.toString().includes(search.toLowerCase()) ||
+                item.item_name.toLowerCase().includes(search.toLowerCase()) ||
+                item.hs_code.toLowerCase().includes(search.toLowerCase()) ||
+                item.opening_quantity.toLowerCase().includes(search.toLowerCase()) ||
+                item.opening_rate.toLowerCase().includes(search.toLowerCase()) ||
+                item.opening_value.toLowerCase().includes(search.toLowerCase()) ||
+                item.opening_date.toLowerCase().includes(search.toLowerCase())
               );
           });
       });
@@ -206,28 +221,28 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
                             <label htmlFor="unitName" className='col-span-1 text-base'>Finish Goods</label>
                             <select className="form-select text-dark col-span-2 text-base" onChange={(e) => setItemId(e.target.value)} required>
                                 <option >Select Finish Goods</option>
-                                {OpeningStock.map((option, index) => ( 
-                                     <option key={index} value={option.id}> 
-                                         {option.itemName} 
+                                {OpeningStock.map((option, index) => (
+                                     <option key={index} value={option.id}>
+                                         {option.item_name}
                                    </option> 
                                 ))} 
                             </select>
                         </div>
                         <div className="w-2/6 gap--x-2 gap-y-3">
                             <label htmlFor="unitName" className='col-span-1 text-base'>Opening Quantity</label>
-                            <input id="openingQty" type="number" className="form-input py-2.5 text-base col-span-2" value={qty} onChange={(e) => setQty(parseFloat(e.target.value))} required />
+                            <input id="opening_quantity" type="number" className="form-input py-2.5 text-base col-span-2" value={qty} onChange={(e) => setQty(parseFloat(e.target.value))} required />
                         </div>
                         <div className="w-2/6 gap--x-2 gap-y-3">
                             <label htmlFor="unitName" className='col-span-1 text-base'>Opening Rate</label>
-                            <input id="openingRate" type="number" className="form-input py-2.5 text-base col-span-2" value={rate} onChange={(e) => setRate(parseFloat(e.target.value))} required />
+                            <input id="opening_rate" type="number" className="form-input py-2.5 text-base col-span-2" value={rate} onChange={(e) => setRate(parseFloat(e.target.value))} required />
                         </div>
                         <div className="w-2/6 gap--x-2 gap-y-3">
                             <label htmlFor="unitName" className='col-span-1 text-base'>Opening Value</label>
-                            <input id="openingValue" type="text" className="form-input py-2.5 text-base col-span-2" value={value} onChange={(e) => setValue(parseFloat(e.target.value))} disabled />
+                            <input id="opening_value" type="text" className="form-input py-2.5 text-base col-span-2" value={value} onChange={(e) => setValue(parseFloat(e.target.value))} disabled />
                         </div>
                         <div className="w-1/6 gap--x-2 gap-y-3">
                             <label htmlFor="unitName" className='col-span-1 text-base'>Opening Date</label>
-                            <input id="unitName" type="date" className="form-input py-2.5 text-base col-span-2" value={dateValue} onChange={(e) => setDateValue(e.target.value)} required />
+                            <input id="unit_name" type="date" className="form-input py-2.5 text-base col-span-2" value={dateValue} onChange={(e) => setDateValue(e.target.value)} required />
                         </div>
                         <div className="flex items-center  justify-center gap-6 pt-6">
                             <button type="submit" className="btn btn-success gap-2">
@@ -251,13 +266,13 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
                       className="whitespace-nowrap table-hover"
                       records={recordsDataWithIndex}
                       columns={[
-                        { accessor: 'index', title: 'Serial', sortable: true },
-                        { accessor: 'itemName', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
-                        { accessor: 'hsCode', title: 'HS-Code', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
-                        { accessor: 'openingQuantity', title: 'Opening-Quantity', sortable: true },
-                        { accessor: 'openingRate', title: 'Opening Rate', sortable: true },
-                        { accessor: 'openingValue', title: 'Opening Value', sortable: true },
-                        { accessor: 'openingDate', title: 'Opening Date', sortable: true },
+                        { accessor: 'id', title: 'Serial', sortable: true },
+                        { accessor: 'item_name', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
+                        { accessor: 'hs_code', title: 'HS-Code', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
+                        { accessor: 'opening_quantity', title: 'Opening-Quantity', sortable: true },
+                        { accessor: 'opening_rate', title: 'Opening Rate', sortable: true },
+                        { accessor: 'opening_value', title: 'Opening Value', sortable: true },
+                        { accessor: 'opening_date', title: 'Opening Date', sortable: true },
 
                     ]}
                       totalRecords={initialRecords.length}
@@ -277,4 +292,4 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
   );
 };
 
-export default rawmaterials;
+export default finishgoods;

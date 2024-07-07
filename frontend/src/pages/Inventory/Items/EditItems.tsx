@@ -133,7 +133,8 @@ const editItem = () => {
             const headers= { Authorization: `Bearer ${user.token}` }
 
         try {
-           await axios.put(`${baseUrl}/item/update_item/${params.id}`, item, {headers})
+           await axios.put(`${baseUrl}/item/update_item
+            /${params.id}`, item, {headers})
           .then(function (response){
             navigate("/pages/inventory/items");
           })
