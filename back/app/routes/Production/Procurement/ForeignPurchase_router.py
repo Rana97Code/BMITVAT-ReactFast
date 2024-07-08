@@ -17,18 +17,18 @@ ForeignPurchase_router = APIRouter()
 
 # API For all_Suppliers:
 
-@ForeignPurchase_router.get("/bmitvat/api/supplier/all_supplier", response_model=List[SupplierSchema], dependencies=[Depends(get_current_active_user)])
-async def index(db:Session = Depends(get_db)):
-    return db.query(Supplier).all()
+# @ForeignPurchase_router.get("/bmitvat/api/supplier/all_supplier", response_model=List[SupplierSchema], dependencies=[Depends(get_current_active_user)])
+# async def index(db:Session = Depends(get_db)):
+#     return db.query(Supplier).all()
 
 
-@ForeignPurchase_router.get("/bmitvat/api/supplier/get_supplier/{supplier_id}", response_model=List[SupplierSchema], dependencies=[Depends(get_current_active_user)])
-async def get_itm(supplier_id:int,db:Session=Depends(get_db)):
-    try:
-        u=db.query(Supplier).filter(Supplier.id == supplier_id).first()
-        return (u)
-    except:
-        return HTTPException(status_code=422, details="supplier not found")
+# @ForeignPurchase_router.get("/bmitvat/api/supplier/get_supplier/{supplier_id}", response_model=List[SupplierSchema], dependencies=[Depends(get_current_active_user)])
+# async def get_itm(supplier_id:int,db:Session=Depends(get_db)):
+#     try:
+#         u=db.query(Supplier).filter(Supplier.id == supplier_id).first()
+#         return (u)
+#     except:
+#         return HTTPException(status_code=422, details="supplier not found")
 
 # @supplier_router.get("/bmitvat/api/supplier/get_supplier/{supplier_id}",response_model=SupplierSchema, dependencies=[Depends(get_current_active_user)])
 # async def get_itm(supplier_id:int,db:Session=Depends(get_db)):
