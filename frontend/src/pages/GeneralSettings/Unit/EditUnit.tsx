@@ -7,9 +7,12 @@ import UserContex from '../../../context/UserContex';
 
 
 const editUnit = () => {
+
     const [unitName,setName]=useState("");
     const [abbr,setAbbr]=useState("");
     const [status,setStatus]=useState("");
+
+
       const params = useParams();
       const navigate = useNavigate();
       const user = useContext(UserContex);
@@ -30,6 +33,7 @@ const editUnit = () => {
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
+
             });
 
         }
@@ -59,11 +63,6 @@ const editUnit = () => {
           .then(function (response){
             navigate("/pages/settings/unit");
           })
-          // if(response.status==200){
-          // }else{
-          //   console.warn("Insert Unsuccessfull");
-          //   navigate("/pages/settings/unit/add");
-          // }
         } catch (err) {
           console.log(err);
         }

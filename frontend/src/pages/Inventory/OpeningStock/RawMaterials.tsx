@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, NavLink,useNavigate, useParams } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState, Fragment } from 'react';
 import sortBy from 'lodash/sortBy';
@@ -8,6 +8,7 @@ import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconFile from '../../../components/Icon/IconFile';
 import IconEdit from '../../../components/Icon/IconEdit';
 import axios from 'axios';
+import UserContex from '../../../context/UserContex';
 
 
 
@@ -15,9 +16,9 @@ const rawmaterials = () => {
 
   interface rawmaterial {
     id: number;
-    itemName: string;
-    calculateYear: string;
-    hsCode: string;
+    item_name: string;
+    calculate_year: string;
+    hs_code: string;
 
   }
 
@@ -25,6 +26,14 @@ const rawmaterials = () => {
 
 
   const navigate = useNavigate();
+  const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+
+
 
 
     // Function to get today's date in the format "YYYY-MM-DD"
@@ -38,7 +47,7 @@ const rawmaterials = () => {
     // State to manage the date value
     const [dateValue, setDateValue] = useState(getTodayDate());
 
-    const [itemId, setItemId] = useState("");
+    const [id, setItemId] = useState("");
     const [qty, setQty] = useState(0);
     const [rate, setRate] = useState(0);
     const [value, setValue] = useState(0);
@@ -49,7 +58,7 @@ const rawmaterials = () => {
       }, [qty, rate]);
 
   const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
-    // e.preventDefault();
+    e.preventDefault();
     
     const newDate = new Date(dateValue);
     const openingDate= newDate.setDate(1);
@@ -62,24 +71,19 @@ const rawmaterials = () => {
 
 
     const items = {
-      itemId: itemId,
-      itemType: itemType,
-      openingQuantity: qty,
-      openingRate: rate,
-      openingValue: value,
-      openingDate: openingDate,
-      closingDate: closingDate,
+      item_id: id,
+      item_type: itemType,
+      opening_quantity: qty,
+      opening_rate: rate,
+      opening_value: value,
+      opening_date: openingDate,
+      closing_date: closingDate,
       
     }
-    // console.log(items);
-
-    const token = localStorage.getItem('Token');
-    if(token){
-      const bearer1 = JSON.parse(token);
-    const headers= { Authorization: `Bearer ${bearer1}` }
-
+    // console.log(items);;
+    if(user){
     try {
-       await axios.post("http://localhost:8080/bmitvat/api/opening_stock/add-opening-stock", items, {headers})
+       await axios.post(`${baseUrl}/opening_stock/add-opening-stock`, items, {headers})
         .then(function (response) {
           if(response.status == 200){
             navigate("/pages/inventory/opening/rawmaterials");
@@ -95,24 +99,22 @@ const rawmaterials = () => {
 
 
   useEffect(() => {
-      const token = localStorage.getItem('Token');
 
-      if(token){
-          const bearer =  token.slice(1,-1); 
+      if(user){
+        axios.get(`${baseUrl}/item/all_raw_materials`,{headers})
+            .then((response) => {
+                if (Array.isArray(response.data)) {
+                    setOpeningStock(response.data);
+                    console.log(response.data)
+                } else {
+                throw new Error('Response data is not an array');
+            }
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
 
-      const headers= { Authorization: `Bearer ${bearer}` }
-
-        axios.get('http://localhost:8080/bmitvat/api/item/all_raw_materials',{headers})
-          .then((response) => {
-              setOpeningStock(response.data);
-
-          })
-          .catch((error) => {
-              console.error('Error fetching data:', error);
-
-          });
-
-        axios.get('http://localhost:8080/bmitvat/api/opening_stock/all_raw_stock',{headers})
+        axios.get(`${baseUrl}/opening_stock/all_raw_stock`,{headers})
           .then((response) => {
               setInitialRecords(response.data);
 
@@ -123,7 +125,7 @@ const rawmaterials = () => {
           });
 
       }
-  }, []);
+  }, [user]);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -142,12 +144,12 @@ const rawmaterials = () => {
   interface RecordWithIndex {
     [key: string]: any; // Define the type for each property in the record
     index: number; // Add index property
-    itemName: string;
-    hsCode: string;
-    openingQuantity: string;
-    openingRate: string;
-    openingValue: string;
-    openingDate: string;
+    item_name: string;
+    hs_code: string;
+    opening_quantity: string;
+    opening_rate: string;
+    opening_value: string;
+    opening_date: string;
 }
 
 //For Index Number
@@ -171,12 +173,12 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
           return initialRecords.filter((item: any) => {
               return (
                   item.id.toString().includes(search.toLowerCase()) ||
-                  item.itemName.toLowerCase().includes(search.toLowerCase()) ||
-                  item.hsCode.toLowerCase().includes(search.toLowerCase()) ||
-                  item.openingQuantity.toLowerCase().includes(search.toLowerCase()) ||
-                  item.openingRate.toLowerCase().includes(search.toLowerCase()) ||
-                  item.openingValue.toLowerCase().includes(search.toLowerCase()) ||
-                  item.openingDate.toLowerCase().includes(search.toLowerCase())
+                  item.item_name.toLowerCase().includes(search.toLowerCase()) ||
+                  item.hs_code.toLowerCase().includes(search.toLowerCase()) ||
+                  item.opening_quantity.toLowerCase().includes(search.toLowerCase()) ||
+                  item.opening_rate.toLowerCase().includes(search.toLowerCase()) ||
+                  item.opening_value.toLowerCase().includes(search.toLowerCase()) ||
+                  item.opening_date.toLowerCase().includes(search.toLowerCase())
               );
           });
       });
@@ -207,7 +209,7 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
                                 <option >Select Raw Materials</option>
                                 {OpeningStock.map((option, index) => ( 
                                      <option key={index} value={option.id}> 
-                                         {option.itemName+ ' (' +option.hsCode +')'} 
+                                         {option.item_name} 
                                    </option> 
                                 ))} 
                             </select>
@@ -251,12 +253,12 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
                       records={recordsDataWithIndex}
                       columns={[
                           { accessor: 'index', title: 'Id', sortable: true },
-                          { accessor: 'itemName', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
-                          { accessor: 'hsCode', title: 'HS-Code', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
-                          { accessor: 'openingQuantity', title: 'Opening-Quantity', sortable: true },
-                          { accessor: 'openingRate', title: 'Opening Rate', sortable: true },
-                          { accessor: 'openingValue', title: 'Opening Value', sortable: true },
-                          { accessor: 'openingDate', title: 'Opening Date', sortable: true },
+                          { accessor: 'item_name', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
+                          { accessor: 'hs_code', title: 'HS-Code', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
+                          { accessor: 'opening_quantity', title: 'Opening-Quantity', sortable: true },
+                          { accessor: 'opening_rate', title: 'Opening Rate', sortable: true },
+                          { accessor: 'opening_value', title: 'Opening Value', sortable: true },
+                          { accessor: 'opening_date', title: 'Opening Date', sortable: true },
  
                       ]}
                       totalRecords={initialRecords.length}

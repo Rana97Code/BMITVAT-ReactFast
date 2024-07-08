@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useEffect, useState } from 'react';
 import { DataTableSortStatus } from 'mantine-datatable';
 import { Link, NavLink, useNavigate }  from 'react-router-dom';
@@ -8,41 +8,45 @@ import { setPageTitle } from '../../../../store/themeConfigSlice';
 import IconFile from '../../../../components/Icon/IconFile';
 import IconTrashLines from '../../../../components/Icon/IconTrashLines';
 import axios from 'axios';
+import UserContex from '../../../../context/UserContex';
 
 
 const addCustomHouse = () => {
-    const [house_name, setHouseName] = useState("");
-    const [house_code, setHouseCode] = useState("");
-    const [house_address, setAddress] = useState("");
+    const [houseName, setHouseName] = useState("");
+    const [houseCode, setHouseCode] = useState("");
+    const [houseAddress, setAddress] = useState("");
+    const [houseStatus, setStatus] = useState("");
     const navigate = useNavigate();
+    const user = useContext(UserContex);
+    const baseUrl = user.base_url;
   
     useEffect(() => {
       handleSubmit;
   }, []);
   
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-      const custom = {
-        houseName: house_name,
-        houseCode: house_code,
-        houseAddress: house_address,
-        createdBy: '1',
+
+      const custom_house = {
+        custom_house_name : houseName,
+        custom_house_code : houseCode, 
+        custom_house_address : houseAddress,
+        custom_house_status : houseStatus
       }
 
-      console.log(custom);
+      //console.log(custom_house);
   
-      const token = localStorage.getItem('Token');
-      if(token){
-        const bearer1 = JSON.parse(token);
-      const headers= { Authorization: `Bearer ${bearer1}` }
+      if(user.token){
+        const headers= { Authorization: `Bearer ${user.token}` }
+      //   const bearer1 = JSON.parse(token);
+      // const headers= { Authorization: `Bearer ${bearer1}` }
   
       try {
-         await axios.post("http://localhost:8080/bmitvat/api/customhouse/add-customhouse", custom, {headers})
+         axios.post(`${baseUrl}/customhouse/add_custom_house`, custom_house, {headers})
           .then(function (response) {
             if(response){
               navigate("/pages/settings/custom_house");
             }else{
-              navigate("/pages/settings/custom_house/add");
+              navigate("/pages/settings/custom_house");
             }
           })
   
@@ -73,17 +77,30 @@ const addCustomHouse = () => {
                             </div>
                             <div className="grid grid-cols-5 gap--x-2 gap-y-3">
                                 <label htmlFor="houseCode" className='col-span-1 text-base'>Custom House Code</label>
-                                <input type="text" placeholder="Enter Custom House Code" className="form-input py-2.5 text-base col-span-4" onChange={(e) => setHouseCode(e.target.value)} required />
+                                <input type="text" placeholder="Enter Your Custom House Code" className="form-input py-2.5 text-base col-span-4" onChange={(e) => setHouseCode(e.target.value)} required />
                             </div>
                             <div className="grid grid-cols-5 gap--x-2 gap-y-3">
                                 <label htmlFor="userName" className='col-span-1 text-base'>Custom House Address</label>
                                 <input type="text" placeholder="Enter Custom House Address" className="form-input py-2.5 text-base col-span-4" onChange={(e) => setAddress(e.target.value)} required />
                             </div>
 
+                            <div>
+                                <div className="grid grid-cols-5 gap--x-2 gap-y-3" >
+                                <label htmlFor="houseStatus" className='col-span-1 text-base'>Custom House Status</label>
+                                <select className="form-select text-dark col-span-4 text-base" value={houseStatus} onChange={(e) => setStatus(e.target.value)} name ="custom_house_Status" required>
+                                <option >Select Status for Custom House</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                                </select>
+                                </div>
+                            </div>
+
+
                             <div className="flex items-center  justify-center gap-6">
                                 <button type="submit" className="btn btn-primary gap-2">
                                     <IconFile className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
                                     Submit
+
                                 </button>
                                 <Link to="/pages/settings/custom_house">
                                 <button type="button" className="btn btn-danger gap-2" >

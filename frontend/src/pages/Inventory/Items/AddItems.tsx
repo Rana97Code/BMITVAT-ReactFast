@@ -33,7 +33,7 @@ const [hsCodeId, setHscodeId] = useState("");
 const [itemType, setType] = useState("");
 const [status, setStatus] = useState("");
 
-  useEffect(() => {
+  useEffect(() => { 
     if(user){
 
                 // for Authorised Person
@@ -135,7 +135,7 @@ const [status, setStatus] = useState("");
               <div className="grid  gap-4">
                 <div className="grid grid-cols-5 gap--x-2 gap-y-3">
                   <label htmlFor="unitName" className='col-span-1 text-base'>Item Name</label>
-                  <input id="unitName" type="text" placeholder="Enter Unit Name" className="form-input py-2.5 text-base col-span-4" name="unit_name" onChange={(e) => setName(e.target.value)} required />
+                  <input id="unitName" type="text" placeholder="Enter Item Name" className="form-input py-2.5 text-base col-span-4" name="unit_name" onChange={(e) => setName(e.target.value)} required />
                 </div>
               </div>
               <div>

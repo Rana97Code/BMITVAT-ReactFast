@@ -17,6 +17,8 @@ const ItemsAdd = lazy(() => import('../pages/Inventory/Items/AddItems'));
 const ItemsEdit = lazy(() => import('../pages/Inventory/Items/EditItems'));
 const RawMatOpeningStock = lazy(() => import('../pages/Inventory/OpeningStock/RawMaterials'));
 const FinishOpeningStock = lazy(() => import('../pages/Inventory/OpeningStock/FinishGoods'));
+const Service = lazy(() => import('../pages/Inventory/OpeningStock/Service'));
+
 const CompanySettings = lazy(() => import('../pages/GeneralSettings/CompanySettings/index'));
 const AuthorisedPerson = lazy(() => import('../pages/GeneralSettings/AuthorisedPerson/index'));
 const AuthorisedPersonAdd = lazy(() => import('../pages/GeneralSettings/AuthorisedPerson/component/authorisedAdd'));
@@ -44,7 +46,6 @@ const HsCode = lazy(() => import('../pages/GeneralSettings/HsCode/index'));
 const CpcCode = lazy(() => import('../pages/GeneralSettings/CpcCode/index'));
 const CpcAdd = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcAdd'));
 const CpcEdit = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcEdit'));
-
 const LocalPurchase = lazy(() => import('../pages/Production/Procurement/LocalPurchase/index'));
 const LocalPurchaseAdd = lazy(() => import('../pages/Production/Procurement/LocalPurchase/components/addLocalPurchase'));
 const LocalPurchaseInvoice = lazy(() => import('../pages/Invoice/LocalPurchaseInvoice'));
@@ -163,7 +164,14 @@ const routes = [
     {
         path: '/pages/inventory/opening/finishgoods',
         element: <FinishOpeningStock />,
+
     },
+    {
+        path: '/pages/inventory/opening/service',
+        element: <Service />,
+
+    },
+
     {
         path: '/pages/procurment/local_purchase/index',
         element: <LocalPurchase />,

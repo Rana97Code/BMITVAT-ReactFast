@@ -3,12 +3,20 @@ from app.config import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.auth_router import auth_router;
 from app.routes.user_router import user_router;
-from app.routes.unit_router import unit_router;
+from app.routes.general_settings.unit_router import unit_router;
+from app.routes.general_settings.costing_router import costing_router;
 from app.routes.country_route import country_router;
 from app.routes.relationship.customer_router import customer_router;
 from app.routes.relationship.supplier_router import supplier_router;
 from app.routes.general_settings.hscode_router import hscode_route;
 from app.routes.inventory.item_router import item_route;
+from app.routes.general_settings.custom_house_router import custom_house_router;
+from app.routes.general_settings.authorised_person_router import authorised_person_router;
+from app.routes.general_settings.company_settings_router import company_settings_router;
+from app.routes.inventory.item_router import item_route;
+from app.routes.inventory.FinishGoods_router import FinishGoods_router;
+
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -22,11 +30,16 @@ def include_router(app):
     app.include_router(hscode_route)
     app.include_router(unit_router)
     app.include_router(item_route)
+    app.include_router(costing_router)
+    app.include_router(custom_house_router)
+    app.include_router(authorised_person_router)
+    app.include_router(company_settings_router)
+    app.include_router(item_route)
+    app.include_router(FinishGoods_router)
 
 
 origins = [
         "http://localhost:5173",
-        "http://localhost:3000",
 ]
 
 
