@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState,useEffect,ChangeEventHandler } from 'react';
 import IconFile from '../../../../../components/Icon/IconFile';
 import IconTrashLines from '../../../../../components/Icon/IconTrashLines';
 import TableGForeignPurchase from './tableForeignPurchase';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
+import { Link, NavLink,useNavigate, useParams } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import axios from 'axios';
+import UserContex from '../../../../../context/UserContex';
 
 
 const addForeignPurchase = () => {
 
     const navigate = useNavigate();
+    const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
 
 
     const getTodayDate = () => {
@@ -24,34 +31,34 @@ const addForeignPurchase = () => {
 
     interface suppliers {
         id: number;
-        supplierName: string;
-        supplierAddress: string;
+        supplier_name: string;
+        s_address: string;
       }
     interface customhouse {
         id: number;
-        houseName: string;
-        houseCode: string;
-        houseAddress: string;
+        house_name: string;
+        house_code: string;
+        house_address: string;
       }
     interface country {
         id: number;
-        countryName: string;
-        supplierAddress: string;
+        country_name: string;
+        s_address: string;
       }
     interface cpcCode {
         id: number;
-        cpcDescription: string;
+        cpc_description: string;
       }
     interface suggestItem {
         id: number;
-        itemName: string;
+        item_name: string;
       }
 
     interface detailsItem {
         id: number;
-        itemName: string;
-        hsCodeId: number;
-        hsCode: string;
+        item_name: string;
+        hs_code_id: number;
+        hs_code: string;
         sd: number;
         vat: number;
       }
@@ -65,14 +72,14 @@ const addForeignPurchase = () => {
     const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
     const [SuppAddress, setAddress] = useState("");
 
-    const [supplier, setSupplier] = useState("");
+    const [supplier_name, setSupplier] = useState("");
     const [supplierAdd, setSupplierAdd] = useState("");
     const [houseId, setHouseId] = useState("");
     const [housecode, setHouseCode] = useState("");
     const [countryId, setCountryId] = useState("");
     const [lcnumber, setLcNumber] = useState("");
     const [lcDate, setLcDate] = useState(getTodayDate());
-    const [entryDate, setEntryDate] = useState(getTodayDate());
+    const [entry_date, setEntryDate] = useState(getTodayDate());
     const [boe, setBoe] = useState("");
     const [boeDate, setBoeDate] = useState(getTodayDate());
     const [dataSource, setDateSource] = useState("");
@@ -84,13 +91,11 @@ const addForeignPurchase = () => {
 
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
-        if(token){
-        const bearer =  token.slice(1,-1); 
+        if(user){
   
-        const headers= { Authorization: `Bearer ${bearer}` }
+        const headers= { Authorization: `Bearer ${user.header}` }
   
-        axios.get('http://localhost:8080/bmitvat/api/supplier/all_supplier',{headers})
+        axios.get(`${baseUrl}/supplier/all_supplier`,{headers})
             .then((response) => {
                 setAllSupplier(response.data);
             })
@@ -98,7 +103,7 @@ const addForeignPurchase = () => {
                 console.error('Error fetching data:', error);
             });
 
-        axios.get('http://localhost:8080/bmitvat/api/customhouse/all_customhouse',{headers})
+        axios.get(`${baseUrl}/customhouse/all_customhouse`,{headers})
             .then((response) => {
                 setAllCustomHouse(response.data);
             })
@@ -106,7 +111,7 @@ const addForeignPurchase = () => {
                 console.error('Error fetching data:', error);
             });
 
-        axios.get('http://localhost:8080/bmitvat/api/country/all_country',{headers})
+        axios.get(`${baseUrl}/country/all_country`,{headers})
             .then((response) => {
                 setAllCountry(response.data);
             })
@@ -114,7 +119,7 @@ const addForeignPurchase = () => {
                 console.error('Error fetching data:', error);
             });
 
-        axios.get('http://localhost:8080/bmitvat/api/cpc/all_cpc',{headers})
+        axios.get(`${baseUrl}/cpc/all_cpc`,{headers})
             .then((response) => {
                 setAllCpcCode(response.data);
             })
@@ -123,7 +128,7 @@ const addForeignPurchase = () => {
             });
   
         }
-    }, []);
+    }, [user]);
   
 
 
@@ -135,7 +140,7 @@ const addForeignPurchase = () => {
             const bearer = JSON.parse(token);
             const headers= { Authorization: `Bearer ${bearer}` }
   
-         axios.get(`http://localhost:8080/bmitvat/api/supplier/get_supplier/${selectedOptionId}`,{headers})
+         axios.get(`${baseUrl}/supplier/get_supplier/${selectedOptionId}`,{headers})
             .then((response) => {
                 const data = response.data;
                 setSupplier(data.id)
@@ -215,7 +220,7 @@ const addForeignPurchase = () => {
                         listItem.style.padding = '10px';
                         listItem.className = 'suggestion-item'; 
                         listItem.value = suggestion.id;
-                        listItem.textContent = suggestion.itemName;
+                        listItem.textContent = suggestion.item_name;
                         suggestionsList.appendChild(listItem);
                         });
     
@@ -753,8 +758,8 @@ const addForeignPurchase = () => {
              
 
             const purchase = {
-                supplierId: supplier,
-                entryDate: entryDate,
+                supplierId: supplier_name,
+                entryDate: entry_date,
                 boe: boe,
                 boeDate: boeDate,
                 lcnumber: lcnumber,
@@ -816,7 +821,7 @@ const addForeignPurchase = () => {
                                                 <option>Select Supplier</option>
                                                 {all_suppliers.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.supplierName} 
+                                                        {option.supplier_name} 
                                                     </option> 
                                                 ))} 
                                             </select>
@@ -827,7 +832,7 @@ const addForeignPurchase = () => {
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Entry Date</label>
-                                            <input id="browserLname" type="date" value ={entryDate} onChange={(e) => setEntryDate(e.target.value)} className="form-input" required />
+                                            <input id="browserLname" type="date" value ={entry_date} onChange={(e) => setEntryDate(e.target.value)} className="form-input" required />
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Bill Of Entry/Challan No</label>
@@ -853,7 +858,7 @@ const addForeignPurchase = () => {
                                                 <option>Select Custom House</option>
                                                 {all_customhouse.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.houseName} 
+                                                        {option.house_name} 
                                                     </option> 
                                                 ))} 
                                             </select>
@@ -868,7 +873,7 @@ const addForeignPurchase = () => {
                                                 <option>Select Country</option>
                                                 {all_country.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.countryName} 
+                                                        {option.country_name} 
                                                     </option> 
                                                 ))} 
                                             </select>
@@ -887,7 +892,7 @@ const addForeignPurchase = () => {
                                                 <option >Select CPC Code</option>
                                                 {all_cpccode.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.cpcDescription} 
+                                                        {option.cpc_description} 
                                                     </option> 
                                                 ))} 
                                             </select>

@@ -55,16 +55,16 @@ class SupplierSchema(BaseModel):
     class Config:
         from_attributes = True
 
-# class supplierBase(BaseModel):
-#     supplier_name:str
-#     supplier_email:str
-#     supplier_phone:str
-#     country_id:int
-#     c_address:str
-#     c_bin_nid:str
-#     c_tin:str
-#     status:int
-#     user_id:int
+class supplierBase(BaseModel):
+    supplier_name:str
+    supplier_email:str
+    supplier_phone:str
+    country_id:int
+    c_address:str
+    c_bin_nid:str
+    c_tin:str
+    status:int
+    user_id:int
 
-#     class Config:
-#         from_attributes = True
+    class Config:
+        from_attributes = True

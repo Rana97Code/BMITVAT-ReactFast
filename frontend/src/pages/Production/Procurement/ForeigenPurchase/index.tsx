@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const index = () => {
 
-    const col = ['serial', 'invoiceNo', 'Supplier'];
+    const col = ['id', 'invoice_no', 'supplier_name'];
     useEffect(() => {
         axios.get('http://localhost:8080/bmitvat/api/v1/unit/allunits')
             .then((response) => {
@@ -53,9 +53,9 @@ const index = () => {
             return initialRecords.filter((item: any) => {
                 return (
                     item.id.toString().includes(search.toLowerCase()) ||
-                    item.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
-                    item.supplier.toLowerCase().includes(search.toLowerCase()) ||
-                    item.lcNo.toLowerCase().includes(search.toLowerCase()) 
+                    item.invoice_no.toLowerCase().includes(search.toLowerCase()) ||
+                    item.supplier_name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.lc_number.toLowerCase().includes(search.toLowerCase()) 
                 );
             });
         });
@@ -121,10 +121,10 @@ const index = () => {
                             className="whitespace-nowrap table-hover"
                             records={recordsData}
                             columns={[
-                                { accessor: 'serial', title: 'Serial', sortable: true },
-                                { accessor: 'invoiceNo', title: 'Invoice No', sortable: true },
-                                { accessor: 'supplier', title: 'Supplier', sortable: true },
-                                { accessor: 'lcNo', title: 'LC No', sortable: true },
+                                { accessor: 'id', title: 'Serial', sortable: true },
+                                { accessor: 'invoice_no', title: 'Invoice No', sortable: true },
+                                { accessor: 'supplier_name', title: 'Supplier', sortable: true },
+                                { accessor: 'lc_number', title: 'LC No', sortable: true },
                             ]}
                             totalRecords={initialRecords.length}
                             recordsPerPage={pageSize}
