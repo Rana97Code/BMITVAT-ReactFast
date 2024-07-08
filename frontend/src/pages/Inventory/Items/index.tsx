@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, NavLink,useNavigate } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState, Fragment } from 'react';
@@ -18,25 +18,23 @@ import IconUpload from '../../../components/Icon/IconUpload';
 import IconDownload from '../../../components/Icon/IconDownload';
 import axios from 'axios';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
+import UserContext from '../../../context/UserContex';
 
 
 
 const index = () => {
 
-    const col = ['id', 'unitName', 'description', 'status', 'action'];
+    const col = ['id', 'item_name', 'description', 'item_type', 'hs_code', 'unit_id', 'calculate_year', 'status', 'action'];
     const navigate = useNavigate();
+    const user = useContext(UserContext);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+    
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
-
-        if(token){
-            //slice for cutting double cotteation
-            const bearer =  token.slice(1,-1); 
-            // const bearer1 = JSON.parse(token);
-
-        const headers= { Authorization: `Bearer ${bearer}` }
-
-        axios.get('http://localhost:8080/bmitvat/api/item/all_details_items',{headers})
+        if(user){
+        axios.get(`${baseUrl}/item/allitems`,{headers})
             .then((response) => {
                 setInitialRecords(response.data);
 
@@ -47,7 +45,29 @@ const index = () => {
             });
 
         }
-    }, []);
+    }, [user]);
+
+
+    // useEffect(() => {
+    //     const token = localStorage.getItem('Token');
+
+    //     if(token){
+    //         //slice for cutting double cotteation
+    //         const bearer =  token.slice(1,-1); 
+
+    //     axios.get(`${user.base_url}/allunits`,{headers})
+    //         .then((response) => {
+    //             setInitialRecords(response.data);
+    //         console.log(response.data)
+
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error fetching data:', error);
+
+    //         });
+
+    //     }
+    // }, []);
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -64,14 +84,14 @@ const index = () => {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'asc' });
 
     interface RecordWithIndex {
-        [key: string]: any; // Define the type for each property in the record
+        [id: string]: any; // Define the type for each property in the record
         index: number; // Add index property
-        itemName: string;
+        item_name: string;
         description: string;
-        itemType: number;
-        hsCode: string;
-        unitName: string;
-        calculateYear: string;
+        item_type: number;
+        hs_code: string;
+        unit_name: string;
+        calculate_year: string;
         status: number;
     }
 
@@ -96,12 +116,12 @@ const index = () => {
             return initialRecords.filter((item: any) => {
                 return (
                     item.id.toString().includes(search.toLowerCase()) ||
-                    item.itemName.toLowerCase().includes(search.toLowerCase()) ||
+                    item.item_name.toLowerCase().includes(search.toLowerCase()) ||
                     item.description.toLowerCase().includes(search.toLowerCase()) ||
-                    item.itemType.toLowerCase().includes(search.toLowerCase()) ||
-                    item.hsCode.toLowerCase().includes(search.toLowerCase()) ||
-                    item.unitName.toLowerCase().includes(search.toLowerCase()) ||
-                    item.calculateYear.toLowerCase().includes(search.toLowerCase()) ||
+                    item.item_type.toLowerCase().includes(search.toLowerCase()) ||
+                    item.hs_code.toLowerCase().includes(search.toLowerCase()) ||
+                    item.unit_name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.calculate_year.toLowerCase().includes(search.toLowerCase()) ||
                     item.status.tooltip.toLowerCase().includes(search.toLowerCase()) ||
                     item.action.toLowerCase().includes(search.toLowerCase())
                 );
@@ -114,7 +134,8 @@ const index = () => {
         setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
     }, [sortStatus]);
-    const header = ['Id', 'Item Name', 'Item Type', 'Status', 'Action'];
+
+    const header = ['id', 'item_name', 'description', 'item_type', 'hs_code', 'unit_id', 'calculate_year', 'status', 'action'];
 
     // excel file
     function handleDownloadExcel() {
@@ -253,8 +274,6 @@ const index = () => {
         setSelectedFiles(event?.target?.files?.[0]);
         
       };
-    //   const file = selectedFiles;
-    //   console.log(file);
 
     const handelExcelUpload = async (e:React.FormEvent<HTMLFormElement>) =>{
 
@@ -475,28 +494,16 @@ const index = () => {
                         records={recordsDataWithIndex}
                         columns={[
                             { accessor: 'index', title: 'Serial', sortable: true },
-                            { accessor: 'itemName', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
+                            { accessor: 'item_name', title: 'Item Name', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
                             { accessor: 'description', title: 'Description', sortable: true, width: '300px', cellsStyle:{ overflow: 'hidden'} },
-                            {
-                                accessor: 'itemType',
-                                title: 'Item Type',
-                                sortable: true,
-                                render: ({ itemType }) => <span className={`p-2 badge ${itemType == 1 ? 'badge-outline-success' : 'badge-outline-primary'} `}>{itemType == 1 ? 'Raw Materials' : 'Finish Goods'}</span>,
+                            {accessor: 'item_type', title: 'Item Type', sortable: true, render: ({ item_type }) => <span className={`p-2 badge ${item_type == 1 ? 'badge-outline-success' : 'badge-outline-primary'} `}>{item_type == 1 ? 'Raw Materials' : 'Finish Goods'}</span>,
                             },
-                            { accessor: 'hsCode', title: 'HS-CODE', sortable: true },
-                            { accessor: 'unitName', title: 'Unit Name', sortable: true },
-                            { accessor: 'calculateYear', title: 'Calculate Year', sortable: true },
-                            {
-                                accessor: 'status',
-                                title: 'Status',
-                                sortable: true,
-                                render: ({ status }) => <span className={`p-2 badge ${status == 1 ? 'badge-outline-success' : 'badge-outline-danger'} `}>{status == 1 ? 'Active' : 'Inactive'}</span>,
+                            { accessor: 'hs_code', title: 'HS-CODE', sortable: true },
+                            { accessor: 'unit_name', title: 'Unit Name', sortable: true },
+                            { accessor: 'calculate_year', title: 'Calculate Year', sortable: true },
+                            { accessor: 'status', title: 'Status', sortable: true, render: ({ status }) => <span className={`p-2 badge ${status == 1 ? 'badge-outline-success' : 'badge-outline-danger'} `}>{status == 1 ? 'Active' : 'Inactive'}</span>,
                             },
-                            {
-                                accessor: 'action',
-                                title: 'Action',
-                                sortable: false,
-                                textAlignment: 'center',
+                            { accessor: 'action', title: 'Action', sortable: false, textAlignment: 'center',
                                 render: ({ id }) => (
                                     <div className="flex gap-4 items-center w-max mx-auto">
                                         <NavLink to={"/pages/inventory/items/edit/" + id} className="flex btn btn-outline-primary btn-sm m-1 p-2">
@@ -526,3 +533,7 @@ const index = () => {
 };
 
 export default index;
+
+function setGetAllUnits(data: any[]) {
+    throw new Error('Function not implemented.');
+}

@@ -1,36 +1,44 @@
-import React, { useState,useEffect } from 'react';
+import React, { useContext,useState,useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import IconFile from '../../../../components/Icon/IconFile';
 import IconTrashLines from '../../../../components/Icon/IconTrashLines';
 import axios from 'axios';
+import UserContex from '../../../.././context/UserContex';
 
 
 const costingAdd = () => {
     const [costing_name, setName] = useState("");
     const [costing_type, setType] = useState("");
+    const [costing_status, setStatus] = useState("");
     const navigate = useNavigate();
+    const user = useContext(UserContex);
+    const baseUrl= user.base_url;
   
     useEffect(() => {
       handleSubmit;
   }, []);
   
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+      
       const costing = {
-        costingName: costing_name,
-        costingType: costing_type,
-        createdBy: '1',
+        costing_name: costing_name,
+        costing_type: costing_type,
+        costing_status: costing_status,
+        user_id: '1',
       }
 
-      console.log(costing);
+      //console.log(costing);
   
-      const token = localStorage.getItem('Token');
-      if(token){
-        const bearer1 = JSON.parse(token);
-      const headers= { Authorization: `Bearer ${bearer1}` }
+      // const token = localStorage.getItem('Token');
+
+
+      if(user.token){
+        const headers= { Authorization: `Bearer ${user.token}` }
+      
   
       try {
-         await axios.post("http://localhost:8080/bmitvat/api/costing/add-costing", costing, {headers})
+         await axios.post(`${baseUrl}/costing/add_costing`, costing, {headers})
           .then(function (response) {
             if(response){
               navigate("/pages/settings/costing");
@@ -71,19 +79,21 @@ const costingAdd = () => {
                                     <option value="indirect">Indirect Cost</option>
                                 </select>
                             </div>
-
+                            <div className="flex sm:flex-row flex-col">
+                                <label htmlFor="costingStatus" className="mb-0 sm:w-1/4 sm:ltr:mr-8 rtl:ml-2" >Status</label>
+                                <select className="form-select text-dark" name = "costing_status" onChange={(e) => setStatus(e.target.value)} required >
+                                    <option >Select Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                          
                             <div className="flex items-center justify-center gap-6 pt-9">
                                
                                     <button type="submit" className="btn btn-success gap-2">
                                         <IconFile className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
                                         Submit
                                     </button>
-                            
-{/*                                
-                                    <button type="button" className="btn btn-danger gap-2" >
-                                        <IconTrashLines className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
-                                        Cancel
-                                    </button> */}
                               
                             </div>
                         </form>
