@@ -1,0 +1,366 @@
+http://127.0.0.1:8000/bmitvat/api/create_user
+
+{
+    "user_name":"Sazzad Hossen",
+    "user_phone":"0123458754",
+    "user_email":"sazzadbmit@gmail.com",
+    "user_password":"12345678"
+}
+
+
+mysql -u arif -p bmitvatdb < bmitvatdb.sql
+mysqldump -u arif -p --no-data bmitvatdb > bmitvatdb.sql
+GRANT PROCESS ON *.* TO 'arif'@'localhost';
+=========================bmitvat===============================================
+hostnamectl set-hostname bmitvat
+apt install net-tools
+sudo su
+cd /etc/netplan
+nano 00-installer-config.yaml
+
+
+network:
+  ethernets:
+    ens33:
+      dhcp4: false
+      addresses: [192.168.80.144/24]
+      gateway4: 192.168.80.2
+      nameservers:
+        addresses: [8.8.8.8,1.1.1.1]
+  version: 2
+
+netplan try
+netplan apply
+
+sudo apt update
+==================nginx ufw================================
+sudo apt install nginx
+sudo nano /etc/default/ufw
+
+sudo ufw enable
+
+sudo apt install nginx
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo ufw app list
+Available applications:
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+  OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw status
+
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 3306
+sudo ufw allow 5173
+sudo ufw allow 3000
+sudo ufw allow 8000
+sudo ufw allow OpenSSH
+
+=================mysql=====================================
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql.service
+mysql -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'arif@123';
+mysql -u root -p
+create database bmitvatdb;	
+
+
+grant all privileges on bmitvatdb.* to 'root'@'localhost';
+flush privileges;
+
+sudo systemctl restart mysql.service
+systemctl status mysql.service
+
+CREATE DATABASE your_database_name;
+CREATE USER 'your_mysql_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_mysql_user'@'localhost';
+FLUSH PRIVILEGES;
+============================postgres=============================================
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install postgresql postgresql-contrib -y
+
+sudo systemctl start postgresql
+sudo systemctl enable PostgreSQL
+
+sudo -i -u postgres
+
+psql
+CREATE USER username WITH PASSWORD 'password';
+CREATE DATABASE dbname OWNER username;
+GRANT ALL PRIVILEGES ON DATABASE dbname TO username;
+
+
+================================nodejs npm =============================
+https://gist.github.com/chranderson/b0a02781c232f170db634b40c97ff455
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh
+nvm
+nvm list
+nvm ls-remote
+nvm ls-remote --lts
+nvm ls-remote --latest
+nvm install v20.13.0nvm 
+node -v
+npm install -g npm@latest
+==================================git clone react project===================================
+git clone https://github.com/Rana97Code/BMITVAT-FastAPI-.git
+
+cd /var/www/html mkdir bmitvat.com
+cd bmitvat.com 
+clone backend and front end
+
+=====================react project setup=======================
+cd frontend
+npm install
+npm install -g vite
+
+change file
+// vite.config.js
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  server: {
+    port: 5173, // Custom port
+    host: '192.168.80.142', // Custom host
+    proxy: {
+      '/bmitvat/api': {
+        target: 'http://192.168.80.142:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
+});
+
+npm run dev
+
+http://192.168.80.142:5173
+src/pages/LoginCover
+
+await axios.post("http://192.168.80.142:8000/bmitvat/api/auth", formData)
+
+
+=====================fastapi project setup=======================
+
+http://192.168.80.142:8000
+cd /var/www/html/bmitvat.com/backend
+
+sudo apt install python3 python3-venv
+python3 -m venv venv
+source venv/bin/activate
+pip install fastapi uvicorn
+
+pip install PyJWT
+pip install passlib
+pip install email-validator
+pip install bcrypt
+pip install pydantic
+pip install python-jose
+pip install python-multipart
+pip install python-dateutil
+pip install pathlib
+pip install pylint
+pip install mysql-connector-python 
+pip install sqlalchemy
+
+
+
+
+
+CREATE DATABASE bmitvatdb;
+CREATE USER 'arif'@'localhost' IDENTIFIED BY 'arif@1234';
+GRANT ALL PRIVILEGES ON bmitvatdb.* TO 'arif'@'localhost';
+FLUSH PRIVILEGES;
+==========================
+cd app/ nano config.py
+
+
+import mysql.connector
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# Define MySQL connection parameters
+MYSQL_HOST = "localhost"
+MYSQL_USER = "arif"
+MYSQL_PASSWORD = "arif@1234"
+MYSQL_DATABASE = "bmitvatdb"
+
+# Create a MySQL connection using mysql.connector
+db_connection = mysql.connector.connect(
+    host=MYSQL_HOST,
+    user=MYSQL_USER,
+    password=MYSQL_PASSWORD,
+    database=MYSQL_DATABASE
+)
+
+# Create a cursor to execute SQL queries
+cursor = db_connection.cursor()
+
+# You need to perform some SQL operations here
+
+# Close cursor and database connection
+cursor.close()
+db_connection.close()
+
+# SQLAlchemy setup
+SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DATABASE}"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+metadata = MetaData()
+Base = declarative_base(metadata=metadata)
+
+#Session Generate
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+=========================main.py===============================
+from fastapi import FastAPI
+from app.config import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
+from app.routes.auth_router import auth_router;
+from app.routes.user_router import user_router;
+from app.routes.unit_router import unit_router;
+
+Base.metadata.create_all(bind=engine)
+
+def include_router(app):
+    app.include_router(auth_router)
+    app.include_router(user_router)
+    app.include_router(unit_router)
+
+
+origins = [
+        "http://192.168.80.142:5173",
+]
+
+
+def start_application():
+    app = FastAPI()
+    include_router(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    # Custom middleware for security headers
+    @app.middleware("http")
+    async def add_security_headers(request, call_next):
+        response = await call_next(request)
+        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
+    
+    return app
+
+app = start_application()
+
+===========================================================
+uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn main:app --host 192.168.80.142 --port 8000
+
+
+http://192.168.80.142:8000/bmitvat/api/create_user
+{
+    "user_name":"arif",
+    "user_phone":"12345678",
+    "user_email":"arif@email.com",
+    "user_password":"12345678"
+}
+
+=========================================
+
+sudo nano /etc/nginx/sites-available/bmitvat.com
+
+
+server {
+    listen 80;
+    server_name bmitvat.com;
+
+    location / {
+        proxy_pass http://bmitvattest.com:5173;  # Assuming React runs on port 5173
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api {
+        proxy_pass http://bmitvattest.com:8000;  # Assuming FastAPI runs on port 8000
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+sudo ln -s /etc/nginx/sites-available/bmitvat.com /etc/nginx/sites-enabled/
+===========================================================================
+
+
+
+import mysql.connector
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# Define MySQL connection parameters
+MYSQL_HOST = "localhost"
+MYSQL_USER = "arif"
+MYSQL_PASSWORD = "arif1234"
+MYSQL_DATABASE = "bmitvatdb"
+
+# Create a MySQL connection using mysql.connector
+db_connection = mysql.connector.connect(
+    host=MYSQL_HOST,
+    user=MYSQL_USER,
+    password=MYSQL_PASSWORD,
+    database=MYSQL_DATABASE
+)
+
+# Create a cursor to execute SQL queries
+cursor = db_connection.cursor()
+
+# You need to perform some SQL operations here
+
+# Close cursor and database connection
+cursor.close()
+db_connection.close()
+
+# SQLAlchemy setup
+# SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DATABASE}"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://arif:arif1234@localhost/bmitvatdb"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+metadata = MetaData()
+Base = declarative_base(metadata=metadata)
+
+#Session Generate
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
