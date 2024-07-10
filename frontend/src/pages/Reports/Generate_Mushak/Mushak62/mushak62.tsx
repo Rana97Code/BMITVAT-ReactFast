@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate,useParams } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useParams } from 'react-router-dom';
 import IconFile from '../../../../components/Icon/IconFile';
 import logo from '/assets/images/Govt/govt.png';
 import axios from 'axios';
@@ -32,7 +32,7 @@ const mushak62: React.FC = () => {
         openingValue: number;
         openingDate: string;
         closingDate: string;
-      }
+    }
 
     interface purchaseDetails {
         id: number;
@@ -56,7 +56,7 @@ const mushak62: React.FC = () => {
         tAmount: number;
         chalanDate: string;
         entryDate: string;
-      }
+    }
 
     interface productionDetails {
         id: number;
@@ -64,7 +64,7 @@ const mushak62: React.FC = () => {
         usedQty: number;
         rate: number;
         productionDate: string;
-      }
+    }
     interface debitNoteDetails {
         id: number;
         debitNoteNo: string;
@@ -76,13 +76,13 @@ const mushak62: React.FC = () => {
         returnVat: number;
         returnSd: number;
         dnIssueDate: string;
-      }
+    }
 
     const [openingDetails, setOpeningDetails] = useState<openingDetails[]>([]);
     const [purchaseItemDetails, setPurchaseDetails] = useState<purchaseDetails[]>([]);
     const [productionDetails, setProductionDetails] = useState<productionDetails[]>([]);
     const [debitNoteDetail, setDebitNoteDetails] = useState<debitNoteDetails[]>([]);
-    
+
     const [openingDate, setOpeningDate] = useState("");
     const [openingQuantity, setOpeningQty] = useState("");
     const [openingRate, setOpeningRate] = useState("");
@@ -94,36 +94,36 @@ const mushak62: React.FC = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('Token');
-        if(token){
-        const bearer =  token.slice(1,-1); 
-  
-        const headers= { Authorization: `Bearer ${bearer}` }
-  
-        axios.get(`http://localhost:8080/bmitvat/api/mushak61/getItemsDetail/${params.data}`,{headers})
-            .then((response) => {
-                setCompanyName(response.data.companyReportModels.companyName);
-                setCompanyAddress(response.data.companyReportModels.street);
-                setCompanyTin(response.data.companyReportModels.comTin);
+        if (token) {
+            const bearer = token.slice(1, -1);
 
-                setOpeningDetails(response.data.openingAddModel);
-                setOpeningDate(response.data.openingAddModel.openingDate);
-                setOpeningQty(response.data.openingAddModel.openingQuantity);
-                setOpeningRate(response.data.openingAddModel.openingRate);
-                setOpeningValue(response.data.openingAddModel.openingValue);
+            const headers = { Authorization: `Bearer ${bearer}` }
 
-                setPurchaseDetails(response.data.purchaseItem61Models);
-                setProductionDetails(response.data.productionItem61Models);
-                setDebitNoteDetails(response.data.debitNoteItem61Models);
+            axios.get(`http://localhost:8080/bmitvat/api/mushak61/getItemsDetail/${params.data}`, { headers })
+                .then((response) => {
+                    setCompanyName(response.data.companyReportModels.companyName);
+                    setCompanyAddress(response.data.companyReportModels.street);
+                    setCompanyTin(response.data.companyReportModels.comTin);
 
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
+                    setOpeningDetails(response.data.openingAddModel);
+                    setOpeningDate(response.data.openingAddModel.openingDate);
+                    setOpeningQty(response.data.openingAddModel.openingQuantity);
+                    setOpeningRate(response.data.openingAddModel.openingRate);
+                    setOpeningValue(response.data.openingAddModel.openingValue);
+
+                    setPurchaseDetails(response.data.purchaseItem61Models);
+                    setProductionDetails(response.data.productionItem61Models);
+                    setDebitNoteDetails(response.data.debitNoteItem61Models);
+
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
         }
     }, []);
 
-    const itemName = purchaseItemDetails.reduce((acc, item) => { return item.itemName;  }, '');
-    const pInvoiceNo = purchaseItemDetails.reduce((acc, item) => { return item.pinvoiceNo;  }, '');
+    const itemName = purchaseItemDetails.reduce((acc, item) => { return item.itemName; }, '');
+    const pInvoiceNo = purchaseItemDetails.reduce((acc, item) => { return item.pinvoiceNo; }, '');
 
     let preQty = openingQuantity;
     let prePrice = openingValue;
@@ -303,7 +303,7 @@ const mushak62: React.FC = () => {
                                             <th className="text-center p-4 border"></th>
                                         </tr>
                                         <tr>
-                                        <th className="text-center p-4 border">(১)</th>
+                                            <th className="text-center p-4 border">(১)</th>
                                             <th className="text-center p-4 border">(২)</th>
                                             <th className="text-center p-4 border">(৩)</th>
                                             <th className="text-center p-4 border">(৪)</th>
@@ -325,7 +325,7 @@ const mushak62: React.FC = () => {
                                             <th className="text-center p-4 border">(২০)=(৮-১৬)</th>
                                             <th className="text-center p-4 border">(২১)</th>
                                         </tr>
-                                        
+
                                     </thead>
                                     <tbody>
                                         <tr className="hover:bg-gray-50 text-center border-b-0 border-b-none h-10">

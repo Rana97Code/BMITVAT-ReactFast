@@ -32,7 +32,7 @@ const mushak61: React.FC = () => {
         openingValue: number;
         openingDate: string;
         closingDate: string;
-      }
+    }
 
     interface purchaseDetails {
         id: number;
@@ -56,7 +56,7 @@ const mushak61: React.FC = () => {
         tAmount: number;
         chalanDate: string;
         entryDate: string;
-      }
+    }
 
     interface productionDetails {
         id: number;
@@ -64,7 +64,7 @@ const mushak61: React.FC = () => {
         usedQty: number;
         rate: number;
         productionDate: string;
-      }
+    }
     interface debitNoteDetails {
         id: number;
         debitNoteNo: string;
@@ -76,13 +76,13 @@ const mushak61: React.FC = () => {
         returnVat: number;
         returnSd: number;
         dnIssueDate: string;
-      }
+    }
 
     const [openingDetails, setOpeningDetails] = useState<openingDetails[]>([]);
     const [purchaseItemDetails, setPurchaseDetails] = useState<purchaseDetails[]>([]);
     const [productionDetails, setProductionDetails] = useState<productionDetails[]>([]);
     const [debitNoteDetail, setDebitNoteDetails] = useState<debitNoteDetails[]>([]);
-    
+
     const [openingDate, setOpeningDate] = useState("");
     const [openingQuantity, setOpeningQty] = useState("");
     const [openingRate, setOpeningRate] = useState("");
@@ -94,36 +94,36 @@ const mushak61: React.FC = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('Token');
-        if(token){
-        const bearer =  token.slice(1,-1); 
-  
-        const headers= { Authorization: `Bearer ${bearer}` }
-  
-        axios.get(`http://localhost:8080/bmitvat/api/mushak61/getItemsDetail/${params.data}`,{headers})
-            .then((response) => {
-                setCompanyName(response.data.companyReportModels.companyName);
-                setCompanyAddress(response.data.companyReportModels.street);
-                setCompanyTin(response.data.companyReportModels.comTin);
+        if (token) {
+            const bearer = token.slice(1, -1);
 
-                setOpeningDetails(response.data.openingAddModel);
-                setOpeningDate(response.data.openingAddModel.openingDate);
-                setOpeningQty(response.data.openingAddModel.openingQuantity);
-                setOpeningRate(response.data.openingAddModel.openingRate);
-                setOpeningValue(response.data.openingAddModel.openingValue);
+            const headers = { Authorization: `Bearer ${bearer}` }
 
-                setPurchaseDetails(response.data.purchaseItem61Models);
-                setProductionDetails(response.data.productionItem61Models);
-                setDebitNoteDetails(response.data.debitNoteItem61Models);
+            axios.get(`http://localhost:8080/bmitvat/api/mushak61/getItemsDetail/${params.data}`, { headers })
+                .then((response) => {
+                    setCompanyName(response.data.companyReportModels.companyName);
+                    setCompanyAddress(response.data.companyReportModels.street);
+                    setCompanyTin(response.data.companyReportModels.comTin);
 
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
+                    setOpeningDetails(response.data.openingAddModel);
+                    setOpeningDate(response.data.openingAddModel.openingDate);
+                    setOpeningQty(response.data.openingAddModel.openingQuantity);
+                    setOpeningRate(response.data.openingAddModel.openingRate);
+                    setOpeningValue(response.data.openingAddModel.openingValue);
+
+                    setPurchaseDetails(response.data.purchaseItem61Models);
+                    setProductionDetails(response.data.productionItem61Models);
+                    setDebitNoteDetails(response.data.debitNoteItem61Models);
+
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
         }
     }, []);
 
-    const itemName = purchaseItemDetails.reduce((acc, item) => { return item.itemName;  }, '');
-    const pInvoiceNo = purchaseItemDetails.reduce((acc, item) => { return item.pinvoiceNo;  }, '');
+    const itemName = purchaseItemDetails.reduce((acc, item) => { return item.itemName; }, '');
+    const pInvoiceNo = purchaseItemDetails.reduce((acc, item) => { return item.pinvoiceNo; }, '');
 
     let preQty = openingQuantity;
     let prePrice = openingValue;
@@ -221,7 +221,7 @@ const mushak61: React.FC = () => {
                                             </th>
                                         </tr>
                                         <tr className="font-bold h-8 border-black text-black">
-                                                <th colSpan={21} style={{ textAlign: 'center' }} className="border border-black">পণ্য/সেবার উপকরণ ক্রয়</th>
+                                            <th colSpan={21} style={{ textAlign: 'center' }} className="border border-black">পণ্য/সেবার উপকরণ ক্রয়</th>
                                         </tr>
                                         <tr className="text-black border border-black font-bold h-8">
                                             <th rowSpan={3} className="md:p-4 p-0 md:w-10 w-10 border border-black align-text-top"> ক্রমিক সংখ্যা</th>
@@ -248,13 +248,13 @@ const mushak61: React.FC = () => {
                                             <th rowSpan={2} className="text-center align-text-top border border-black">মূল্য( সকল প্রকার কর ব্যতীত)</th>
                                         </tr>
                                         <tr className="border border-black h-8 text-black">
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>নাম</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>ঠিকানা</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>নিবন্ধন/তালিকাভুক্তি/জাতীয় পরিচয় পত্র নং</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>পরিমাণ<br />(একক)</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>মূল্য(সকল প্রকার কর ব্যতীত)</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>পরিমান<br />(একক)</th>
-                                            <th style={{ textAlign:'center' }} className='align-text-top border border-black'>মূল্য(সকল প্রকার কর ব্যতীত)</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>নাম</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>ঠিকানা</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>নিবন্ধন/তালিকাভুক্তি/জাতীয় পরিচয় পত্র নং</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>পরিমাণ<br />(একক)</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>মূল্য(সকল প্রকার কর ব্যতীত)</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>পরিমান<br />(একক)</th>
+                                            <th style={{ textAlign: 'center' }} className='align-text-top border border-black'>মূল্য(সকল প্রকার কর ব্যতীত)</th>
                                         </tr>
                                         <tr>
                                             <th className="text-center border border-black">(১)</th>
@@ -279,134 +279,134 @@ const mushak61: React.FC = () => {
                                             <th className="text-center border border-black">(২০)</th>
                                             <th className="text-center border border-black">(২১)</th>
                                         </tr>
-                                        
+
                                     </thead>
                                     <tbody>
-                                    {/* {openingDetails.map((item, index) => {
+                                        {/* {openingDetails.map((item, index) => {
                                          totalUsedQty += item.openingQuantity;
                                          totalPrice += item.openingValue;
                                         return ( */}
-                                            <tr className="hover:bg-gray-50 text-center border border-black h-10">
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black overflow-hidden">{openingDate}</td>
-                                                <td className="p-0 border border-black">{preQty}</td>
-                                                <td className="p-0 border border-black">{prePrice}</td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black">{openingQuantity}</td>
-                                                <td className="p-0 border border-black">{openingValue}</td>
-                                                <td className="p-0 border border-black"></td>
-                                            </tr>
+                                        <tr className="hover:bg-gray-50 text-center border border-black h-10">
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black overflow-hidden">{openingDate}</td>
+                                            <td className="p-0 border border-black">{preQty}</td>
+                                            <td className="p-0 border border-black">{prePrice}</td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black"></td>
+                                            <td className="p-0 border border-black">{openingQuantity}</td>
+                                            <td className="p-0 border border-black">{openingValue}</td>
+                                            <td className="p-0 border border-black"></td>
+                                        </tr>
                                         {/* );
                                     })}  */}
 
-                                    {purchaseItemDetails.map((item, index) => {
-                                         preQty = totalUsedQty;
-                                         prePrice = totalPrice;
-                                         totalUsedQty += item.qty;
-                                         totalPrice += item.qty*item.rate;
-                                         return (
-                                            <tr className="hover:bg-gray-50 text-center border border-black h-10">
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black overflow-hidden" >{item.chalanDate}</td>
-                                                <td className="p-0 border border-black">{preQty}</td>
-                                                <td className="p-0 border border-black">{prePrice}</td>
-                                                <td className="p-0 border border-black overflow-hidden">{item.pinvoiceNo}</td>
-                                                <td className="p-0 border border-black"></td>
-                                                <td className="p-0 border border-black">{item.supplierName}</td>
-                                                <td className="p-0 border border-black">{item.supplierAddress}</td>
-                                                <td className="p-0 border border-black">{item.supplierTin}</td>
-                                                <td className="p-0 border border-black">{item.itemName}</td>
-                                                <td className="p-0 border border-black">{item.qty}</td>
-                                                <td className="p-0 border border-black">{item.qty*item.rate}</td>
-                                                <td className="p-0 border border-black">{item.sdAmount}</td>
-                                                <td className="p-0 border border-black">{item.taxAmount}</td>
-                                                <td className="p-0 border border-black">{totalUsedQty}</td>
-                                                <td className="p-0 border border-black">{totalPrice}</td>
-                                                <td className="p-0 border border-black">{totalUsedQty}</td>
-                                                <td className="p-0 border border-black">{totalPrice}</td>
-                                                <td className="p-0 border border-black">{totalUsedQty}</td>
-                                                <td className="p-0 border border-black">{totalPrice}</td>
-                                                <td className="p-0 border border-black"></td>
-                                            </tr>
-                                         );
-                                    })}
+                                        {purchaseItemDetails.map((item, index) => {
+                                            preQty = totalUsedQty;
+                                            prePrice = totalPrice;
+                                            totalUsedQty += item.qty;
+                                            totalPrice += item.qty * item.rate;
+                                            return (
+                                                <tr className="hover:bg-gray-50 text-center border border-black h-10">
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black overflow-hidden" >{item.chalanDate}</td>
+                                                    <td className="p-0 border border-black">{preQty}</td>
+                                                    <td className="p-0 border border-black">{prePrice}</td>
+                                                    <td className="p-0 border border-black overflow-hidden">{item.pinvoiceNo}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black">{item.supplierName}</td>
+                                                    <td className="p-0 border border-black">{item.supplierAddress}</td>
+                                                    <td className="p-0 border border-black">{item.supplierTin}</td>
+                                                    <td className="p-0 border border-black">{item.itemName}</td>
+                                                    <td className="p-0 border border-black">{item.qty}</td>
+                                                    <td className="p-0 border border-black">{item.qty * item.rate}</td>
+                                                    <td className="p-0 border border-black">{item.sdAmount}</td>
+                                                    <td className="p-0 border border-black">{item.taxAmount}</td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                </tr>
+                                            );
+                                        })}
 
-                                    {debitNoteDetail.map((item, index) => {
-                                         preQty = totalUsedQty;
-                                         prePrice = totalPrice;
-                                         totalUsedQty += item.returnQty;
-                                         totalPrice += item.returnAmount;
+                                        {debitNoteDetail.map((item, index) => {
+                                            preQty = totalUsedQty;
+                                            prePrice = totalPrice;
+                                            totalUsedQty += item.returnQty;
+                                            totalPrice += item.returnAmount;
 
-                                         return (
-                                        <tr className="hover:bg-gray-50 text-center border border-black h-10">
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black overflow-hidden" >{item.dnIssueDate}</td>
-                                            <td className="p-0 border border-black">{preQty}</td>
-                                            <td className="p-0 border border-black">{prePrice}</td>
-                                            <td className="p-0 border border-black overflow-hidden">{item.debitNoteNo}</td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black">{item.returnQty}</td>
-                                            <td className="p-0 border border-black">{item.returnAmount}</td>
-                                            <td className="p-0 border border-black">{item.sdAmount}</td>
-                                            <td className="p-0 border border-black">{item.vatAmount}</td>
-                                            <td className="p-0 border border-black">{totalUsedQty}</td>
-                                            <td className="p-0 border border-black">{totalPrice}</td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black">{totalUsedQty}</td>
-                                            <td className="p-0 border border-black">{totalPrice}</td>
-                                            <td className="p-0 border border-black"></td>
-                                        </tr>
-                                         );
-                                    })}
+                                            return (
+                                                <tr className="hover:bg-gray-50 text-center border border-black h-10">
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black overflow-hidden" >{item.dnIssueDate}</td>
+                                                    <td className="p-0 border border-black">{preQty}</td>
+                                                    <td className="p-0 border border-black">{prePrice}</td>
+                                                    <td className="p-0 border border-black overflow-hidden">{item.debitNoteNo}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black">{item.returnQty}</td>
+                                                    <td className="p-0 border border-black">{item.returnAmount}</td>
+                                                    <td className="p-0 border border-black">{item.sdAmount}</td>
+                                                    <td className="p-0 border border-black">{item.vatAmount}</td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                </tr>
+                                            );
+                                        })}
 
-                                    {productionDetails.map((item, index) => {
-                                        preQty = totalUsedQty;
-                                        prePrice = totalPrice;
-                                        totalUsedQty +=  -item.usedQty;
-                                        totalPrice += -(item.rate * item.usedQty);
-                                        return(
-                                        <tr className="hover:bg-gray-50 text-center border border-black h-10">
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black overflow-hidden">{item.productionDate}</td>
-                                            <td className="p-0 border border-black">{preQty}</td>
-                                            <td className="p-0 border border-black">{prePrice}</td>
-                                            <td className="p-0 border border-black overflow-hidden">{item.proInvoiceId}</td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black"></td>
-                                            <td className="p-0 border border-black">{item.usedQty}</td>
-                                            <td className="p-0 border border-black">{item.rate * item.usedQty}</td>
-                                            <td className="p-0 border border-black">{totalUsedQty}</td>
-                                            <td className="p-0 border border-black">{totalPrice}</td>
-                                            <td className="p-0 border border-black"></td>
-                                        </tr>
-                                        )
+                                        {productionDetails.map((item, index) => {
+                                            preQty = totalUsedQty;
+                                            prePrice = totalPrice;
+                                            totalUsedQty += -item.usedQty;
+                                            totalPrice += -(item.rate * item.usedQty);
+                                            return (
+                                                <tr className="hover:bg-gray-50 text-center border border-black h-10">
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black overflow-hidden">{item.productionDate}</td>
+                                                    <td className="p-0 border border-black">{preQty}</td>
+                                                    <td className="p-0 border border-black">{prePrice}</td>
+                                                    <td className="p-0 border border-black overflow-hidden">{item.proInvoiceId}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black"></td>
+                                                    <td className="p-0 border border-black">{item.usedQty}</td>
+                                                    <td className="p-0 border border-black">{item.rate * item.usedQty}</td>
+                                                    <td className="p-0 border border-black">{totalUsedQty}</td>
+                                                    <td className="p-0 border border-black">{totalPrice}</td>
+                                                    <td className="p-0 border border-black"></td>
+                                                </tr>
+                                            )
                                         })}
 
                                         <tr className="hover:bg-gray-50 text-center border border-black h-10">

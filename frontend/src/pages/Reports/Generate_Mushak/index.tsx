@@ -5,13 +5,10 @@ import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import sortBy from 'lodash/sortBy';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
-import IconPlus from '../../../components/Icon/IconPlus';
 import axios from 'axios';
 
 
 const index = () => {
-
-
 
     return (
         <div>
@@ -45,12 +42,11 @@ const index = () => {
                         </div>
                     </div>
                     <div className="datatables">
-                       
                     </div>
                 </div>
                 {/*-------------- User list end -------------*/}
 
-
+                
             </div>
         </div>
     );

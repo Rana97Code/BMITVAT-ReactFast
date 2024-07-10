@@ -17,8 +17,6 @@ const ItemsAdd = lazy(() => import('../pages/Inventory/Items/AddItems'));
 const ItemsEdit = lazy(() => import('../pages/Inventory/Items/EditItems'));
 const RawMatOpeningStock = lazy(() => import('../pages/Inventory/OpeningStock/RawMaterials'));
 const FinishOpeningStock = lazy(() => import('../pages/Inventory/OpeningStock/FinishGoods'));
-const Service = lazy(() => import('../pages/Inventory/OpeningStock/Service'));
-
 const CompanySettings = lazy(() => import('../pages/GeneralSettings/CompanySettings/index'));
 const AuthorisedPerson = lazy(() => import('../pages/GeneralSettings/AuthorisedPerson/index'));
 const AuthorisedPersonAdd = lazy(() => import('../pages/GeneralSettings/AuthorisedPerson/component/authorisedAdd'));
@@ -46,6 +44,7 @@ const HsCode = lazy(() => import('../pages/GeneralSettings/HsCode/index'));
 const CpcCode = lazy(() => import('../pages/GeneralSettings/CpcCode/index'));
 const CpcAdd = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcAdd'));
 const CpcEdit = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcEdit'));
+
 const LocalPurchase = lazy(() => import('../pages/Production/Procurement/LocalPurchase/index'));
 const LocalPurchaseAdd = lazy(() => import('../pages/Production/Procurement/LocalPurchase/components/addLocalPurchase'));
 const LocalPurchaseInvoice = lazy(() => import('../pages/Invoice/LocalPurchaseInvoice'));
@@ -82,6 +81,47 @@ const Mushak61 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak61/mu
 const Mushak62Intex = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak62/index'));
 const Mushak62 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak62/mushak62'));
 const Mushak63 = lazy(() => import('../pages/Reports/Sales/Mushak-6.3'));
+const Mushak91Intex = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/index'));
+const Mushak91 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/mushak91'));
+const Mushak91Note1 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note1'));
+const Mushak91Note2 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note2'));
+const Mushak91Note3 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note3'));
+const Mushak91Note4 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note4'));
+const Mushak91Note5 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note5'));
+const Mushak91Note6 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note6'));
+const Mushak91Note7 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note7'));
+const Mushak91Note8 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note8'));
+const Mushak91Note10 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note10'));
+const Mushak91Note11 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note11'));
+const Mushak91Note12 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note12'));
+const Mushak91Note13 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note13'));
+const Mushak91Note14 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note14'));
+const Mushak91Note15 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note15'));
+const Mushak91Note16 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note16'));
+const Mushak91Note17 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note17'));
+const Mushak91Note18 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note18'));
+const Mushak91Note19 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note19'));
+const Mushak91Note20 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note20'));
+const Mushak91Note21 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note21'));
+const Mushak91Note22 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note22'));
+const Mushak91Note24 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note24'));
+const Mushak91Note26 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note26'));
+const Mushak91Note27 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note27'));
+const Mushak91Note29 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note29'));
+const Mushak91Note30 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note30'));
+const Mushak91Note31 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note31'));
+const Mushak91Note32 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note32'));
+const Mushak91Note38 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note38'));
+const Mushak91Note39 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note39'));
+const Mushak91Note40 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note40'));
+const Mushak91Note58 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note58'));
+const Mushak91Note59 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note59'));
+const Mushak91Note60 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note60'));
+const Mushak91Note61 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note61'));
+const Mushak91Note62 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note62'));
+const Mushak91Note63 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note63'));
+const Mushak91Note64 = lazy(() => import('../pages/Reports/Generate_Mushak/Mushak91/subForm/Note64'));
+
 
 const routes = [
     {
@@ -164,14 +204,7 @@ const routes = [
     {
         path: '/pages/inventory/opening/finishgoods',
         element: <FinishOpeningStock />,
-
     },
-    {
-        path: '/pages/inventory/opening/service',
-        element: <Service />,
-
-    },
-
     {
         path: '/pages/procurment/local_purchase/index',
         element: <LocalPurchase />,
@@ -281,7 +314,166 @@ const routes = [
         path: '/pages/report/mushak62/:data',
         element: <Mushak62 />,
     },
-
+    {
+        path: '/pages/report/mushak91/index',
+        element: <Mushak91Intex />,
+    },
+    {
+        path: '/pages/report/mushak91/data',
+        element: <Mushak91 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_1',
+        element: <Mushak91Note1 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_2',
+        element: <Mushak91Note2 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_3',
+        element: <Mushak91Note3 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_4',
+        element: <Mushak91Note4 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_5',
+        element: <Mushak91Note5 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_6',
+        element: <Mushak91Note6 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_7',
+        element: <Mushak91Note7 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_8',
+        element: <Mushak91Note8 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_10',
+        element: <Mushak91Note10 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_11',
+        element: <Mushak91Note11 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_12',
+        element: <Mushak91Note12 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_13',
+        element: <Mushak91Note13 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_14',
+        element: <Mushak91Note14 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_15',
+        element: <Mushak91Note15 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_16',
+        element: <Mushak91Note16 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_17',
+        element: <Mushak91Note17 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_18',
+        element: <Mushak91Note18 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_19',
+        element: <Mushak91Note19 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_20',
+        element: <Mushak91Note20 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_21',
+        element: <Mushak91Note21 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_22',
+        element: <Mushak91Note22 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_24',
+        element: <Mushak91Note24 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_26',
+        element: <Mushak91Note26 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_27',
+        element: <Mushak91Note27 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_29',
+        element: <Mushak91Note29 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_30',
+        element: <Mushak91Note30 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_31',
+        element: <Mushak91Note31 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_32',
+        element: <Mushak91Note32 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_38',
+        element: <Mushak91Note38 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_39',
+        element: <Mushak91Note39 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_40',
+        element: <Mushak91Note40 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_58',
+        element: <Mushak91Note58 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_59',
+        element: <Mushak91Note59 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_60',
+        element: <Mushak91Note60 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_61',
+        element: <Mushak91Note61 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_62',
+        element: <Mushak91Note62 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_63',
+        element: <Mushak91Note63 />,
+    },
+    {
+        path: '/pages/report/mushak91/subform/note_64',
+        element: <Mushak91Note64 />,
+    },
 
 
     //Company Settings
@@ -330,7 +522,7 @@ const routes = [
         element: <CustomHouseAdd />,
     },
     {
-       path: '/pages/settings/custom_house/edit/:id',
+        path: '/pages/settings/custom_house/edit/:id',
         element: <CustomHouseEdit />,
     },
 

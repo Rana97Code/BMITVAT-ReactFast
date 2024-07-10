@@ -305,7 +305,7 @@ const Sidebar = () => {
                                             <AnimateHeight duration={300} height={errorSubMenu ? 'auto' : 0}>
                                                 <ul className="sub-menu text-gray-500">
                                                     <li>
-                                                        <a href="/pages/reports/generateMushak/index" target="_blank">{t('General Mushak')}</a>
+                                                        <a href="/pages/reports/generateMushak/index">{t('General Mushak')}</a>
                                                     </li>
                                                     <li>
                                                         <a href="/pages/error404" target="_blank">{t('Treasury Challan')}</a>
