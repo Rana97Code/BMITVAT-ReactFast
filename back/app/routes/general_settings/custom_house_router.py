@@ -16,7 +16,9 @@ custom_house_router = APIRouter()
 
 
 
-@custom_house_router.get("/bmitvat/api/customhouse/all_custom_house", response_model=List[Custom_houseSchema], dependencies=[Depends(get_current_active_user)])
+@custom_house_router.get("/bmitvat/api/customhouse/all_custom_house", 
+                         response_model=List[Custom_houseSchema], 
+                         dependencies=[Depends(get_current_active_user)])
 async def index(db:Session=Depends(get_db)):  
     return db.query(Custom_house).all()
 
