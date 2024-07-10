@@ -44,7 +44,7 @@ const CustomHouseAdd = lazy(() => import('../pages/GeneralSettings/CustomHouse/c
 const CustomHouseEdit = lazy(() => import('../pages/GeneralSettings/CustomHouse/components/editCustomHouse'));
 const HsCode = lazy(() => import('../pages/GeneralSettings/HsCode/index'));
 const CpcCode = lazy(() => import('../pages/GeneralSettings/CpcCode/index'));
-const CpcAdd = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcAdd'));
+const CpcAdd = lazy(() => import('../pages/GeneralSettings/CpcCode/components/addCpc'));
 const CpcEdit = lazy(() => import('../pages/GeneralSettings/CpcCode/components/cpcEdit'));
 const LocalPurchase = lazy(() => import('../pages/Production/Procurement/LocalPurchase/index'));
 const LocalPurchaseAdd = lazy(() => import('../pages/Production/Procurement/LocalPurchase/components/addLocalPurchase'));

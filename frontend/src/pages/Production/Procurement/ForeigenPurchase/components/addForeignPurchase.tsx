@@ -32,13 +32,13 @@ const addForeignPurchase = () => {
     interface suppliers {
         id: number;
         supplier_name: string;
-        s_address: string;
+        sp_address: string;
       }
     interface customhouse {
         id: number;
-        house_name: string;
-        house_code: string;
-        house_address: string;
+        custom_house_name: string;
+        custom_house_code: string;
+        custom_house_address: string;
       }
     interface country {
         id: number;
@@ -48,6 +48,7 @@ const addForeignPurchase = () => {
     interface cpcCode {
         id: number;
         cpc_description: string;
+        cpc_code : string;
       }
     interface suggestItem {
         id: number;
@@ -64,27 +65,27 @@ const addForeignPurchase = () => {
       }
     
     const [all_suppliers, setAllSupplier] = useState<suppliers[]>([]);
-    const [all_customhouse, setAllCustomHouse] = useState<customhouse[]>([]);
+    const [all_custom_house, setAllCustomHouse] = useState<customhouse[]>([]);
     const [all_country, setAllCountry] = useState<country[]>([]);
-    const [all_cpccode, setAllCpcCode] = useState<cpcCode[]>([]);
+    const [all_cpc, setAllCpcCode] = useState<cpcCode[]>([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
 
     const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
-    const [SuppAddress, setAddress] = useState("");
+    const [so_address, setAddress] = useState("");
 
     const [supplier_name, setSupplier] = useState("");
-    const [supplierAdd, setSupplierAdd] = useState("");
-    const [houseId, setHouseId] = useState("");
-    const [housecode, setHouseCode] = useState("");
-    const [countryId, setCountryId] = useState("");
-    const [lcnumber, setLcNumber] = useState("");
-    const [lcDate, setLcDate] = useState(getTodayDate());
+    const [s_address, setSupplierAdd] = useState("");
+    const [id, setHouseId] = useState("");
+    const [custom_house_code, setHouseCode] = useState("");
+    const [country_id, setCountryId] = useState("");
+    const [lc_number, setLcNumber] = useState("");
+    const [lc_date, setLcDate] = useState(getTodayDate());
     const [entry_date, setEntryDate] = useState(getTodayDate());
     const [boe, setBoe] = useState("");
     const [boeDate, setBoeDate] = useState(getTodayDate());
     const [dataSource, setDateSource] = useState("");
-    const [cpcCode, setCpcCode] = useState("");
-    const [fiscalYear, setFiscalYear] = useState("");
+    const [cpc_code, setCpcCode] = useState("");
+    const [fiscal_year, setFiscalYear] = useState("");
 
     const [note, setNote] = useState('');
 
@@ -93,19 +94,25 @@ const addForeignPurchase = () => {
     useEffect(() => {
         if(user){
   
-        const headers= { Authorization: `Bearer ${user.header}` }
-  
         axios.get(`${baseUrl}/supplier/all_supplier`,{headers})
             .then((response) => {
-                setAllSupplier(response.data);
+                if (Array.isArray(response.data)) {
+            setAllSupplier(response.data);
+            } else {
+            throw new Error('Response data is not an array');
+            }
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
-
-        axios.get(`${baseUrl}/customhouse/all_customhouse`,{headers})
+              
+        axios.get(`${baseUrl}/customhouse/all_custom_house`,{headers})
             .then((response) => {
-                setAllCustomHouse(response.data);
+                if (Array.isArray(response.data)) {
+                    setAllCustomHouse(response.data);
+            } else {
+            throw new Error('Response data is not an array');
+            }
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -113,7 +120,11 @@ const addForeignPurchase = () => {
 
         axios.get(`${baseUrl}/country/all_country`,{headers})
             .then((response) => {
-                setAllCountry(response.data);
+                if (Array.isArray(response.data)) {
+                    setAllCountry(response.data);
+            } else {
+            throw new Error('Response data is not an array');
+            }
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -121,12 +132,15 @@ const addForeignPurchase = () => {
 
         axios.get(`${baseUrl}/cpc/all_cpc`,{headers})
             .then((response) => {
-                setAllCpcCode(response.data);
+                if (Array.isArray(response.data)) {
+                    setAllCpcCode(response.data);
+            } else {
+            throw new Error('Response data is not an array');
+            }
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
-  
         }
     }, [user]);
   
@@ -135,16 +149,12 @@ const addForeignPurchase = () => {
     const getSupplierId: ChangeEventHandler<HTMLSelectElement> = (event) => {
         const selectedOptionId = event.target.value;
 
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
-  
+        if(user){  
          axios.get(`${baseUrl}/supplier/get_supplier/${selectedOptionId}`,{headers})
             .then((response) => {
                 const data = response.data;
                 setSupplier(data.id)
-                setAddress(data.supplierAddress)
+                setSupplierAdd(data.s_address)
   
             })
             .catch((error) => {
@@ -152,31 +162,23 @@ const addForeignPurchase = () => {
             });
         }
     };
+
 
     const getHouseId: ChangeEventHandler<HTMLSelectElement> = (event) => {
         const selectedOptionId = event.target.value;
             setHouseId(selectedOptionId);
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
+        if(user){
   
-         axios.get(`http://localhost:8080/bmitvat/api/customhouse/get_customhouse/${selectedOptionId}`,{headers})
+         axios.get(`${baseUrl}/customhouse/get_custom_house/${selectedOptionId}`,{headers})
             .then((response) => {
                 const data = response.data;
-                setHouseCode(data.houseCode)
+                setHouseCode(data.custom_house_code)
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
         }
     };
-
-    // const getFiscalYear: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    //     const selectedOptionId = event.target.value;
-    //     console.log(selectedOptionId);
-    // }
-
 
     async function getItemByKeyUp(event: React.FormEvent<HTMLInputElement>) {
 
@@ -196,19 +198,14 @@ const addForeignPurchase = () => {
               suggestionsList.innerHTML = '';
               return;
             }
-            const token = localStorage.getItem('Token');
-            if(token){
-                const bearer = JSON.parse(token);
-                const headers= { Authorization: `Bearer ${bearer}` }
+            if(user){
 
-                let selectElement = document.getElementById('fiscalYear') as HTMLSelectElement;
-                let fiscalYear = selectElement.value;
+                let selectElement = document.getElementById('fiscal_year') as HTMLSelectElement;
+                let fiscal_year = selectElement.value;
     
-                const searchTerm = fiscalYear + '/' + encodeURIComponent(searchInput.value);
-                // console.log(searchTerm);
-                // if(searchInput.value.length>0){
+                const searchTerm = fiscal_year + '/' + encodeURIComponent(searchInput.value);
                 try {
-                    const response = await axios.post('http://localhost:8080/bmitvat/api/item/getItemSuggestions', searchTerm,{headers});
+                    const response = await axios.post(`${baseUrl}/item/getItemSuggestions`, searchTerm,{headers});
                     const suggestions = response.data;
                     setSuggestItem(suggestions);
     
@@ -240,14 +237,10 @@ const addForeignPurchase = () => {
                               }
     
                               if(clickedValue>0){
-    
-    
-                                const token = localStorage.getItem('Token');
-                                if(token){
-                                    const bearer = JSON.parse(token);
-                                    const headers= { Authorization: `Bearer ${bearer}` }
+
+                                if(user){
                         
-                                axios.get(`http://localhost:8080/bmitvat/api/purchase/get_item_details/${clickedValue}`,{headers})
+                                axios.get(`${baseUrl}/purchase/get_item_details/${clickedValue}`,{headers})
                                     .then((response) => {
                                         const data = response.data;
                                         setItemDetails(data);
@@ -274,8 +267,8 @@ const addForeignPurchase = () => {
     
                                         const input = document.createElement('input');
                                         input.type = 'text';
-                                        input.name = 'itemName';
-                                        input.value = data.itemName;
+                                        input.name = 'item_name';
+                                        input.value = data.item_name;
                                         input.autocomplete = 'off';
                                         input.disabled = true;
                                         input.style.cssText = 'border: 1px solid black; width: 180px;';
@@ -762,14 +755,14 @@ const addForeignPurchase = () => {
                 entryDate: entry_date,
                 boe: boe,
                 boeDate: boeDate,
-                lcnumber: lcnumber,
-                lcDate: lcDate,
-                customHouse: houseId,
-                housecode: housecode,
-                countryId: countryId,
+                lcnumber: lc_number,
+                lcDate: lc_date,
+                customHouse: id,
+                housecode: custom_house_code,
+                countryId: country_id,
                 dataSource: dataSource,
-                cpcCode: cpcCode,
-                fiscalYear: fiscalYear,
+                cpcCode: cpc_code,
+                fiscalYear: fiscal_year,
                 purchaseItems: arrayData,
                 totalTax: Vat,
                 totalAt: AT,
@@ -787,7 +780,7 @@ const addForeignPurchase = () => {
                 try {
                     // process.exit();
 
-                   await axios.post("http://localhost:8080/bmitvat/api/purchase/add-foreign-purchase", purchase, {headers})
+                   await axios.post(`${baseUrl}/purchase/add-foreign-purchase`, purchase, {headers})
                   .then(function (response){
                     navigate("/pages/procurment/foreign_purchase/index");
                   })
@@ -827,8 +820,8 @@ const addForeignPurchase = () => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label htmlFor="browserLname">Supplier Address</label>
-                                            <input id="browserLname" type="text" value={SuppAddress} onChange={(e) => setSupplierAdd(e.target.value)} className="form-input" required />
+                                            <label htmlFor="browserLname">House Code</label>
+                                            <input id="browserLname" type="text" value={s_address} onChange={(e) => setSupplierAdd(e.target.value)} className="form-input" required />
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Entry Date</label>
@@ -850,22 +843,22 @@ const addForeignPurchase = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-6 gap-5 pt-4">
                                         <div>
                                             <label htmlFor="browserLname">LC Date</label>
-                                            <input id="browserLname" type="date" value ={lcDate} onChange={(e) => setLcDate(e.target.value)} className="form-input" required />
+                                            <input id="browserLname" type="date" value ={lc_date} onChange={(e) => setLcDate(e.target.value)} className="form-input" required />
                                         </div>
                                         <div>
                                             <label htmlFor="gridState">Custom House</label>
                                             <select id="getCustomhouse" onChange={getHouseId} className="form-select text-dark col-span-4 text-sm" required >
                                                 <option>Select Custom House</option>
-                                                {all_customhouse.map((option, index) => ( 
+                                                {all_custom_house.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.house_name} 
+                                                        {option.custom_house_name} 
                                                     </option> 
                                                 ))} 
                                             </select>
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">House Code</label>
-                                            <input id="browserLname" type="text" value={housecode} onChange={(e) => setHouseCode(e.target.value)} className="form-input" required />
+                                            <input id="browserLname" type="text" value={custom_house_code} onChange={(e) => setHouseCode(e.target.value)} className="form-input" required />
                                         </div>
                                         <div>
                                             <label htmlFor="gridState">Country Of Origin</label>
@@ -890,16 +883,16 @@ const addForeignPurchase = () => {
                                             <label htmlFor="gridState">CPC Code</label>
                                             <select id="gridState"  onChange={(e) => setCpcCode(e.target.value)} className="form-select text-dark col-span-4 text-sm" required>
                                                 <option >Select CPC Code</option>
-                                                {all_cpccode.map((option, index) => ( 
+                                                {all_cpc.map((option, index) => ( 
                                                     <option key={index} value={option.id}> 
-                                                        {option.cpc_description} 
+                                                        {option.cpc_code} 
                                                     </option> 
                                                 ))} 
                                             </select>
                                         </div>
                                         <div className='pt-4'>
                                             <label htmlFor="fiscalYear">Fiscal Year</label>
-                                            <select id="fiscalYear"  onChange={(e) => setFiscalYear(e.target.value)} className="form-select text-dark col-span-4 text-sm" required>
+                                            <select id="fiscal_year"  onChange={(e) => setFiscalYear(e.target.value)} className="form-select text-dark col-span-4 text-sm" required>
                                                 <option >Please Select</option>
                                                 <option value={"2024"} >2023-2024</option>
                                                 <option value={"2023"} >2022-2023</option>
@@ -913,7 +906,7 @@ const addForeignPurchase = () => {
                                         <ul style={{ cursor: 'pointer' }} className="mt-10 ml-20 w-1/2 absolute bg-slate-300" id="suggestionsList"></ul>   
                                     </div>
 
-                                    {/* <TableGForeignPurchase /> */}
+                                    {/* <TableForeignPurchase /> */}
                                     <div className="border overflow-hidden overflow-x-auto">
                                         <table id="dataTable" className="whitespace-nowrap table-hover border dataTable">
                                             <thead>

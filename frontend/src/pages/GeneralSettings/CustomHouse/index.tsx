@@ -33,7 +33,6 @@ const index = () => {
         const token = user.token;
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
 
         if(user){
     
@@ -50,26 +49,6 @@ const index = () => {
     
             }
         }, [user]);
-
-    //     if(token){
-    //         const bearer =  token.slice(1,-1); 
-    //         // const bearer1 = JSON.parse(token);
-
-    //     const headers= { Authorization: `Bearer ${bearer}` }
-
-    //     axios.get('http://localhost:8080/bmitvat/api/customhouse/all_custom_house',{headers})
-    //         .then((response) => {
-    //             setInitialRecords(response.data);
-
-    //         })
-    //         .catch((error) => {
-    //             console.error('Error fetching data:', error);
-
-    //         });
-
-    //     }
-    // }, []);
-
 
 
     const dispatch = useDispatch();
@@ -115,13 +94,6 @@ const index = () => {
         setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
     }, [sortStatus]);
-
-    // const header = ['Id', 'Unit Name', 'customHouseAddress', 'Status', 'Action' ];
-
-
-
-       //Excel File Upload
-
 
 
        const [defaultParams] = useState({ file: '', });
