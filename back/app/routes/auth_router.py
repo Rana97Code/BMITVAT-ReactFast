@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException,status,File, UploadFile, F
 from typing import Annotated
 from datetime import datetime, timedelta
 from app.models.user_model import UserCreateSchema,User,TokenData,UserInDB,SigninRequest,Token, TokenJson,UserRead
-from app.config import get_db, engine
+from app.db.database import get_db, engine
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm

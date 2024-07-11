@@ -1,4 +1,4 @@
-from app.config import engine, Base, SessionLocal
+from app.db.database import engine, Base, SessionLocal
 from sqlalchemy import Column,String,Integer,Boolean,SmallInteger, TIMESTAMP, func, create_engine
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel, Field

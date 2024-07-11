@@ -1,4 +1,4 @@
-from app.config import engine, Base, SessionLocal
+from app.db.database import engine, Base, SessionLocal
 from sqlalchemy import Column,String,Integer,Boolean,Float,Double,DateTime,Date
 from datetime import datetime,date, time
 from sqlalchemy.orm import relationship

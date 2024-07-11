@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, File, UploadFile
 from typing import Union, List, Optional
 from sqlalchemy.orm import Session
 from app.models.general_settings.company_settings_model import Company_settingsCreateSchema, Company_settingsSchema, Company_settings
-from app.config import get_db
+from app.db.database import get_db
 from app.routes.auth_router import get_current_active_user
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException,status,File, UploadFile, Form
-from app.config import get_db, engine
+from app.db.database import get_db, engine
 from app.models.user_model import User,UserRead,UserSchema
 from app.routes.auth_router import get_current_active_user;
 from sqlalchemy.orm import Session

@@ -1,53 +1,11 @@
 from fastapi import FastAPI
-from app.config import engine, Base
+from app.routes.router_list import router as api_router
+from app.db.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes.auth_router import auth_router
-from app.routes.user_router import user_router
-from app.routes.general_settings.unit_router import unit_router
-from app.routes.general_settings.costing_router import costing_router
-from app.routes.country_route import country_router
-from app.routes.relationship.customer_router import customer_router
-from app.routes.relationship.supplier_router import supplier_router
-from app.routes.general_settings.hscode_router import hscode_route
-from app.routes.inventory.item_router import item_route
-from app.routes.general_settings.custom_house_router import custom_house_router
-from app.routes.general_settings.authorised_person_router import authorised_person_router
-from app.routes.general_settings.company_settings_router import company_settings_router
-from app.routes.inventory.item_router import item_route
-from app.routes.inventory.FinishGoods_router import FinishGoods_router
-from app.routes.production.sales.localSales_router import sales_router
-from app.routes.production.sales.creditnote_router import Creditnote_router
-from app.routes.production.sales.receiveVds_router import ReceiveVds_router
-from app.routes.production.wastage.wastage_router import Wastage_router 
-from app.routes.inventorystock_router import InventoryStock_router
-
-
 
 
 
 Base.metadata.create_all(bind=engine)
-
-def include_router(app):
-    app.include_router(auth_router)
-    app.include_router(user_router)
-    app.include_router(country_router)
-    app.include_router(customer_router)
-    app.include_router(supplier_router)
-    app.include_router(hscode_route)
-    app.include_router(unit_router)
-    app.include_router(item_route)
-    app.include_router(costing_router)
-    app.include_router(custom_house_router)
-    app.include_router(authorised_person_router)
-    app.include_router(company_settings_router)
-    app.include_router(item_route)
-    app.include_router(FinishGoods_router)
-    app.include_router(sales_router)
-    app.include_router(Creditnote_router)
-    app.include_router(ReceiveVds_router)
-    app.include_router(Wastage_router)
-    app.include_router(InventoryStock_router)
-
 
 origins = [
         "http://localhost:5173",
@@ -56,7 +14,7 @@ origins = [
 
 def start_application():
     app = FastAPI()
-    include_router(app)
+    app.include_router(api_router)
 
     app.add_middleware(
         CORSMiddleware,
