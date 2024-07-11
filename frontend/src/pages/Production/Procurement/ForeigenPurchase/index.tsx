@@ -68,11 +68,6 @@ const index = () => {
     }, [sortStatus]);
     const header = ['Serial', 'Invoice No', 'Supplier', 'LC No'];
 
-    // const changeValue = (e: any) => {
-    //     const { value, id } = e.target;
-    //     setParams({ ...params, [id]: value });
-    // };
-
 
     const [addContactModal, setAddContactModal] = useState<any>(false);
 

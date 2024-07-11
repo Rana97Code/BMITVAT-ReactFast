@@ -97,8 +97,8 @@ const tableForeignPurchase = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'description', title: 'Description', sortable: true },
-                            { accessor: 'boeItemNo', title: 'BOE Item No', sortable: true },
-                            { accessor: 'quantity', title: 'Quantity', sortable: true },
+                            { accessor: 'boe_item_no', title: 'BOE Item No', sortable: true },
+                            { accessor: 'qty', title: 'Quantity', sortable: true },
                             { accessor: 'assessableValue', title: 'Assessable Value', sortable: true },
                             { accessor: 'rate', title: 'Rate(BDT)', sortable: true },
                             { accessor: 'cdPercent	', title: 'CD Percent', sortable: true },

@@ -259,7 +259,7 @@ const addForeignPurchase = () => {
     
                                         const inputId = document.createElement('input');
                                         inputId.type = 'hidden';
-                                        inputId.name = 'itemId';
+                                        inputId.name = 'item_id';
                                         inputId.value = data.id;
                                         inputId.autocomplete = 'off';
                                         inputId.disabled = true;
@@ -514,7 +514,7 @@ const addForeignPurchase = () => {
                                         function removeRow(row: HTMLTableRowElement) {
                                             dataTable.removeChild(row);
                                             // Remove the corresponding data from the arrayData array
-                                            const index = arrayData.findIndex((item) => item.itemName === data.itemName);
+                                            const index = arrayData.findIndex((item) => item.item_name === data.item_name);
                                             if (index !== -1) {
                                                 arrayData.splice(index, 1);
                                             }
@@ -716,7 +716,7 @@ const addForeignPurchase = () => {
                         const inputElement = input as HTMLInputElement;
                         const inputElementSelect = input as HTMLSelectElement;
                         const selectValue = inputElement.type === 'select-one' ? inputElementSelect.value : inputElement.value;
-                        rowData[inputElement.name || 'itemId']      = inputElement.value;
+                        rowData[inputElement.name || 'item_id']      = inputElement.value;
                         rowData[inputElement.name || 'quantity']    = inputElement.value;
                         rowData[inputElement.name || 'rate']        = inputElement.value;
                         rowData[inputElement.name || 'priceValue']  = inputElement.value;
