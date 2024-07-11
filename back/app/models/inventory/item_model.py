@@ -18,6 +18,7 @@ class Item(Base):
     calculate_year = Column(String(255), nullable=True)
     created_by = Column(Integer, nullable=True)
     updated_by = Column(Integer, nullable=True)
+    # updated_at = Column(DateTime,index=True, default=datetime.utcnow())
     created_at = Column(DateTime,index=True, default=datetime.utcnow())
     # prod = relationship(Product)
 
@@ -67,6 +68,19 @@ class ItemBase(BaseModel):
     calculate_year:str | None
     created_by:int | None
     updated_by:int | None
+    # updated_at : datetime |None
+
+    class Config:
+        from_attributes = True
+
+
+class ItemSuggest(BaseModel):
+    id : int
+    item_name:str
+    hs_code:str
+    calculate_year:str | None
+ 
+
 
     class Config:
         from_attributes = True

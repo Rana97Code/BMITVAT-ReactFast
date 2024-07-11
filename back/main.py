@@ -8,16 +8,16 @@ from app.routes.general_settings.costing_router import costing_router;
 from app.routes.country_route import country_router;
 from app.routes.relationship.customer_router import customer_router;
 from app.routes.relationship.supplier_router import supplier_router;
+from app.routes.general_settings.cpc_router import cpc_router;
 from app.routes.general_settings.hscode_router import hscode_route;
 from app.routes.inventory.item_router import item_route;
 from app.routes.general_settings.custom_house_router import custom_house_router;
 from app.routes.general_settings.authorised_person_router import authorised_person_router;
 from app.routes.general_settings.company_settings_router import company_settings_router;
 from app.routes.inventory.item_router import item_route;
-from app.routes.inventory.FinishGoods_router import FinishGoods_router;
-from app.routes.Production.Procurement.ForeignPurchase_router import ForeignPurchase_router;
-
-
+from app.routes.inventory.FinishGoods_router import FinishGoods_router
+from app.routes.Production.Procurement.Purchase_router import Purchase_router;
+from app.routes.inventorystock_router import InventoryStock_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -28,6 +28,7 @@ def include_router(app):
     app.include_router(country_router)
     app.include_router(customer_router)
     app.include_router(supplier_router)
+    app.include_router(cpc_router)
     app.include_router(hscode_route)
     app.include_router(unit_router)
     app.include_router(item_route)
@@ -37,7 +38,9 @@ def include_router(app):
     app.include_router(company_settings_router)
     app.include_router(item_route)
     app.include_router(FinishGoods_router)
-    app.include_router(ForeignPurchase_router)
+    app.include_router(Purchase_router)
+    app.include_router(InventoryStock_router)
+    
 
 
 origins = [

@@ -1,7 +1,10 @@
+from typing import List
+from email.quoprimime import unquote
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional
+from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase
+from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase, ItemSuggest
 from app.config import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
@@ -10,7 +13,6 @@ from pathlib import *
 import os
 from app.models.general_settings.unit_model import Unit
 from app.models.general_settings.hs_code_model import Hscode
-
 
 
 #route define
@@ -91,7 +93,6 @@ async def get_itm(item_id:int,db:Session=Depends(get_db)):
         return {"item has been deleted"}
     except:
         return HTTPException(status_code=422, details="user not found")
-    
 
 #array push
 
@@ -105,7 +106,6 @@ async def create(item:List[ItemCreateSchema], request: Request, db:Session=Depen
     i = []
     unt = []
     for i in range(len(name)):
-        print(i)
         unt.append({
           'item_name': name[i]["item_name"],
           'item_type': name[i]["item_type"],
@@ -187,7 +187,6 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
             })
 
         for row in data:
-            # print(row)
             item_list = [Item(**row)]
             db.add_all(item_list)
             db.commit()
@@ -196,3 +195,6 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+    
+
+
