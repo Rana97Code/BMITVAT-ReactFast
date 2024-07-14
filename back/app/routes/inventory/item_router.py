@@ -8,8 +8,6 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pathlib import *
 import os
-from app.models.general_settings.unit_model import Unit
-from app.models.general_settings.hs_code_model import Hscode
 
 
 
@@ -27,31 +25,9 @@ async def create(item:ItemCreateSchema,db:Session=Depends(get_db)):
 
 @item_route.get("/bmitvat/api/item/allitems",response_model=List[ItemSchema], dependencies=[Depends(get_current_active_user)])
 async def index(db:Session=Depends(get_db)):
+    return db.query(Item).all()
 
-    #In ITEM shows data From unit data table 
-    x=db.query(Item, Unit, Hscode).join(Unit, Item.unit_id==Unit.id ).join(Hscode, Item.hs_code_id==Hscode.id)\
-        .add_columns(Item.id,Item.item_name,Hscode.description,Item.item_type,Item.hs_code,Unit.unit_name,Item.stock_status,Item.status,Hscode.calculate_year,Item.created_by,Item.updated_by).all()
-    #print(x)
-    p_item =[]
-    for pp in x:
-        p_item.append({
-           'id': pp.id,
-           'item_name': pp.item_name,
-           'description': pp.description,
-           'item_type':pp.item_type,
-           'hs_code':pp.hs_code,
-           'unit_name':pp.unit_name,
-           'stock_status':pp.stock_status,
-           'status':pp.status,
-           'calculate_year':pp.calculate_year,
-           'created_by':pp.created_by,
-           'updated_by':pp.updated_by
-           })
-
-    junit = jsonable_encoder(p_item)
-    return JSONResponse(content=junit)
-
-@item_route.get("/bmitvat/api/item/get_item/{item_id}",response_model=ItemBase, dependencies=[Depends(get_current_active_user)])
+@item_route.get("/bmitvat/api/item/get_item/{item_id}",response_model=ItemSchema, dependencies=[Depends(get_current_active_user)])
 async def get_itm(item_id:int,db:Session=Depends(get_db)):
     try:
         u=db.query(Item).filter(Item.id == item_id).first()

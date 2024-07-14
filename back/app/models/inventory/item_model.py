@@ -42,10 +42,10 @@ class ItemCreateSchema(BaseModel):
 class ItemSchema(BaseModel):
     id:int
     item_name:str
-    description:str
     item_type:str
     hs_code:str
-    unit_name:int | None
+    hs_code_id:int | None
+    unit_id:int | None
     stock_status:int | None
     status:int | None
     calculate_year:str | None

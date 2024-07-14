@@ -30,14 +30,21 @@ async def index(db: Session = Depends(get_db)):
     return db.query(Supplier).all()
 
 
-@supplier_router.get("/bmitvat/api/supplier/get_supplier/{supplier_id}", response_model=list[SupplierSchema],
-                     dependencies=[Depends(get_current_active_user)])
-async def get_itm(supplier_id: int, db: Session = Depends(get_db)):
+@supplier_router.get("/bmitvat/api/supplier/{supplier_id}/address", response_model=dict)
+def get_supplier_address(supplier_id: int, db: Session = Depends(get_db)):
+    supplier = db.query(Supplier.s_address).filter(Supplier.id == supplier_id).first()
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier not found")
+    return {"s_address": supplier.s_address}
+
+@supplier_router.get("/bmitvat/api/supplier/get_supplier/{supplier_id}",response_model=SupplierSchema, dependencies=[Depends(get_current_active_user)])
+async def get_single_supplier(supplier_id:int,db:Session=Depends(get_db)):
     try:
-        u = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+        u=db.query(Supplier).filter(Supplier.id == supplier_id).first()
         return (u)
     except:
         return HTTPException(status_code=422, details="supplier not found")
+
 
 
 @supplier_router.put("/bmitvat/api/supplier/update_supplier/{supplier_id}",
