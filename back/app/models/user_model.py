@@ -1,4 +1,4 @@
-from app.config import engine, Base, SessionLocal
+from app.db.database import engine, Base, SessionLocal
 from sqlalchemy import Column,String,Integer,Boolean
 from pydantic import BaseModel
 import passlib.hash as _hash

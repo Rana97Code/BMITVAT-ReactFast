@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, U
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
 from app.models.general_settings.custom_house_model import Custom_houseCreateSchema, Custom_houseSchema, Custom_house
-from app.config import get_db
+from app.db.database import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -16,7 +16,9 @@ custom_house_router = APIRouter()
 
 
 
-@custom_house_router.get("/bmitvat/api/customhouse/all_custom_house", response_model=List[Custom_houseSchema], dependencies=[Depends(get_current_active_user)])
+@custom_house_router.get("/bmitvat/api/customhouse/all_custom_house", 
+                         response_model=List[Custom_houseSchema], 
+                         dependencies=[Depends(get_current_active_user)])
 async def index(db:Session=Depends(get_db)):  
     return db.query(Custom_house).all()
 

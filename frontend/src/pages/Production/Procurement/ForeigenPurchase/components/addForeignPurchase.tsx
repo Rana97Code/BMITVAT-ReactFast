@@ -82,7 +82,7 @@ const addForeignPurchase = () => {
     const [lc_date, setLcDate] = useState(getTodayDate());
     const [entry_date, setEntryDate] = useState(getTodayDate());
     const [boe, setBoe] = useState("");
-    const [boeDate, setBoeDate] = useState(getTodayDate());
+    const [boe_date, setBoeDate] = useState(getTodayDate());
     const [dataSource, setDateSource] = useState("");
     const [cpc_code, setCpcCode] = useState("");
     const [fiscal_year, setFiscalYear] = useState("");
@@ -275,7 +275,7 @@ const addForeignPurchase = () => {
     
                                         const input1 = document.createElement('input');
                                         input1.type = 'text';
-                                        input1.name = 'boe';
+                                        input1.name = 'boe_item_no';
                                         input1.className = '';
                                         input1.value = '';
                                         input1.id = 'boe';
@@ -285,7 +285,7 @@ const addForeignPurchase = () => {
 
                                         const input2 = document.createElement('input');
                                         input2.type = 'number';
-                                        input2.name = 'quantity';
+                                        input2.name = 'qty';
                                         input2.className = '';
                                         input2.value = '';
                                         input2.id = 'qtyId';
@@ -295,7 +295,7 @@ const addForeignPurchase = () => {
 
                                         const input3 = document.createElement('input');
                                         input3.type = 'number';
-                                        input3.name = 'accessableValue';
+                                        input3.name = 'access_amount';
                                         input3.className = '';
                                         input3.value = '';
                                         input3.id = 'accessableValue';
@@ -315,7 +315,7 @@ const addForeignPurchase = () => {
                                     
                                         const input5 = document.createElement('input');
                                         input5.type = 'number';
-                                        input5.name = 'cd';
+                                        input5.name = 'item_cd';
                                         input5.className = '';
                                         input5.value = data.cd;
                                         input5.autocomplete = 'off';
@@ -325,7 +325,7 @@ const addForeignPurchase = () => {
                                         
                                         const input6 = document.createElement('input');
                                         input6.type = 'number';
-                                        input6.name = 'cdAmount';
+                                        input6.name = 'cd_amount';
                                         input6.className = '';
                                         input6.value = '';
                                         input6.autocomplete = 'off';
@@ -335,7 +335,7 @@ const addForeignPurchase = () => {
                                                                             
                                         const input7 = document.createElement('input');
                                         input7.type = 'number';
-                                        input7.name = 'rd';
+                                        input7.name = 'item_rd';
                                         input7.className = '';
                                         input7.value = data.rd;
                                         input7.autocomplete = 'off';
@@ -345,7 +345,7 @@ const addForeignPurchase = () => {
                                                                             
                                         const input8 = document.createElement('input');
                                         input8.type = 'number';
-                                        input8.name = 'rdAmount';
+                                        input8.name = 'rd_amount';
                                         input8.className = '';
                                         input8.value = '';
                                         input8.autocomplete = 'off';
@@ -355,7 +355,7 @@ const addForeignPurchase = () => {
 
                                         const input9 = document.createElement('input');
                                         input9.type = 'number';
-                                        input9.name = 'sd';
+                                        input9.name = 'item_sd';
                                         input9.className = '';
                                         input9.value = data.sd;
                                         input9.autocomplete = 'off';
@@ -365,7 +365,7 @@ const addForeignPurchase = () => {
     
                                         const input10 = document.createElement('input');
                                         input10.type = 'number';
-                                        input10.name = 'sdAmount';
+                                        input10.name = 'sd_amount';
                                         input10.className = 'total_sd';
                                         input10.value = '';
                                         input10.autocomplete = 'off';
@@ -375,7 +375,7 @@ const addForeignPurchase = () => {
     
                                         const input11 = document.createElement('input');
                                         input11.type = 'number';
-                                        input11.name = 'vatableValue';
+                                        input11.name = 'vatable_value';
                                         input11.className = '';
                                         input11.value = '';
                                         input11.autocomplete = 'off';
@@ -384,7 +384,7 @@ const addForeignPurchase = () => {
                                         input11.style.cssText = 'border: 1px solid black; width: 160px;';
                                             
                                         const selectElement = document.createElement('select');
-                                        selectElement.name = 'vatType';
+                                        selectElement.name = 'vat_type';
                                         selectElement.className = '';
                                         selectElement.style.cssText = 'border: 1px solid black; width: 180px;';
     
@@ -416,7 +416,7 @@ const addForeignPurchase = () => {
 
                                         const input12 = document.createElement('input');
                                         input12.type = 'number';
-                                        input12.name = 'vatRate';
+                                        input12.name = 'vat_rate';
                                         input12.className = '';
                                         input12.value = data.vat;
                                         input12.autocomplete = 'off';
@@ -426,7 +426,7 @@ const addForeignPurchase = () => {
     
                                         const input13 = document.createElement('input');
                                         input13.type = 'number';
-                                        input13.name = 'vatAmount';
+                                        input13.name = 'vat_amount';
                                         input13.className = 'total_vat';
                                         input13.value = '';
                                         input13.autocomplete = 'off';
@@ -436,7 +436,7 @@ const addForeignPurchase = () => {
              
                                         const input14 = document.createElement('input');
                                         input14.type = 'number';
-                                        input14.name = 'ait';
+                                        input14.name = 'item_ait';
                                         input14.className = '';
                                         input14.value = data.ait;
                                         input14.autocomplete = 'off';
@@ -446,7 +446,7 @@ const addForeignPurchase = () => {
                                                                             
                                         const input15 = document.createElement('input');
                                         input15.type = 'number';
-                                        input15.name = 'aitAmount';
+                                        input15.name = 'ait_amount';
                                         input15.className = '';
                                         input15.value = '';
                                         input15.autocomplete = 'off';
@@ -457,7 +457,7 @@ const addForeignPurchase = () => {
                  
                                         const input16 = document.createElement('input');
                                         input16.type = 'number';
-                                        input16.name = 'at';
+                                        input16.name = 'item_at';
                                         input16.className = '';
                                         input16.value = data.at;
                                         input16.autocomplete = 'off';
@@ -467,7 +467,7 @@ const addForeignPurchase = () => {
                                                                             
                                         const input17 = document.createElement('input');
                                         input17.type = 'number';
-                                        input17.name = 'atAmount';
+                                        input17.name = 'at_amount';
                                         input17.className = 'total_at';
                                         input17.value = '';
                                         input17.autocomplete = 'off';
@@ -497,7 +497,7 @@ const addForeignPurchase = () => {
     
                                         const input18 = document.createElement('input');
                                         input18.type = 'number';
-                                        input18.name = 'totalAmount';
+                                        input18.name = 't_amount';
                                         input18.className = 'total_amount';
                                         input18.value = '';
                                         input18.autocomplete = 'off';
@@ -717,7 +717,7 @@ const addForeignPurchase = () => {
                         const inputElementSelect = input as HTMLSelectElement;
                         const selectValue = inputElement.type === 'select-one' ? inputElementSelect.value : inputElement.value;
                         rowData[inputElement.name || 'item_id']      = inputElement.value;
-                        rowData[inputElement.name || 'quantity']    = inputElement.value;
+                        rowData[inputElement.name || 'qty']    = inputElement.value;
                         rowData[inputElement.name || 'rate']        = inputElement.value;
                         rowData[inputElement.name || 'priceValue']  = inputElement.value;
                         rowData[inputElement.name || 'sd']          = inputElement.value;
@@ -731,6 +731,38 @@ const addForeignPurchase = () => {
                         rowData[inputElement.name || 'totalAmount'] = inputElement.value;
                     });
             
+    //                 item_id : int |None
+    
+    // boe_item_no : int |None
+    // hs_code : str |None
+    // hs_code_id : int |None
+    // service_code : float |None
+    // qty : float |None
+    // rate : float |None
+    // vatable_value : float |None
+    // vat_rate : float |None
+    // tax_amount : float |None
+    // item_cd : float |None
+    // cd_amount : float |None
+    // item_sd : float |None
+    // sd_amount :float  |None
+    // item_rd : float |None
+    // rd_amount :float  |None
+    // item_at : float |None
+    // at_amount : float |None
+    // item_ait :float  |None
+    // ait_amount :float  |None
+    // item_tti : float |None
+    // tti_amount : float |None
+    // amount : float |None
+    // t_amount : float |None
+    // access_amount : float |None
+    // vat_type: float |None
+    // vds : int |None
+    // rebate: int |None
+    // purchase_date :datetime |None
+    // entry_date: datetime |None
+    // p_date : datetime |None
                     arrayData.push(rowData);
                   
                 });
@@ -751,12 +783,12 @@ const addForeignPurchase = () => {
              
 
             const purchase = {
-                supplierId: supplier_name,
+                supplier_id: supplier_name,
                 entryDate: entry_date,
-                boe: boe,
-                boeDate: boeDate,
+                invoice_no: boe,
+                boeDate: boe_date,
                 lcnumber: lc_number,
-                lcDate: lc_date,
+                lc_date: lc_date,
                 customHouse: id,
                 housecode: custom_house_code,
                 countryId: country_id,
@@ -766,17 +798,35 @@ const addForeignPurchase = () => {
                 purchaseItems: arrayData,
                 totalTax: Vat,
                 totalAt: AT,
-                grandTotal: ALL,
+                grand_total: ALL,
                 note: note
             
               }
-        
+    //invoice_no: str| None
+    // purchase_type: int| None
+    // purchase_category: int| None
+    // service_category: int| None
+    // lc_number: str| None
+    // lc_date: datetime
+    // chalan_date: datetime
+    // total_vds: float| None
+    // grand_total: float| None
+    // total_tax: float | None
+    // supplier_id: int | None
+    // vendor_invoice: str| None
+    // entry_date: datetime
+    // notes: str| None
+    // user_id: int| None
+    // custom_house: str| None
+    // country_origin: str| None
+    // boe_item_no: int| None
+    // data_source: str| None
+    // cpc_code: int| None
+        //change as schema and DB
                 console.log(purchase);
 
-                const token = localStorage.getItem('Token');
-                if(token){
-                    const bearer = JSON.parse(token);
-                    const headers= { Authorization: `Bearer ${bearer}` }
+                if(user){
+
                 try {
                     // process.exit();
 
@@ -820,7 +870,7 @@ const addForeignPurchase = () => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label htmlFor="browserLname">House Code</label>
+                                            <label htmlFor="browserLname">Supplier Address</label>
                                             <input id="browserLname" type="text" value={s_address} onChange={(e) => setSupplierAdd(e.target.value)} className="form-input" required />
                                         </div>
                                         <div>
@@ -833,7 +883,7 @@ const addForeignPurchase = () => {
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Bill Of Entry Date</label>
-                                            <input id="browserLname" type="date" value ={boeDate} onChange={(e) => setBoeDate(e.target.value)}className="form-input" required />
+                                            <input id="browserLname" type="date" value ={boe_date} onChange={(e) => setBoeDate(e.target.value)}className="form-input" required />
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">LC Number</label>
@@ -938,6 +988,8 @@ const addForeignPurchase = () => {
                                             </thead>
 
                                             <tbody>
+
+                                                
                                             </tbody>
                                         </table>
 

@@ -1,4 +1,4 @@
-from app.config import engine, Base, SessionLocal
+from app.db.database import engine, Base, SessionLocal
 from sqlalchemy import Column,String,Integer,Boolean,SmallInteger,DateTime
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
@@ -18,7 +18,6 @@ class Item(Base):
     calculate_year = Column(String(255), nullable=True)
     created_by = Column(Integer, nullable=True)
     updated_by = Column(Integer, nullable=True)
-    # updated_at = Column(DateTime,index=True, default=datetime.utcnow())
     created_at = Column(DateTime,index=True, default=datetime.utcnow())
     # prod = relationship(Product)
 
@@ -68,11 +67,9 @@ class ItemBase(BaseModel):
     calculate_year:str | None
     created_by:int | None
     updated_by:int | None
-    # updated_at : datetime |None
 
     class Config:
         from_attributes = True
-
 
 class ItemSuggest(BaseModel):
     id : int
@@ -83,6 +80,4 @@ class ItemSuggest(BaseModel):
 
 
     class Config:
-        from_attributes = True
-
-    
+        from_attributes = True 
