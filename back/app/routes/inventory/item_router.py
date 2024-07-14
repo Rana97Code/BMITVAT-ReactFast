@@ -198,3 +198,38 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
     
 
 
+async def all_suggestitm(year: int, db:Session=Depends(get_db)):
+    result = db.query(Item,Hscode).join(Hscode, Item.hs_code_id==Hscode.id)\
+            .filter(Item.stock_status == 1, Hscode.calculate_year == year)\
+            .add_columns(Item.id, Item.item_name, Item.hs_code, Item.calculate_year).all()
+            
+    items = []
+    for y in result:
+        items.append({
+            'id' : y.id,
+            'item_name': y.item_name,
+            'hs_code': y.hs_code,
+            'calculate_year': y.calculate_year,
+        })
+    json_items = jsonable_encoder(items)
+    return json_items
+
+@item_route.post("/bmitvat/api/item/getItemSuggestions", response_model=List[ItemSuggest])
+async def suggest_items(request: Request,db:Session=Depends(get_db)):
+    request_body = await request.body()
+    decoded_string = request_body.decode()
+    parts = decoded_string.split("/")
+    
+    if len(parts) > 1:
+        year = parts[0]
+        part2 = parts[1]
+        items = await all_suggestitm(year = year, db = db)
+        searchTerm = part2.lower()
+        if searchTerm:
+            data= [item for item in items if 'item_name' in item and searchTerm in item['item_name'].lower()]
+            return data
+
+        else:
+            return []
+    else:
+        return []
