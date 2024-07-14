@@ -83,7 +83,7 @@ const addForeignPurchase = () => {
     const [entry_date, setEntryDate] = useState(getTodayDate());
     const [boe, setBoe] = useState("");
     const [boe_date, setBoeDate] = useState(getTodayDate());
-    const [dataSource, setDateSource] = useState("");
+    const [data_source, setDateSource] = useState("");
     const [cpc_code, setCpcCode] = useState("");
     const [fiscal_year, setFiscalYear] = useState("");
 
@@ -298,7 +298,7 @@ const addForeignPurchase = () => {
                                         input3.name = 'access_amount';
                                         input3.className = '';
                                         input3.value = '';
-                                        input3.id = 'accessableValue';
+                                        input3.id = 'accessable_value';
                                         input3.autocomplete = 'off';
                                         input3.min = '0';
                                         input3.style.cssText = 'border: 1px solid black; width: 100px;';
@@ -719,50 +719,18 @@ const addForeignPurchase = () => {
                         rowData[inputElement.name || 'item_id']      = inputElement.value;
                         rowData[inputElement.name || 'qty']    = inputElement.value;
                         rowData[inputElement.name || 'rate']        = inputElement.value;
-                        rowData[inputElement.name || 'priceValue']  = inputElement.value;
+                        rowData[inputElement.name || 'price_value']  = inputElement.value;
                         rowData[inputElement.name || 'sd']          = inputElement.value;
-                        rowData[inputElement.name || 'sdAmount']    = inputElement.value;
-                        rowData[inputElement.name || 'vatableValue']= inputElement.value;
-                        rowData[inputElement.name || 'vatType']     = inputElement.value;
-                        rowData[inputElement.name || 'vatRate']     = inputElement.value;
-                        rowData[inputElement.name || 'vatAmount']   = inputElement.value;
+                        rowData[inputElement.name || 'sd_amount']    = inputElement.value;
+                        rowData[inputElement.name || 'vatable_value']= inputElement.value;
+                        rowData[inputElement.name || 'vat_type']     = inputElement.value;
+                        rowData[inputElement.name || 'vat_rate']     = inputElement.value;
+                        rowData[inputElement.name || 'tax_amount']   = inputElement.value;
                         rowData[inputElement.name || 'vds']         = selectValue;
                         rowData[inputElement.name || 'rebate']      = selectValue;
-                        rowData[inputElement.name || 'totalAmount'] = inputElement.value;
+                        rowData[inputElement.name || 't_amount'] = inputElement.value;
                     });
             
-    //                 item_id : int |None
-    
-    // boe_item_no : int |None
-    // hs_code : str |None
-    // hs_code_id : int |None
-    // service_code : float |None
-    // qty : float |None
-    // rate : float |None
-    // vatable_value : float |None
-    // vat_rate : float |None
-    // tax_amount : float |None
-    // item_cd : float |None
-    // cd_amount : float |None
-    // item_sd : float |None
-    // sd_amount :float  |None
-    // item_rd : float |None
-    // rd_amount :float  |None
-    // item_at : float |None
-    // at_amount : float |None
-    // item_ait :float  |None
-    // ait_amount :float  |None
-    // item_tti : float |None
-    // tti_amount : float |None
-    // amount : float |None
-    // t_amount : float |None
-    // access_amount : float |None
-    // vat_type: float |None
-    // vds : int |None
-    // rebate: int |None
-    // purchase_date :datetime |None
-    // entry_date: datetime |None
-    // p_date : datetime |None
                     arrayData.push(rowData);
                   
                 });
@@ -787,43 +755,22 @@ const addForeignPurchase = () => {
                 entryDate: entry_date,
                 invoice_no: boe,
                 boeDate: boe_date,
-                lcnumber: lc_number,
+                lc_number: lc_number,
                 lc_date: lc_date,
-                customHouse: id,
-                housecode: custom_house_code,
-                countryId: country_id,
-                dataSource: dataSource,
-                cpcCode: cpc_code,
-                fiscalYear: fiscal_year,
+                custom_house: custom_house_code,
+                custom_house_code: custom_house_code,
+                country_id: country_id,
+                data_source: data_source,
+                cpc_code: cpc_code,
+                fiscal_year: fiscal_year,
                 purchaseItems: arrayData,
-                totalTax: Vat,
-                totalAt: AT,
+                total_tax: Vat,
+                total_at: AT,
                 grand_total: ALL,
                 note: note
             
               }
-    //invoice_no: str| None
-    // purchase_type: int| None
-    // purchase_category: int| None
-    // service_category: int| None
-    // lc_number: str| None
-    // lc_date: datetime
-    // chalan_date: datetime
-    // total_vds: float| None
-    // grand_total: float| None
-    // total_tax: float | None
-    // supplier_id: int | None
-    // vendor_invoice: str| None
-    // entry_date: datetime
-    // notes: str| None
-    // user_id: int| None
-    // custom_house: str| None
-    // country_origin: str| None
-    // boe_item_no: int| None
-    // data_source: str| None
-    // cpc_code: int| None
-        //change as schema and DB
-                console.log(purchase);
+            console.log(purchase)
 
                 if(user){
 

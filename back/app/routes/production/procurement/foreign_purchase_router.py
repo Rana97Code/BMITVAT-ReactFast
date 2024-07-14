@@ -117,7 +117,8 @@ async def create(fpurchase:foreignPurchaseInsertSchema,db:Session=Depends(get_db
         custom_house=fpurchase.custom_house_id,
         country_origin=fpurchase.country_origin,
         data_source=fpurchase.data_source,
-        cpc_code=fpurchase.cpc_code_id )
+        cpc_code=fpurchase.cpc_code_id 
+    )
     db.add(srv)
     db.commit()
 
@@ -128,7 +129,7 @@ async def create(fpurchase:foreignPurchaseInsertSchema,db:Session=Depends(get_db
             boe_item_no = item.boe_item_no,
             hs_code_id = item.hs_code_id,
             service_code = item.service_code,
-            quantity = item.qty,
+            qty = item.qty,
             rate = item.rate,
             vatable_value = item.vatable_value,
             vat_rate = item.vat_rate,
