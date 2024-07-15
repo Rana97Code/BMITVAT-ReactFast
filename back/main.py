@@ -7,6 +7,8 @@ from app.routes.country_route import country_router
 from app.routes.relationship.customer_router import customer_router
 from app.routes.relationship.supplier_router import supplier_router
 from app.routes.general_settings.hscode_router import hscode_route
+from app.routes.general_settings.unit_router import unit_router
+from app.routes.inventory.raw_materials_router import router as opening_stock_router
 from app.routes.inventory.item_router import item_route
 from app.routes.production.local_purchase.purchase_route import router as purchase_router
 
@@ -19,7 +21,10 @@ def include_router(app):
     app.include_router(customer_router)
     app.include_router(supplier_router)
     app.include_router(hscode_route)
+    app.include_router(unit_router)
     app.include_router(item_route)
+    app.include_router(opening_stock_router)
+    
     app.include_router(purchase_router)
 
 origins = [

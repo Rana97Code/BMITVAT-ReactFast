@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
-from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase
+from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase,ItemSuggest
 from app.config import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pathlib import *
 import os
+from app.models.general_settings.unit_model import Unit
+from app.models.general_settings.hs_code_model import Hscode
+
 
 
 
@@ -154,9 +157,9 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
                 'hs_code':      row[2],
                 'hs_code_id':   row[3],
                 'stock_status': row[4],
-                'status':       row[5],
-                'calculate_year': row[6],
-                'created_by':   row[7]
+                'status':       row[4],
+                'calculate_year': row[5],
+                'created_by':   row[6]
             })
 
         for row in data:
@@ -169,3 +172,43 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+    
+    
+async def all_suggestitm(year: int, db:Session=Depends(get_db)):
+    result = db.query(Item,Hscode).join(Hscode, Item.hs_code_id==Hscode.id)\
+            .filter(Item.stock_status == 1, Hscode.calculate_year == year)\
+            .add_columns(Item.id, Item.item_name, Item.hs_code, Item.calculate_year).all()
+            
+    items = []
+    for y in result:
+        items.append({
+            'id' : y.id,
+            'item_name': y.item_name,
+            'hs_code': y.hs_code,
+            'calculate_year': y.calculate_year,
+        })
+    json_items = jsonable_encoder(items)
+    return json_items
+
+@item_route.post("/bmitvat/api/item/getItemSuggestions", response_model=List[ItemSuggest])
+async def suggest_items(request: Request,db:Session=Depends(get_db)):
+    request_body = await request.body()
+    decoded_string = request_body.decode()
+    parts = decoded_string.split("/")
+    
+    if len(parts) > 1:
+        year = parts[0]
+        part2 = parts[1]
+        items = await all_suggestitm(year = year, db = db)
+        searchTerm = part2.lower()
+        print(items)
+        if searchTerm:
+            data= [item for item in items if 'item_name' in item and searchTerm in item['item_name'].lower()]
+            return data
+
+        else:
+            return []
+    else:
+        return []
+    
+    
