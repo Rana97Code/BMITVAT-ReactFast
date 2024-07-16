@@ -30,7 +30,10 @@ const editCustomers = () => {
 
 
   const getCustomer = async()=>{
-    if(user){
+    const token = localStorage.getItem('Token');
+    if(token){
+        // const bearer = JSON.parse(token);
+        // const headers= { Authorization: `Bearer ${bearer}` }
 
     await axios.get(`${user.base_url}/customer/get_customer/${params.id}`,{headers})
         .then((response) => {
@@ -75,8 +78,8 @@ const editCustomers = () => {
         });
     }
 
-    getCustomer();
-    handleSubmit;
+      getCustomer();
+      handleSubmit;
 
 }, [user]);
 

@@ -100,7 +100,7 @@ async def update_array(unit_id: str, request: Request, db:Session=Depends(get_db
         uu=db.query(Unit).filter(Unit.id == x["id"]).first()
         uu.unit_name=unit_name
         uu.unit_details=unit_details
-        print(jsonable_encoder(uu))
+        # print(jsonable_encoder(uu))
         db.add(uu)
         db.commit()
     return {"Message":"Successfully Update"}

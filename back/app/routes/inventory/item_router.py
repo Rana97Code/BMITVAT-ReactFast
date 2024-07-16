@@ -169,3 +169,4 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
