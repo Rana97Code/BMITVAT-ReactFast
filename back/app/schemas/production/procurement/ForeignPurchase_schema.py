@@ -73,7 +73,15 @@ class ItemDetailsModel(BaseModel):
         from_mode = True
 
 
+class PurchaseTableDetailsModel(BaseModel):
+    invoice_no: Optional[str] = None
+    grand_total: Optional[float] = None
+    supplier_name: Optional[str] = None
+    lc_number: Optional[str] = None
+    supplier_id: Optional[int] = None
 
+    class Config:
+        from_mode = True
 
 
 

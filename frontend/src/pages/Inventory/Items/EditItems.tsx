@@ -101,20 +101,6 @@ const editItem = () => {
 
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      
-      // const myArray = hsCodeId.split("/");
-      // const myArray1 = hsCodeId.split("#");
-  
-      // const startIndex = hsCodeId.indexOf('/');
-      // const endIndex = hsCodeId.indexOf('#');
-      //before '/'
-      // const hs_code_id = myArray[0];
-      //Middle part
-      // const year = hsCodeId.substring(startIndex + 1, endIndex);
-      //after '/'
-      // const hs_code = myArray1.slice(1).join("#");
-
-
       const item = {
         item_name: itemName,
         unit_id: unitId,
@@ -129,13 +115,12 @@ const editItem = () => {
         }
         console.log(item)
 
-        if(user.token){
+        if(user){
             const headers= { Authorization: `Bearer ${user.token}` }
 
         try {
-           await axios.put(`${baseUrl}/item/update_item
-            /${params.id}`, item, {headers})
-          .then(function (response){
+          await axios.put(`${baseUrl}/item/update_item/${params.id}`, item, {headers})
+          .then(function (response){            
             navigate("/pages/inventory/items");
           })
         } catch (err) {

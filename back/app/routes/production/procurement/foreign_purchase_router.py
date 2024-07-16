@@ -11,7 +11,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 from app.models.inventory.opening_stock_model import OpeningStock, OpeningInsertSchema , OpeningStockSchema
 from app.models.relationship.supplier_model import Supplier, supplierBase, SupplierSchema
 from app.models.production.procurement.Purchase_model import Purchase,Purchase_item
-from app.schemas.production.procurement.ForeignPurchase_schema import ForeignPurchaseInsertSchema,ItemDetailsModel
+from app.schemas.production.procurement.ForeignPurchase_schema import ForeignPurchaseInsertSchema,ItemDetailsModel, PurchaseTableDetailsModel
 from app.models.general_settings.hs_code_model import Hscode
 from app.models.inventory.item_model import Item, ItemSuggest
 
@@ -159,6 +159,30 @@ async def get_item_details_by_id(item_id: int, db: Session = Depends(get_db)):
         raise e
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+
+
+# #get the value for foreign purchase index value:
+# @Purchase_router.get("/bmitvat/api/item/allitems",response_model=List[PurchaseTableDetailsModel], dependencies=[Depends(get_current_active_user)])
+# async def index(db:Session=Depends(get_db)):
+
+#     #In ITEM shows data From unit data table 
+#     #x=db.query(Item, Hscode).join(Unit, Item.unit_id==Unit.id ).join(Hscode, Item.hs_code_id==Hscode.id)\
+#     x=db.query(Purchase, Supplier).join(Supplier, Purchase.supplier_id == Supplier.id )\
+#         .add_columns(,Item.stock_status,Item.status,Hscode.calculate_year,Item.created_by,Item.updated_by).all()
+#     #print(x)
+#     p_item =[]
+#     for pp in x:
+#         p_item.append({
+#            'id': pp.id,
+#            'item_name': pp.item_name,
+#            'description': pp.description,
+#            'item_type':pp.item_type,
+#            'hs_code':pp.hs_code,
+#            })
+
+#     junit = jsonable_encoder(p_item)
+#     return JSONResponse(content=junit)
 
 
 
