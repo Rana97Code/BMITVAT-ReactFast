@@ -8,7 +8,7 @@ from app.routes.relationship.customer_router import customer_router
 from app.routes.relationship.supplier_router import supplier_router
 from app.routes.general_settings.hscode_router import hscode_route
 from app.routes.general_settings.unit_router import unit_router
-from app.routes.inventory.raw_materials_router import router as opening_stock_router
+from app.routes.inventory.opening_stock_router import router as opening_stock_router
 from app.routes.inventory.item_router import item_route
 from app.routes.production.local_purchase.purchase_route import router as purchase_router
 
