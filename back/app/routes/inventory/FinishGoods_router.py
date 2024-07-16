@@ -22,7 +22,7 @@ FinishGoods_router = APIRouter()
 #For Raw_Materials::
 @FinishGoods_router.get("/bmitvat/api/item/all_raw_materials", response_model=List[ItemBase], dependencies=[Depends(get_current_active_user)])
 async def index(db: Session = Depends(get_db)):  
-    return db.query(Item).filter(Item.item_type == 1, Item.status == 1).all()
+    return db.query(Item).filter(Item.item_type == 1, Item.stock_status == 0).all()
 
 
 @FinishGoods_router.get("/bmitvat/api/opening_stock/all_raw_stock", response_model=List[OpeningStockSchema], dependencies=[Depends(get_current_active_user)])
@@ -63,11 +63,19 @@ async def create(openingStock:OpeningInsertSchema, db:Session=Depends(get_db)):
                       opening_quantity=openingStock.opening_quantity, opening_rate= openingStock.opening_rate, opening_value= openingStock.opening_value)
     db.add(srv)
     db.commit()
+    db.refresh(srv)
 
-    #here item status update 
+    # Update item table's stock_status to 1
+    item = db.query(Item).filter(Item.id == openingStock.item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    item.stock_status = 1
+    db.commit()
+
+    return {"message": "Opening stock added and item stock status updated successfully", "opening_stock": srv}
 
     
-    return {"Message":"Successfully Add"}
+    
 
 
 @FinishGoods_router.get("/bmitvat/api/opening_stock/all_finish_stock", response_model=List[OpeningStockSchema], dependencies=[Depends(get_current_active_user)])

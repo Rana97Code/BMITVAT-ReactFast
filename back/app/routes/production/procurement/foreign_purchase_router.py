@@ -11,11 +11,82 @@ from sqlalchemy.sql.sqltypes import Numeric
 from app.models.inventory.opening_stock_model import OpeningStock, OpeningInsertSchema , OpeningStockSchema
 from app.models.relationship.supplier_model import Supplier, supplierBase, SupplierSchema
 from app.models.production.procurement.Purchase_model import Purchase,Purchase_item
-from app.schemas.production.procurement.ForeignPurchase_schema import foreignPurchaseInsertSchema,ItemDetailsModel
+from app.schemas.production.procurement.ForeignPurchase_schema import ForeignPurchaseInsertSchema,ItemDetailsModel
 from app.models.general_settings.hs_code_model import Hscode
 from app.models.inventory.item_model import Item, ItemSuggest
 
 Purchase_router = APIRouter()
+
+@Purchase_router.post("/bmitvat/api/purchase/add-foreign-purchase", dependencies=[Depends(get_current_active_user)])
+async def create_foreign_purchase(fpurchase: ForeignPurchaseInsertSchema, db: Session = Depends(get_db)):
+    try:
+        srv = Purchase(
+            invoice_no=fpurchase.invoice_no,
+            vendor_inv=fpurchase.vendor_inv,
+            supplier_id=fpurchase.supplier_id,
+            purchase_type=fpurchase.purchase_type,
+            purchase_category=fpurchase.purchase_category,
+            lc_number=fpurchase.lc_number,
+            custom_house_id=fpurchase.custom_house_id,
+            country_origin=fpurchase.country_origin,
+            data_source=fpurchase.data_source,
+            cpc_code_id=fpurchase.cpc_code_id,
+            grand_total=fpurchase.grand_total,
+            total_tax=fpurchase.total_tax,
+            total_at=fpurchase.total_at,
+            fiscal_year=fpurchase.fiscal_year,
+            notes=fpurchase.notes,
+            user_id=fpurchase.user_id,
+            lc_date=fpurchase.lc_date,
+            chalan_date=fpurchase.chalan_date,
+            entry_date=fpurchase.entry_date
+            )
+        db.add(srv)
+        db.flush()  # Get the srv.id before committing
+
+        for item in fpurchase.items:
+            purchase_item = Purchase_item(
+                item_id=item.item_id,
+                purchase_id=srv.id,
+                boe_item_no = item.boe_item_no,
+                access_amount = item.access_amount,
+                at_amount = item.at_amount,
+                item_cd = item.item_cd,
+                cd_amount = item.cd_amount,
+                hs_code = item.hs_code,
+                hs_code_id = item.hs_code_id,
+                item_at = item.item_at,
+                item_rd = item.item_rd,
+                item_sd = item.item_sd,
+                qty = item.qty,
+                rate = item.rate,
+                rd_amount = item.rd_amount,
+                rebate = item.rebate,
+                sd_amount = item.sd_amount,
+                t_amount = item.t_amount,
+                vat_rate = item.vat_rate,
+                vat_type = item.vat_type,
+                vatable_value = item.vatable_value,
+                purchase_date = srv.entry_date,
+                entry_date = srv.entry_date,
+                p_date = srv.entry_date
+                )
+            db.add(purchase_item)
+        db.commit()
+        return {"Message": "Successfully Added"}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Error occurred: {e}")
+    finally:
+        db.close()
+
+
+
+
+
+
+
 
 
 #foreing purchase ITem Search function
@@ -95,65 +166,8 @@ async def get_item_details_by_id(item_id: int, db: Session = Depends(get_db)):
 
 
 
-@Purchase_router.post("/bmitvat/api/purchase/add-foreign-purchase", dependencies=[Depends(get_current_active_user)])
-async def create(fpurchase:foreignPurchaseInsertSchema,db:Session=Depends(get_db)): 
-    print(fpurchase)
-    print(fpurchase.items)
-    srv=Purchase(
-        invoice_no = fpurchase.invoice_no,
-        purchase_type=fpurchase.purchase_type,
-        purchase_category=fpurchase.purchase_category,
-        lc_number=fpurchase.lc_number,
-        lc_date=fpurchase.lc_date,
-        chalan_date=fpurchase.chalan_date,
-        grand_total=fpurchase.grand_total,
-        total_tax=fpurchase.total_tax,
-        supplier_id=fpurchase.supplier_id,
-        entry_date='2023-07-14 06:00:00',
-        notes=fpurchase.notes,
-        user_id=fpurchase.user_id,
-        custom_house_id=fpurchase.custom_house_id,
-        country_origin=fpurchase.country_origin,
-        data_source=fpurchase.data_source,
-        cpc_code_id=fpurchase.cpc_code_id 
-    )
-    
-    db.add(srv)
-    db.commit()
-    
-    for item in fpurchase.items:
-        purchase_item = Purchase_item(
-            item_id = item.item_id,
-            purchase_id = srv.id,
-            boe_item_no = item.boe_item_no,
-            hs_code_id = item.hs_code_id,
-            hs_code = item.hs_code,
-            qty = item.qty,
-            rate = item.rate,
-            vatable_value = item.vatable_value,
-            vat_rate = item.vat_rate,
-            tax_amount = item.tax_amount,
-            item_cd = item.item_cd,
-            cd_amount = item.cd_amount,
-            item_sd = item.item_sd,
-            sd_amount = item.sd_amount,
-            item_rd = item.item_rd,
-            rd_amount = item.rd_amount,
-            item_at = item.item_at,
-            at_amount = item.at_amount,
-            t_amount = item.t_amount,
-            access_amount = item.access_amount,
-            vat_type = item.vat_type,
-            rebate = item.rebate,
-            purchase_date = '2023-07-14 06:00:00',
-            entry_date = '2023-07-14 06:00:00',
-            p_date = '2023-07-14 06:00:00',
-        )
-        db.add(purchase_item)
-        db.commit()
-   
-    
-    return {"Message":"Successfully Add"}
+
+
 
 
 

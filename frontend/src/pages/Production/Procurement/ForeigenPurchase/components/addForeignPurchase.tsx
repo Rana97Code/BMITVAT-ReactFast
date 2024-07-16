@@ -40,16 +40,19 @@ const addForeignPurchase = () => {
         custom_house_code: string;
         custom_house_address: string;
       }
+
     interface country {
         id: number;
         country_name: string;
         s_address: string;
       }
+
     interface cpcCode {
         id: number;
         cpc_description: string;
         cpc_code : string;
       }
+
     interface suggestItem {
         id: number;
         item_name: string;
@@ -231,7 +234,7 @@ const addForeignPurchase = () => {
                               liElementTyped.style.backgroundColor = 'green';
                        
                               // Now 'clickedValue' contains the value of the clicked li element
-                              console.log('Clicked Item ID:', clickedValue);
+                              //console.log('Clicked Item ID:', clickedValue);
                               if (suggestionsList) {
                                 suggestionsList.style.display = 'none';
                               }
@@ -258,7 +261,7 @@ const addForeignPurchase = () => {
                                     const arrayData: any[] = [];
     
                                         const inputId = document.createElement('input');
-                                        inputId.type = 'hidden';
+                                        inputId.type = 'text';
                                         inputId.name = 'item_id';
                                         inputId.value = data.id;
                                         inputId.autocomplete = 'off';
@@ -672,14 +675,12 @@ const addForeignPurchase = () => {
                                     const hscodeId = newRow.insertCell();
                                     hscodeId.appendChild(inputId2);
 
-
-                                   
-
-
                                     const cell = newRow.insertCell();
                                     cell.appendChild(input);
+
                                     const cell1 = newRow.insertCell();
                                     cell1.appendChild(input1);
+
                                     const cell2 = newRow.insertCell();
                                     cell2.appendChild(input2);
                                     const cell3 = newRow.insertCell();
@@ -738,7 +739,8 @@ const addForeignPurchase = () => {
             e.preventDefault();
 
                 const dataTable = document.querySelector('#dataTable tbody') as HTMLTableElement;
-                const arrayData: any[] = [];
+                
+                const arrayData1: any[] = [];
                 if (dataTable) {
                 dataTable.querySelectorAll('tr').forEach((row) => {
 
@@ -749,39 +751,22 @@ const addForeignPurchase = () => {
                         const inputElementSelect = input as HTMLSelectElement;
                         const selectValue = inputElement.type === 'select-one' ? inputElementSelect.value : inputElement.value;
 
-                        rowData[inputElement.name || 'item_id']       = inputElement.value;
-                        rowData[inputElement.name || 'hs_code_id']    = inputElement.value;
-                        rowData[inputElement.name || 'hs_code']       = inputElement.value;
-                        rowData[inputElement.name || 'boe_item_no']   = inputElement.value;
-                        rowData[inputElement.name || 'qty']           = inputElement.value;
-                        rowData[inputElement.name || 'access_amount'] = inputElement.value;
-                        rowData[inputElement.name || 'rate']          = inputElement.value;
-                        rowData[inputElement.name || 'item_cd']       = inputElement.value;
-                        rowData[inputElement.name || 'cd_amount']     = inputElement.value;
-                        rowData[inputElement.name || 'item_rd']       = inputElement.value;
-                        rowData[inputElement.name || 'rd_amount']     = inputElement.value;
-                        rowData[inputElement.name || 'item_sd']       = inputElement.value;
-                        rowData[inputElement.name || 'sd_amount']     = inputElement.value;
-                        rowData[inputElement.name || 'vatable_value'] = inputElement.value;
-                        rowData[inputElement.name || 'vat_type']      = selectValue;
-                        rowData[inputElement.name || 'vat_rate']      = inputElement.value;
-                        rowData[inputElement.name || 'tax_amount']    = inputElement.value;
-                        rowData[inputElement.name || 'item_at']       = inputElement.value;
-                        rowData[inputElement.name || 'at_amount']     = inputElement.value;
-                        rowData[inputElement.name || 'rebate']        = selectValue;
-                        rowData[inputElement.name || 't_amount']      = inputElement.value;
+                        rowData[inputElement.name || 'item_id']   = inputElement.value;
+
+
+                       
                        
                     });
             
-                    arrayData.push(rowData);
-                    console.log(arrayData)
+                    
+                    arrayData1.push(rowData);
+                    
                 });
 
             } else {
                 console.error("Could not find #dataTable tbody element");
             }
-            // console.log(arrayData);
-            // const jsonAllItemsData = JSON.stringify(arrayData);
+           
             const TotalVat = document.getElementById('vatTotal') as HTMLInputElement;
             const TotalAT = document.getElementById('atTotal') as HTMLInputElement;
             const AllTotal = document.getElementById('grandTotal') as HTMLInputElement;
@@ -793,29 +778,29 @@ const addForeignPurchase = () => {
              
 
             const purchase = {
-                invoice_no: boe,
-                purchase_type:'1',
-                purchase_category:'1',
-                service_category:'1',
-                lc_number:lc_number,
-                lc_date:lc_date,
-                chalan_date:boe_date,
-                grand_total:ALL,
-                total_tax:Vat,
-                supplier_id:supplier_name,
-               
-                // vendor_invoice:boe,
-                entry_date:entry_date,
-                notes:note,
-                user_id:'1',
-                custom_house_id:custom_house_id,
-                country_origin:country_id,
-                data_source:data_source,
-                cpc_code_id:cpc_code,
-                // fiscal_year:fiscal_year,
-                // items: arrayData,
-            
+                invoice_no: "1234",
+                vendor_inv:boe,
+                supplier_id: supplier_name,
+                purchase_type: 2,
+                purchase_category: 2,
+                lc_number: lc_number,
+                custom_house_id: custom_house_id,
+                country_origin: country_id,
+                data_source: data_source,
+                cpc_code_id: cpc_code,
+                grand_total: ALL,
+                total_tax: Vat,
+                total_at: AT,
+                fiscal_year: fiscal_year,
+                notes: note,
+                user_id: 1,
+                lc_date: lc_date,
+                chalan_date: boe_date,
+                entry_date: boe_date,
+
+                items: arrayData1,
               }
+            
             console.log(purchase)
 
                 if(user){
@@ -956,10 +941,10 @@ const addForeignPurchase = () => {
                                                 <tr className="whitespace-nowrap border overflow-x-auto">
                                                     <th className="w-1"></th>
                                                     <th className="w-1"></th>
-                                                    <th className="w-1"></th>
+                                                    <th className="w-1">item id</th>
                                                     <th className="w-14" >Description</th>
                                                     <th className="w-9 border-black" >BOE Item No</th>
-                                                    <th className="w-9 border-black" >Quantity</th>
+                                                     <th className="w-9 border-black" >Quantity</th>
                                                     <th className="w-9 border-black" >Assessable Value</th>
                                                     <th className="w-9" >Rate(BDT)</th>
                                                     <th className="w-6" >CD%</th>

@@ -25,6 +25,7 @@ const addCustomHouse = () => {
     useEffect(() => {
       handleSubmit;
   }, []);
+
   
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
 
@@ -43,7 +44,7 @@ const addCustomHouse = () => {
         await axios.post(`${baseUrl}/customhouse/add_custom_house`, custom_house, {headers})
           .then(function (response) {
             if(response){
-              navigate("/pages/settings/custom_house");
+              navigate("/pages/settings/all_custom_house");
             }
             else{
               navigate("/pages/settings/custom_house/add");
