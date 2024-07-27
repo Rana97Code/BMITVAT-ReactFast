@@ -74,6 +74,7 @@ class ItemDetailsModel(BaseModel):
 
 
 class PurchaseTableDetailsModel(BaseModel):
+    id:int
     invoice_no: Optional[str] = None
     grand_total: Optional[float] = None
     supplier_name: Optional[str] = None

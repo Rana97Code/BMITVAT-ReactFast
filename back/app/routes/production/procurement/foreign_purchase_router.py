@@ -83,13 +83,7 @@ async def create_foreign_purchase(fpurchase: ForeignPurchaseInsertSchema, db: Se
 
 
 
-
-
-
-
-
-
-#foreing purchase ITem Search function
+#foreing purchase Item Search function
 async def all_suggestitm(year: int, db:Session=Depends(get_db)):
     result = db.query(Item,Hscode).join(Hscode, Item.hs_code_id==Hscode.id)\
             .filter(Item.stock_status == 1, Hscode.calculate_year == year)\
@@ -163,26 +157,29 @@ async def get_item_details_by_id(item_id: int, db: Session = Depends(get_db)):
 
 
 # #get the value for foreign purchase index value:
-# @Purchase_router.get("/bmitvat/api/item/allitems",response_model=List[PurchaseTableDetailsModel], dependencies=[Depends(get_current_active_user)])
+
+@Purchase_router.get("/bmitvat/api/purchase/all-purchase",response_model=List[PurchaseTableDetailsModel], dependencies=[Depends(get_current_active_user)])
+async def index(db:Session=Depends(get_db)):
+
+    #In ITEM shows data From unit data table 
+    index=db.query(Purchase, Supplier).join(Supplier, Purchase.supplier_id == Supplier.id )\
+        .add_columns(Purchase.id,Purchase.invoice_no, Supplier.supplier_name, Purchase.lc_number, Purchase.grand_total).all()
+    pur_index_item =[]
+    for pp in index:
+        pur_index_item.append({
+           'id': pp.id,
+           'invoice_no': pp.invoice_no,
+           'supplier_name': pp.supplier_name,
+           'lc_number':pp.lc_number,
+           'grand_total':pp.grand_total,
+           })
+
+    junit = jsonable_encoder(pur_index_item)
+    return JSONResponse(content=junit)
+
+# @Purchase_router.get("/bmitvat/api/purchase/all-purchase",response_model=List[PurchaseTableDetailsModel], dependencies=[Depends(get_current_active_user)])
 # async def index(db:Session=Depends(get_db)):
-
-#     #In ITEM shows data From unit data table 
-#     #x=db.query(Item, Hscode).join(Unit, Item.unit_id==Unit.id ).join(Hscode, Item.hs_code_id==Hscode.id)\
-#     x=db.query(Purchase, Supplier).join(Supplier, Purchase.supplier_id == Supplier.id )\
-#         .add_columns(,Item.stock_status,Item.status,Hscode.calculate_year,Item.created_by,Item.updated_by).all()
-#     #print(x)
-#     p_item =[]
-#     for pp in x:
-#         p_item.append({
-#            'id': pp.id,
-#            'item_name': pp.item_name,
-#            'description': pp.description,
-#            'item_type':pp.item_type,
-#            'hs_code':pp.hs_code,
-#            })
-
-#     junit = jsonable_encoder(p_item)
-#     return JSONResponse(content=junit)
+#     return db.query(Purchase).all()
 
 
 
