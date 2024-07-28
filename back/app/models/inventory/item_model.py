@@ -71,13 +71,13 @@ class ItemBase(BaseModel):
     class Config:
         from_attributes = True
 
+
+
 class ItemSuggest(BaseModel):
     id : int
     item_name:str
     hs_code:str
     calculate_year:str | None
  
-
-
     class Config:
         from_attributes = True 

@@ -15,7 +15,7 @@ class Bom(Base):
     product_code = Column(String, nullable=True, name="product_code")
     item_id = Column(Integer, nullable=True, name="item_id")
     hs_code = Column(String, nullable=True, name="hs_code")
-    unit_name = Column(String, nullable=True, name="unit_name")
+    unitName = Column(String, nullable=True, name="unit_name")
     remarks = Column(String, nullable=True)
     reference = Column(String, nullable=True)
     total_costing = Column(Numeric(precision=10, scale=2), nullable=True, name="total_costing")

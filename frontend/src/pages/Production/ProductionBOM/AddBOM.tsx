@@ -1,17 +1,24 @@
-import React, { ChangeEvent, ChangeEventHandler } from 'react';
+import React, { ChangeEvent, ChangeEventHandler, useContext } from 'react';
 import {  useEffect, useState, useRef } from 'react';
 import IconFile from '../../../components/Icon/IconFile';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
-import { Link, NavLink,useNavigate } from 'react-router-dom';
+import { Link, NavLink,useNavigate, useParams } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import sortBy from 'lodash/sortBy';
 import axios from 'axios';
+import UserContex from '../../../context/UserContex';
 
 
 const addProductionBOM: React.FC = () => {
     const navigate = useNavigate();
+    const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
 
 
     // Function to get today's date in the format "YYYY-MM-DD"
@@ -26,31 +33,33 @@ const addProductionBOM: React.FC = () => {
 
     interface finishGoods {
         id: number;
-        itemName: string;
-        unitName: string;
-        hsCode: string;
+        item_name: string;
+        unit_name: string;
+        hs_code: string;
+        
       }
 
     interface suggestItem {
         id: number;
-        itemName: string;
+        item_name: string;
       }
 
     interface detailsItem {
         id: number;
-        itemName: string;
-        hsCodeId: number;
-        hsCode: string;
+        item_name: string;
+        hs_code_id: number;
+        hs_code: string;
         sd: number;
         vat: number;
       }
 
     interface suggestCosting {
         id: number;
-        costingName: string;
+        costing_name: string;
       }
     
     const [all_finishGoods, setAllFinishGoods] = useState<finishGoods[]>([]);
+    // const [all_finishGoods, setAllFinishGoods] = useState([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
     const [all_suggest_costing, setSuggestCosting] = useState<suggestCosting[]>([]);
     const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
@@ -67,43 +76,34 @@ const addProductionBOM: React.FC = () => {
 
 
     useEffect(() => {
-
-        const token = localStorage.getItem('Token');
   
-        if(token){
-            const bearer =  token.slice(1,-1); 
-  
-        const headers= { Authorization: `Bearer ${bearer}` }
-  
-        axios.get('http://localhost:8080/bmitvat/api/item/all_finish_goods_in',{headers})
+        if(user){
+        axios.get(`${baseUrl}/item/all_finish_goods_in`,{headers})
             .then((response) => {
-                setAllFinishGoods(response.data);
-  
+                if (Array.isArray(response.data)) {
+                    setAllFinishGoods(response.data);
+            } else {
+            throw new Error('Response data is not an array');
+            }
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
-  
-            });
-  
+            });  
         }
-    }, []);
+    }, [user]);
   
 
 
     const getItemId: ChangeEventHandler<HTMLSelectElement> = (event) => {
         const selectedOptionId = event.target.value;
 
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
-  
-         axios.get(`http://localhost:8080/bmitvat/api/item/get_item_details/${selectedOptionId}`,{headers})
+        if(user){  
+         axios.get(`${baseUrl}/item/get_item_details/${selectedOptionId}`,{headers})
             .then((response) => {
                 const data = response.data;
                 setFGItem(data.id)
-                setItemUnit(data.unitName)
-                setItemHSCode(data.hsCode)
+                setItemUnit(data.unit_name)
+                setItemHSCode(data.hs_code)
   
             })
             .catch((error) => {
@@ -134,19 +134,15 @@ const addProductionBOM: React.FC = () => {
           suggestionsList.innerHTML = '';
           return;
         }
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
+        if(user){
 
             const searchTerm = searchInput.value;
             try {
-                const response = await axios.post('http://localhost:8080/bmitvat/api/item/getAllRawMaterialsSuggestions', searchTerm,{headers});
+                const response = await axios.post(`${baseUrl}/item/getAllRawMaterialsSuggestions`, searchTerm,{headers});
                 // <string[]>
                 const suggestions = response.data;
                 setSuggestItem(suggestions);
-                // console.log(total);
-
+                
                 suggestionsList.innerHTML = '';
                 all_suggestitm.forEach(suggestion => {
 
@@ -155,7 +151,7 @@ const addProductionBOM: React.FC = () => {
                     listItem.style.padding = '10px';
                     listItem.className = 'suggestion-item'; 
                     listItem.value = suggestion.id;
-                    listItem.textContent = suggestion.itemName;
+                    listItem.textContent = suggestion.item_name;
                     suggestionsList.appendChild(listItem);
                     });
 
@@ -177,12 +173,9 @@ const addProductionBOM: React.FC = () => {
                           if(clickedValue>0){
 
 
-                            const token = localStorage.getItem('Token');
-                            if(token){
-                                const bearer = JSON.parse(token);
-                                const headers= { Authorization: `Bearer ${bearer}` }
+                            if(user){
                     
-                            axios.get(`http://localhost:8080/bmitvat/api/production-bom/get_bom_item_details/${clickedValue}`,{headers})
+                            axios.get(`${baseUrl}/production-bom/get_bom_item_details/${clickedValue}`,{headers})
                                 .then((response) => {
                                     const data = response.data;
                                     //  console.log(data.itemName);
@@ -205,7 +198,7 @@ const addProductionBOM: React.FC = () => {
                                     console.log(id);
                                     const inputId = document.createElement('input');
                                     inputId.type = 'hidden';
-                                    inputId.name = 'rawMaterialId';
+                                    inputId.name = 'raw_material_id';
                                     inputId.value = data.id;
                                     inputId.autocomplete = 'off';
                                     inputId.disabled = true;
@@ -213,7 +206,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input = document.createElement('input');
                                     input.type = 'text';
-                                    input.name = 'itemName';
+                                    input.name = 'item_name';
                                     input.value = data.itemName;
                                     input.autocomplete = 'off';
                                     input.disabled = true;
@@ -221,7 +214,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input1 = document.createElement('input');
                                     input1.type = 'number';
-                                    input1.name = 'materialQty';
+                                    input1.name = 'material_qty';
                                     input1.className = '';
                                     input1.value = '';
                                     input1.id = 'qtyId';
@@ -232,15 +225,15 @@ const addProductionBOM: React.FC = () => {
 
                                     const input2 = document.createElement('input');
                                     input2.type = 'text';
-                                    input2.name = 'unitName';
-                                    input2.value = data.unitName;
+                                    input2.name = 'unit_name';
+                                    input2.value = data.unit_name;
                                     input2.autocomplete = 'off';
                                     input2.disabled = true;
                                     input2.style.cssText = 'border: 1px solid black; width: 180px;';
 
                                     const input3 = document.createElement('input');
                                     input3.type = 'number';
-                                    input3.name = 'materialRate';
+                                    input3.name = 'material_rate';
                                     input3.className = 'rateClass';
                                     input3.value = data.rate;
                                     input3.id = 'rateId';
@@ -250,7 +243,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input4 = document.createElement('input');
                                     input4.type = 'number';
-                                    input4.name = 'materialPrice';
+                                    input4.name = 'material_price';
                                     input4.className = '';
                                     input4.value = '';
                                     input4.autocomplete = 'off';
@@ -260,7 +253,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input5 = document.createElement('input');
                                     input5.type = 'number';
-                                    input5.name = 'wastagePercent';
+                                    input5.name = 'wastage_percent';
                                     input5.className = '';
                                     input5.value = '';
                                     input5.autocomplete = 'off';
@@ -302,7 +295,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input6 = document.createElement('input');
                                     input6.type = 'number';
-                                    input6.name = 'wastageQty';
+                                    input6.name = 'wastage_qty';
                                     input6.className = '';
                                     input6.value = '';
                                     input6.autocomplete = 'off';
@@ -322,7 +315,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input8 = document.createElement('input');
                                     input8.type = 'number';
-                                    input8.name = 'wastagePrice';
+                                    input8.name = 'wastage_price';
                                     input8.className = '';
                                     input8.value = '';
                                     input8.autocomplete = 'off';
@@ -332,8 +325,8 @@ const addProductionBOM: React.FC = () => {
 
                                     const input9 = document.createElement('input');
                                     input9.type = 'number';
-                                    input9.name = 'totalQty';
-                                    input9.className = 'total_qty';
+                                    input9.name = 'total_qty';
+                                    input9.className = 'totalQty';
                                     input9.value = '';
                                     input9.autocomplete = 'off';
                                     input9.disabled = true;
@@ -342,8 +335,8 @@ const addProductionBOM: React.FC = () => {
 
                                     const input10 = document.createElement('input');
                                     input10.type = 'number';
-                                    input10.name = 'totalPrice';
-                                    input10.className = 'total_price';
+                                    input10.name = 'total_price';
+                                    input10.className = 'totalPrice';
                                     input10.value = '';
                                     input10.autocomplete = 'off';
                                     input10.disabled = true;
@@ -450,14 +443,12 @@ const addProductionBOM: React.FC = () => {
             CostingSuggestionsList.innerHTML = '';
           return;
         }
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
+
+        if(user){
 
             const searchTerm = searchInput.value;
             try {
-                const response = await axios.post('http://localhost:8080/bmitvat/api/costing/getAllCostingSuggestions', searchTerm,{headers});
+                const response = await axios.post(`${baseUrl}/costing/getAllCostingSuggestions`, searchTerm,{headers});
                 // <string[]>
                 const suggestions = response.data;
                 setSuggestCosting(suggestions);
@@ -470,7 +461,7 @@ const addProductionBOM: React.FC = () => {
                     listCosting.style.padding = '10px';
                     listCosting.className = 'costing-suggestion'; 
                     listCosting.value = suggestion.id;
-                    listCosting.textContent = suggestion.costingName;
+                    listCosting.textContent = suggestion.costing_name;
                     CostingSuggestionsList.appendChild(listCosting);
                     });
 
@@ -491,12 +482,9 @@ const addProductionBOM: React.FC = () => {
 
                           if(clickedValue>0){
 
-                            const token = localStorage.getItem('Token');
-                            if(token){
-                                const bearer = JSON.parse(token);
-                                const headers= { Authorization: `Bearer ${bearer}` }
+                            if(user){
                     
-                            axios.get(`http://localhost:8080/bmitvat/api/costing/get_costing/${clickedValue}`,{headers})
+                            axios.get(`${baseUrl}/costing/get_costing/${clickedValue}`,{headers})
                                 .then((response) => {
                                     const data = response.data;
                                     addCostingRow(data);
@@ -525,7 +513,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input = document.createElement('input');
                                     input.type = 'text';
-                                    input.name = 'costingName';
+                                    input.name = 'costing_name';
                                     input.value = data.costingName;
                                     input.autocomplete = 'off';
                                     input.disabled = true;
@@ -620,18 +608,18 @@ const addProductionBOM: React.FC = () => {
 
                     row.querySelectorAll('td input').forEach((input) => {
                         const inputElement = input as HTMLInputElement;
-                        rowData[inputElement.name || 'rawMaterialId']  = inputElement.value;
-                        rowData[inputElement.name || 'itemName']       = inputElement.value;
-                        rowData[inputElement.name || 'materialQty']    = inputElement.value;
-                        rowData[inputElement.name || 'unitName']       = inputElement.value;
-                        rowData[inputElement.name || 'materialRate']   = inputElement.value;
-                        rowData[inputElement.name || 'materialPrice']  = inputElement.value;
-                        rowData[inputElement.name || 'wastagePercent'] = inputElement.value;
-                        rowData[inputElement.name || 'wastageQty']     = inputElement.value;
-                        rowData[inputElement.name || 'wastageRate']    = inputElement.value;
-                        rowData[inputElement.name || 'wastagePrice']   = inputElement.value;
-                        rowData[inputElement.name || 'totalQty']       = inputElement.value;
-                        rowData[inputElement.name || 'totalPrice']     = inputElement.value;
+                        rowData[inputElement.name || 'raw_material_id']  = inputElement.value;
+                        rowData[inputElement.name || 'item_name']       = inputElement.value;
+                        rowData[inputElement.name || 'material_qty']    = inputElement.value;
+                        rowData[inputElement.name || 'unit_name']       = inputElement.value;
+                        rowData[inputElement.name || 'material_rate']   = inputElement.value;
+                        rowData[inputElement.name || 'material_price']  = inputElement.value;
+                        rowData[inputElement.name || 'wastage_percent'] = inputElement.value;
+                        rowData[inputElement.name || 'wastage_qty']     = inputElement.value;
+                        rowData[inputElement.name || 'wastageRate']     = inputElement.value;
+                        rowData[inputElement.name || 'wastage_price']   = inputElement.value;
+                        rowData[inputElement.name || 'total_qty']       = inputElement.value;
+                        rowData[inputElement.name || 'total_price']     = inputElement.value;
                     });
             
                     arrayData.push(rowData);
@@ -648,8 +636,8 @@ const addProductionBOM: React.FC = () => {
 
                     row.querySelectorAll('td input').forEach((input) => {
                         const inputElement = input as HTMLInputElement;
-                        rowData[inputElement.name || 'costingId']      = inputElement.value;
-                        rowData[inputElement.name || 'costingName']    = inputElement.value;
+                        rowData[inputElement.name || 'costing_id']      = inputElement.value;
+                        rowData[inputElement.name || 'costing_name']    = inputElement.value;
                         rowData[inputElement.name || 'cost']           = inputElement.value;
                     });
             
@@ -671,29 +659,25 @@ const addProductionBOM: React.FC = () => {
              
 
             const bom = {
-                sku: sku,
-                submissionDate: submitDate,
-                effectiveDate: effectiveDate,
-                itemId: FGItemId,
-                unitName: Unit_name,
-                hsCode: HsCode,
+                item_sku: sku,
+                submission_date: submitDate,
+                effective_date: effectiveDate,
+                item_id: FGItemId,
+                unit_name: Unit_name,
+                hs_code: HsCode,
                 remarks: remarks,
                 reference: reference,
                 bomItemsArray: arrayData,
                 costingArray: costignArray,
-                totalPrice: totalPrice,
-                totalCosting: totalCosting,
-                totalSalesPrice: ALLTotal,
+                item_price: totalPrice,
+                total_costing: totalCosting,
+                sales_price: ALLTotal,
               }
         
-                console.log(bom);
 
-                const token = localStorage.getItem('Token');
-                if(token){
-                    const bearer = JSON.parse(token);
-                    const headers= { Authorization: `Bearer ${bearer}` }
+                if(user){
                 try {
-                   await axios.post("http://localhost:8080/bmitvat/api/production-bom/add-bom", bom, {headers})
+                   await axios.post(`${baseUrl}/production-bom/add-bom`, bom, {headers})
                   .then(function (response){
                     navigate("/pages/production_bom/index");
                   })
@@ -737,14 +721,15 @@ const addProductionBOM: React.FC = () => {
                                     <div className="grid grid-cols-5 gap--x-2 gap-y-3" >
                                         <label htmlFor="inputPerson" className='col-span-1 text-sm '>Finish Goods Name</label>
                                         <select onChange={getItemId} className="form-select text-dark col-span-3 text-sm" required >
-                                                <option>Select Item</option>
-                                                {all_finishGoods.map((option, index) => ( 
-                                                    <option key={index} value={option.id}> 
-                                                        {option.itemName} 
-                                                    </option> 
-                                                ))} 
+                                                <option value="">Select Item</option>
+                                                {all_finishGoods.map((option, index) => (
+                                                    <option key={index} value={option.id}>
+                                                    {option.item_name}
+                                                    </option>
+                                                ))}
                                             </select>
                                     </div>
+                                    
                                     <div className="grid grid-cols-5 gap--x-2 gap-y-3">
                                         <label htmlFor="userEmail" className='col-span-1 text-sm'>Units (Units Of Measurement)</label>
                                         <input id="userEmail" type="text" className="form-input py-2.5 text-sm col-span-3" value={Unit_name} onChange={(e) => setItemUnit(e.target.value)} disabled />

@@ -261,7 +261,7 @@ const addForeignPurchase = () => {
                                     const arrayData: any[] = [];
     
                                         const inputId = document.createElement('input');
-                                        inputId.type = 'text';
+                                        inputId.type = 'hidden';
                                         inputId.name = 'item_id';
                                         inputId.value = data.id;
                                         inputId.autocomplete = 'off';
@@ -778,7 +778,7 @@ const addForeignPurchase = () => {
              
 
             const purchase = {
-                invoice_no: "1234",
+                invoice_no: "INV1234",
                 vendor_inv:boe,
                 supplier_id: supplier_name,
                 purchase_type: 2,
@@ -941,10 +941,10 @@ const addForeignPurchase = () => {
                                                 <tr className="whitespace-nowrap border overflow-x-auto">
                                                     <th className="w-1"></th>
                                                     <th className="w-1"></th>
-                                                    <th className="w-1">item id</th>
+                                                    <th className="w-1"></th>
                                                     <th className="w-14" >Description</th>
                                                     <th className="w-9 border-black" >BOE Item No</th>
-                                                     <th className="w-9 border-black" >Quantity</th>
+                                                    <th className="w-9 border-black" >Quantity</th>
                                                     <th className="w-9 border-black" >Assessable Value</th>
                                                     <th className="w-9" >Rate(BDT)</th>
                                                     <th className="w-6" >CD%</th>
