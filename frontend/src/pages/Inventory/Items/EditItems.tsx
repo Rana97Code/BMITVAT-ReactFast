@@ -12,6 +12,7 @@ const editItem = () => {
   const [unitId, setUnit] = useState("");
   const [hsCodeId, setHscodeId] = useState("");
   const [hsCode, setHscode] = useState("");
+  const [year, setYear] = useState("");
   const [itemType, setType] = useState("");
   const [status, setStatus] = useState("");
 
@@ -49,6 +50,7 @@ const editItem = () => {
                 setUnit(data.unit_id)
                 setHscode(data.hs_code)
                 setHscodeId(data.hs_code_id)
+                setYear(data.calculate_year)
                 setType(data.item_type)
                 setStatus(data.status)
 
@@ -58,24 +60,33 @@ const editItem = () => {
 
             });
 
-            // // for units 
-            // axios.get(`${baseUrl}/unit/allunits`,{headers})
-            //   .then((response) => {
-            //       setGetAllUnits(response.data);
-            // })
-            // .catch((error) => {
-            //     console.error('Error fetching data:', error);
-    
-            // });
-                // //for hs_code
-                // axios.get('http://localhost:8080/bmitvat/api/hs_code/all_hs-code',{headers})
-                // .then((response) => {
-                //     setGetAllHscode(response.data);
-                // })
-                // .catch((error) => {
-                //     console.error('Error fetching data:', error);
-    
-                // });
+            // for units 
+
+        axios.get(`${baseUrl}/allunits`,{headers})
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            setGetAllUnits(response.data);
+          } else {
+            throw new Error('Response data is not an array');
+        }
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+
+
+        //For hs_code
+        axios.get(`${baseUrl}/hs_code/all_hs_code`,{headers})
+        .then((response) => {
+          if (Array.isArray(response.data)) {
+            setGetAllHscode(response.data);
+          } else {
+            throw new Error('Response data is not an array');
+        }
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
     
 
         }
@@ -90,40 +101,27 @@ const editItem = () => {
 
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      
-      const myArray = hsCodeId.split("/");
-      const myArray1 = hsCodeId.split("#");
-  
-      const startIndex = hsCodeId.indexOf('/');
-      const endIndex = hsCodeId.indexOf('#');
-      //before '/'
-      const hs_code_id = myArray[0];
-      //Middle part
-      const year = hsCodeId.substring(startIndex + 1, endIndex);
-      //after '/'
-      const hs_code = myArray1.slice(1).join("#");
-
-
       const item = {
         item_name: itemName,
         unit_id: unitId,
         hs_code: hsCode,
         hs_code_id: hsCodeId,
         item_type: itemType,
-        stockStatus: '0',
+        stock_status: '0',
         status: status,
         calculate_year: year,
-        reatedBy: '0',
-        updatedBy: '0'
+        created_by: '0',
+        updated_by: '0'
         }
+        console.log(item)
 
-        if(user.token){
+        if(user){
             const headers= { Authorization: `Bearer ${user.token}` }
 
         try {
-           await axios.put(`${baseUrl}/item/update_item/${params.id}`, item, {headers})
-          .then(function (response){
-            navigate("/pages/inventory/allunits");
+          await axios.put(`${baseUrl}/item/update_item/${params.id}`, item, {headers})
+          .then(function (response){            
+            navigate("/pages/inventory/items");
           })
         } catch (err) {
           console.log(err);
@@ -147,7 +145,7 @@ const editItem = () => {
                 <form className="space-y-5" onSubmit={handleSubmit} >
                   <div className="grid  gap-4">
                     <div className="grid grid-cols-5 gap--x-2 gap-y-3">
-                      <label htmlFor="unitName" className='col-span-1 text-base'>Item Name</label>
+                      <label htmlFor="inputPerson" className='col-span-1 text-base'>Item Name</label>
                       <input id="unitName" type="text" className="form-input py-2.5 text-base col-span-4" value={itemName} onChange={(e) => setName(e.target.value)} required />
                     </div>
                   </div>
@@ -170,8 +168,9 @@ const editItem = () => {
                       <select className="form-select text-dark col-span-4 text-base" value={hsCodeId} onChange={(e) => setHscodeId(e.target.value)} required>
                         <option >Select HS-CODE</option>
                         {allHscode.map((option, index) => (
-                            <option key={index} value={option.id+'/'+option.calculate_year+'#'+option.hs_code}>
-                            </option>
+                            <option key={index} value={option.id}>
+                            {option.hs_code + ' ('+ option.description +')'+ '('+ option.calculate_year +')'}
+                        </option>
                         ))}
                       </select>
                     </div>

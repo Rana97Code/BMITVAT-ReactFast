@@ -16,13 +16,16 @@ const addCustomHouse = () => {
     const [houseCode, setHouseCode] = useState("");
     const [houseAddress, setAddress] = useState("");
     const [houseStatus, setStatus] = useState("");
+
     const navigate = useNavigate();
     const user = useContext(UserContex);
     const baseUrl = user.base_url;
+    const headers = user.headers;
   
     useEffect(() => {
       handleSubmit;
   }, []);
+
   
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
 
@@ -36,17 +39,15 @@ const addCustomHouse = () => {
       //console.log(custom_house);
   
       if(user.token){
-        const headers= { Authorization: `Bearer ${user.token}` }
-      //   const bearer1 = JSON.parse(token);
-      // const headers= { Authorization: `Bearer ${bearer1}` }
-  
+
       try {
-         axios.post(`${baseUrl}/customhouse/add_custom_house`, custom_house, {headers})
+        await axios.post(`${baseUrl}/customhouse/add_custom_house`, custom_house, {headers})
           .then(function (response) {
             if(response){
-              navigate("/pages/settings/custom_house");
-            }else{
-              navigate("/pages/settings/custom_house");
+              navigate("/pages/settings/all_custom_house");
+            }
+            else{
+              navigate("/pages/settings/custom_house/add");
             }
           })
   

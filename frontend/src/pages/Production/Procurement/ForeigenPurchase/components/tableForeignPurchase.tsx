@@ -97,18 +97,18 @@ const tableForeignPurchase = () => {
                         records={recordsData}
                         columns={[
                             { accessor: 'description', title: 'Description', sortable: true },
-                            { accessor: 'boeItemNo', title: 'BOE Item No', sortable: true },
-                            { accessor: 'quantity', title: 'Quantity', sortable: true },
-                            { accessor: 'assessableValue', title: 'Assessable Value', sortable: true },
+                            { accessor: 'boe_item_no', title: 'BOE Item No', sortable: true },
+                            { accessor: 'qty', title: 'Quantity', sortable: true },
+                            { accessor: 'assessable_value', title: 'Assessable Value', sortable: true },
                             { accessor: 'rate', title: 'Rate(BDT)', sortable: true },
-                            { accessor: 'cdPercent	', title: 'CD Percent', sortable: true },
+                            { accessor: 'cd_amount	', title: 'CD Percent', sortable: true },
                             { accessor: 'cdBDT', title: 'CD (BDT)', sortable: true },
                             { accessor: 'rdPercent', title: 'RD Percent', sortable: true },
                             { accessor: 'rdBDT', title: 'RD(BDT)', sortable: true },
                             { accessor: 'sdPercent', title: 'SD Percent', sortable: true },
                             { accessor: 'sdBDT', title: 'SD(BDT)', sortable: true },
                             { accessor: 'baseValue', title: 'Base Value of VAT(BDT)', sortable: true },
-                            { accessor: 'vatType', title: 'VAT Type', sortable: true },
+                            { accessor: 'vat_type', title: 'VAT Type', sortable: true },
                             { accessor: 'vatPercent', title: 'VAT Percent', sortable: true },
                             { accessor: 'vatBDT', title: 'VAT(BDT)', sortable: true },
                             { accessor: 'aitBDT', title: 'AIT Percent', sortable: true },
@@ -117,27 +117,15 @@ const tableForeignPurchase = () => {
                             { accessor: 'atBDT', title: 'AT(BDT)', sortable: true },
                             { accessor: 'rebate', title: 'Rebate', sortable: true },
                             { accessor: 'totalAmount', title: 'Total Amount', sortable: true },
-                            // {
-                            //     accessor: 'status',
-                            //     title: 'Status',
-                            //     sortable: true,
-                            //     render: ({ status }) => <span className={`p-2 badge badge-outline-${status.color} `}>{status.tooltip}</span>,
-                            // },
+                           
+                            
                             {
                                 accessor: 'action',
                                 title: 'Action',
                                 sortable: false,
                                 textAlignment: 'center',
-                                // render: ({ }) => (
-                                //     <div className="flex gap-4 items-center w-max mx-auto">
-                                //         <NavLink to="/pages/relationship/customers/edit" className="flex btn btn-outline-primary btn-sm m-1 p-2">
-                                //                 <IconEdit className="w-4.5 h-4.5 mr-2" />
-                                //                 Edit
-                                //             </NavLink>
-
-                                //     </div>
-                                // ),
                             },
+
                         ]}
                     />
                 </div>

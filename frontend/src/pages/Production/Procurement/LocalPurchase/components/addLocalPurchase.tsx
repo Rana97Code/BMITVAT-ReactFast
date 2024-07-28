@@ -7,7 +7,7 @@ import { Link, NavLink,useNavigate, useParams } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import axios from 'axios';
 import UserContex from '../../../../../context/UserContex';
-
+import { exists } from 'i18next';
 
 const addLocalPurchase = () => {
     const navigate = useNavigate();

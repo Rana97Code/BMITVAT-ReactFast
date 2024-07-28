@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
-from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase,ItemSuggest
-from app.config import get_db
+from app.models.inventory.item_model import Item, ItemCreateSchema, ItemSchema, ItemBase
+from app.db.database import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -10,7 +10,6 @@ from pathlib import *
 import os
 from app.models.general_settings.unit_model import Unit
 from app.models.general_settings.hs_code_model import Hscode
-
 
 
 
@@ -26,11 +25,37 @@ async def create(item:ItemCreateSchema,db:Session=Depends(get_db)):
     db.commit()
     return {"Message":"Successfully Add"}
 
+
+
+
+
 @item_route.get("/bmitvat/api/item/allitems",response_model=List[ItemSchema], dependencies=[Depends(get_current_active_user)])
 async def index(db:Session=Depends(get_db)):
-    return db.query(Item).all()
 
-@item_route.get("/bmitvat/api/item/get_item/{item_id}",response_model=ItemSchema, dependencies=[Depends(get_current_active_user)])
+    #In ITEM shows data From unit data table 
+    x=db.query(Item, Unit, Hscode).join(Unit, Item.unit_id==Unit.id ).join(Hscode, Item.hs_code_id==Hscode.id)\
+        .add_columns(Item.id,Item.item_name,Hscode.description,Item.item_type,Item.hs_code,Unit.unit_name,Item.stock_status,Item.status,Hscode.calculate_year,Item.created_by,Item.updated_by).all()
+    #print(x)
+    p_item =[]
+    for pp in x:
+        p_item.append({
+           'id': pp.id,
+           'item_name': pp.item_name,
+           'description': pp.description,
+           'item_type':pp.item_type,
+           'hs_code':pp.hs_code,
+           'unit_name':pp.unit_name,
+           'stock_status':pp.stock_status,
+           'status':pp.status,
+           'calculate_year':pp.calculate_year,
+           'created_by':pp.created_by,
+           'updated_by':pp.updated_by
+           })
+
+    junit = jsonable_encoder(p_item)
+    return JSONResponse(content=junit)
+
+@item_route.get("/bmitvat/api/item/get_item/{item_id}",response_model=ItemBase, dependencies=[Depends(get_current_active_user)])
 async def get_itm(item_id:int,db:Session=Depends(get_db)):
     try:
         u=db.query(Item).filter(Item.id == item_id).first()
@@ -42,10 +67,12 @@ async def get_itm(item_id:int,db:Session=Depends(get_db)):
 async def update(item_id:int,item:ItemCreateSchema,db:Session=Depends(get_db)):
     try:
         u=db.query(Item).filter(Item.id==item_id).first()
-        u.item_name=item.item_name,
+        print(u)
+        print(item)
+        u.item_name=item.item_name
         u.item_type=item.item_type
         u.hs_code=item.hs_code
-        u.hs_code_id=item.hs_code_id,
+        u.hs_code_id=item.hs_code_id
         u.unit_id=item.unit_id
         u.stock_status=item.stock_status
         u.status=item.status
@@ -103,7 +130,7 @@ async def create(item:List[ItemCreateSchema], request: Request, db:Session=Depen
 
 
 @item_route.put("/bmitvat/api/item/update_item_array/{item_id}", dependencies=[Depends(get_current_active_user)])
-async def update_array(item_id: str, request: Request, db:Session=Depends(get_db)): 
+async def update_array(item_id: str, item:ItemCreateSchema, request: Request, db:Session=Depends(get_db)): 
     y = item_id.split(",")
     u=db.query(Item).filter(Item.id.in_(y)).all()
     name= jsonable_encoder(u)
@@ -119,6 +146,7 @@ async def update_array(item_id: str, request: Request, db:Session=Depends(get_db
         calculate_year = x["calculate_year"],
         created_by = x["created_by"],
         updated_by = x["updated_by"]
+ 
 
         uu=db.query(Item).filter(Item.id == x["id"]).first()
         uu.item_name=item_name
@@ -157,9 +185,9 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
                 'hs_code':      row[2],
                 'hs_code_id':   row[3],
                 'stock_status': row[4],
-                'status':       row[4],
-                'calculate_year': row[5],
-                'created_by':   row[6]
+                'status':       row[5],
+                'calculate_year': row[6],
+                'created_by':   row[7]
             })
 
         for row in data:
@@ -172,43 +200,3 @@ async def upload_file(file: UploadFile = File(...), db:Session=Depends(get_db)):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
-    
-    
-async def all_suggestitm(year: int, db:Session=Depends(get_db)):
-    result = db.query(Item,Hscode).join(Hscode, Item.hs_code_id==Hscode.id)\
-            .filter(Item.stock_status == 1, Hscode.calculate_year == year)\
-            .add_columns(Item.id, Item.item_name, Item.hs_code, Item.calculate_year).all()
-            
-    items = []
-    for y in result:
-        items.append({
-            'id' : y.id,
-            'item_name': y.item_name,
-            'hs_code': y.hs_code,
-            'calculate_year': y.calculate_year,
-        })
-    json_items = jsonable_encoder(items)
-    return json_items
-
-@item_route.post("/bmitvat/api/item/getItemSuggestions", response_model=List[ItemSuggest])
-async def suggest_items(request: Request,db:Session=Depends(get_db)):
-    request_body = await request.body()
-    decoded_string = request_body.decode()
-    parts = decoded_string.split("/")
-    
-    if len(parts) > 1:
-        year = parts[0]
-        part2 = parts[1]
-        items = await all_suggestitm(year = year, db = db)
-        searchTerm = part2.lower()
-        print(items)
-        if searchTerm:
-            data= [item for item in items if 'item_name' in item and searchTerm in item['item_name'].lower()]
-            return data
-
-        else:
-            return []
-    else:
-        return []
-    
-    

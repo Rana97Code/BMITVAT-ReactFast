@@ -35,16 +35,12 @@ import AddCPC from './components/addCpc';
             const token = user.token;
         
     
-        useEffect(() => {
-            const token = localStorage.getItem('Token');
-    
+        useEffect(() => {    
             if(user){
         
             axios.get(`${baseUrl}/cpc/all_cpc`,{headers})
                 .then((response) => {
-                    setInitialRecords(response.data);
-                    //console.log(response.data);
-    
+                    setInitialRecords(response.data);    
                 })
                 .catch((error) => {
                     console.error('Error fetching data:', error);
@@ -118,31 +114,22 @@ import AddCPC from './components/addCpc';
      setSelectedFiles(event?.target?.files?.[0]);
      
    };
- //   const file = selectedFiles;
- //   console.log(file);
 
  const handelExcelUpload = async (e:React.FormEvent<HTMLFormElement>) =>{
 
-     const file = { 
+    const file = { 
          file: selectedFiles
-     }
-     console.log(file);
+    }
 
-     const token = localStorage.getItem('Token');
-     if(token){
-         const bearer = JSON.parse(token);
-     const headers= { Authorization: `Bearer ${bearer}`,'content-type': 'multipart/form-data' }
-     // console.log(headers);
 
-   //await axios.post('http://localhost:8080/bmitvat/api/cpc/upload_cpc_excel', file, {headers})
-
-   await axios.post(`${baseUrl}/cpc/upload_cpc_excel`, file, {headers})
-   .then(function (response){
-     console.log("Data Inserted");
-     if(response.status==200){
-        navigate("/pages/cpccode/list");
-       }
-   })
+    if(user){
+    await axios.post(`${baseUrl}/cpc/upload_cpc_excel`, file, {headers})
+    .then(function (response){
+        console.log("Data Inserted");
+        if(response.status==200){
+            navigate("/pages/cpccode/list");
+        }
+    })
     
    .catch((error) => {
        console.error('Error fetching data:', error);

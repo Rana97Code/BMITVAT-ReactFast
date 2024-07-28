@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, U
 from typing import Union,List,Optional
 from sqlalchemy.orm import Session
 from app.models.relationship.customer_model import Customer, CustomerCreateSchema, CustomerSchema
-from app.config import get_db
+from app.db.database import get_db
 from app.routes.auth_router import get_current_active_user;
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -24,9 +24,13 @@ async def create(customer:CustomerCreateSchema,db:Session=Depends(get_db)):
     db.commit()
     return {"Message":"Successfully Add"}
 
+
+
 @customer_router.get("/bmitvat/api/customer/all_customer",response_model=List[CustomerSchema], dependencies=[Depends(get_current_active_user)])
 async def index(db:Session=Depends(get_db)):
     return db.query(Customer).all()
+
+
 
 @customer_router.get("/bmitvat/api/customer/get_customer/{customer_id}",response_model=CustomerSchema, dependencies=[Depends(get_current_active_user)])
 async def get_itm(customer_id:int,db:Session=Depends(get_db)):
@@ -35,6 +39,8 @@ async def get_itm(customer_id:int,db:Session=Depends(get_db)):
         return (u)
     except:
         return HTTPException(status_code=422, details="Customer not found")
+
+
 
 @customer_router.put("/bmitvat/api/customer/update_customer/{customer_id}", dependencies=[Depends(get_current_active_user)])
 async def update(customer_id:int,customer:CustomerCreateSchema,db:Session=Depends(get_db)):
@@ -59,6 +65,8 @@ async def update(customer_id:int,customer:CustomerCreateSchema,db:Session=Depend
     except:
         return HTTPException(status_code=404,detail="Update Uncessfull")
 
+
+
 @customer_router.delete("/bmitvat/api/delete_customer/{customer_id}",response_class=JSONResponse, dependencies=[Depends(get_current_active_user)])
 async def get_itm(customer_id:int,db:Session=Depends(get_db)):
     try:
@@ -71,6 +79,8 @@ async def get_itm(customer_id:int,db:Session=Depends(get_db)):
     
 
 #array push
+
+
 
 @customer_router.post("/bmitvat/api/add_customer_array", dependencies=[Depends(get_current_active_user)])
 async def create(customer:List[CustomerCreateSchema], request: Request, db:Session=Depends(get_db)): 
@@ -106,6 +116,8 @@ async def create(customer:List[CustomerCreateSchema], request: Request, db:Sessi
     return {"Message":"Successfully Add"}
 
 
+
+
 @customer_router.put("/bmitvat/api/update_customer_array/{customer_id}", dependencies=[Depends(get_current_active_user)])
 async def update_array(customer_id: str, request: Request, db:Session=Depends(get_db)): 
     y = customer_id.split(",")
@@ -124,6 +136,7 @@ async def update_array(customer_id: str, request: Request, db:Session=Depends(ge
         db.add(uu)
         db.commit()
     return {"Message":"Successfully Update"}
+
 
 
 

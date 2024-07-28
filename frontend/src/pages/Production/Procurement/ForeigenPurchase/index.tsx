@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, Fragment, useEffect } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import sortBy from 'lodash/sortBy';
@@ -7,13 +7,24 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../../store/themeConfigSlice';
 import IconPlus from '../../../../components/Icon/IconPlus';
 import axios from 'axios';
+import UserContex from '../../../../context/UserContex';
 
 
 const index = () => {
 
-    const col = ['serial', 'invoiceNo', 'Supplier'];
+    const navigate = useNavigate();
+    // const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
+
+    const col = ['id', 'invoice_no', 'supplier_name', 'lc_number', 'grand_total'];
+
+
     useEffect(() => {
-        axios.get('http://localhost:8080/bmitvat/api/v1/unit/allunits')
+        axios.get(`${baseUrl}/v1/unit/allunits`)
             .then((response) => {
                 setInitialRecords(response.data);
 
@@ -53,9 +64,10 @@ const index = () => {
             return initialRecords.filter((item: any) => {
                 return (
                     item.id.toString().includes(search.toLowerCase()) ||
-                    item.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
-                    item.supplier.toLowerCase().includes(search.toLowerCase()) ||
-                    item.lcNo.toLowerCase().includes(search.toLowerCase()) 
+                    item.invoice_no.toLowerCase().includes(search.toLowerCase()) ||
+                    item.supplier_name.toLowerCase().includes(search.toLowerCase()) ||
+                    item.lc_number.toLowerCase().includes(search.toLowerCase()) ||
+                    item.grand_total.toLowerCase().includes(search.toLowerCase()) 
                 );
             });
         });
@@ -66,12 +78,7 @@ const index = () => {
         setInitialRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
     }, [sortStatus]);
-    const header = ['Serial', 'Invoice No', 'Supplier', 'LC No'];
-
-    // const changeValue = (e: any) => {
-    //     const { value, id } = e.target;
-    //     setParams({ ...params, [id]: value });
-    // };
+    const header = ['Serial', 'Invoice No', 'Supplier', 'LC No', 'Grand Total'];
 
 
     const [addContactModal, setAddContactModal] = useState<any>(false);
@@ -110,7 +117,7 @@ const index = () => {
                 <div className="panel col-span-3 " id="stack_form">
                     <div className="flex md:items-center justify-between md:flex-row flex-col mb-4.5 gap-5">
                         <div className="flex items-center justify-between mb-6">
-                            <h5 className="font-semibold text-lg dark:text-white-light">Local Purchase List</h5>
+                            <h5 className="font-semibold text-lg dark:text-white-light">Foreign Purchase List</h5>
                         </div>
                         <input type="search" className="form-input w-auto" placeholder="Search..." />
                     </div>
@@ -121,10 +128,12 @@ const index = () => {
                             className="whitespace-nowrap table-hover"
                             records={recordsData}
                             columns={[
-                                { accessor: 'serial', title: 'Serial', sortable: true },
-                                { accessor: 'invoiceNo', title: 'Invoice No', sortable: true },
-                                { accessor: 'supplier', title: 'Supplier', sortable: true },
-                                { accessor: 'lcNo', title: 'LC No', sortable: true },
+                                { accessor: 'id', title: 'Serial', sortable: true },
+                                { accessor: 'invoice_no', title: 'Invoice No', sortable: true },
+                                { accessor: 'supplier_name', title: 'Supplier', sortable: true },
+                                { accessor: 'lc_number', title: 'LC No', sortable: true },
+                                { accessor: 'grand_total', title: 'Grand Total', sortable: true },
+
                             ]}
                             totalRecords={initialRecords.length}
                             recordsPerPage={pageSize}
