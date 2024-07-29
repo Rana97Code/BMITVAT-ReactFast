@@ -116,45 +116,40 @@ const addProductionBOM: React.FC = () => {
 
 
 
-    async function getItemByKeyUp(event: React.FormEvent<HTMLInputElement>) {
-
-
+    async function getItemByKeyUp(event: React.FormEvent<HTMLInputElement>){
         const searchInput = event.currentTarget as HTMLInputElement;
         const suggestionsList = document.getElementById('suggestionsList');
 
-        if (suggestionsList) {
+        if (suggestionsList){
             suggestionsList.style.display = 'block';
         }
       
-        if (!suggestionsList) {
+        if(!suggestionsList){
           return;
         }
       
-        if (searchInput.value.trim() === '') {
+        if (searchInput.value.trim() === ''){
           suggestionsList.innerHTML = '';
           return;
         }
         if(user){
-
-            const searchTerm = searchInput.value;
-            try {
-                const response = await axios.post(`${baseUrl}/item/getAllRawMaterialsSuggestions`, searchTerm,{headers});
-                // <string[]>
-                const suggestions = response.data;
-                setSuggestItem(suggestions);
-                
-                suggestionsList.innerHTML = '';
-                all_suggestitm.forEach(suggestion => {
-
-                    const listItem = document.createElement('li');
-                    listItem.style.width = '500px';
-                    listItem.style.padding = '10px';
-                    listItem.className = 'suggestion-item'; 
-                    listItem.value = suggestion.id;
-                    listItem.textContent = suggestion.item_name;
-                    suggestionsList.appendChild(listItem);
-                    });
-
+                    const searchTerm = encodeURIComponent(searchInput.value);
+                    try {
+                        const response = await axios.post(`${baseUrl}/item/getAllRawMaterialsSuggestions`, searchTerm,{headers});
+                        const suggestions = response.data;
+                        setSuggestItem(suggestions);
+        
+                        suggestionsList.innerHTML = '';
+                        all_suggestitm.forEach(suggestion => {
+        
+                            const listItem = document.createElement('li');
+                            listItem.style.width = '500px';
+                            listItem.style.padding = '10px';
+                            listItem.className = 'suggestion-item'; 
+                            listItem.value = suggestion.id;
+                            listItem.textContent = suggestion.item_name;
+                            suggestionsList.appendChild(listItem);
+                            });
 
                     const selectedLiElements = document.querySelectorAll('.suggestion-item');
                     selectedLiElements.forEach(async(liElement) => {
@@ -207,7 +202,7 @@ const addProductionBOM: React.FC = () => {
                                     const input = document.createElement('input');
                                     input.type = 'text';
                                     input.name = 'item_name';
-                                    input.value = data.itemName;
+                                    input.value = data.item_name;
                                     input.autocomplete = 'off';
                                     input.disabled = true;
                                     input.style.cssText = 'border: 1px solid black; width: 180px;';
@@ -446,22 +441,24 @@ const addProductionBOM: React.FC = () => {
 
         if(user){
 
-            const searchTerm = searchInput.value;
+            //const searchTerm = searchInput.value;
+            const searchTerm1 = encodeURIComponent(searchInput.value);
+            console.log(searchTerm1)
             try {
-                const response = await axios.post(`${baseUrl}/costing/getAllCostingSuggestions`, searchTerm,{headers});
+                const response = await axios.post(`${baseUrl}/costing/getAllCostingSuggestions`, searchTerm1,{headers});
                 // <string[]>
-                const suggestions = response.data;
-                setSuggestCosting(suggestions);
+                const suggestions1 = response.data;
+                setSuggestCosting(suggestions1);
 
                 CostingSuggestionsList.innerHTML = '';
-                all_suggest_costing.forEach(suggestion => {
+                all_suggest_costing.forEach(suggestions1 => {
 
                     const listCosting = document.createElement('li');
                     listCosting.style.width = '500px';
                     listCosting.style.padding = '10px';
                     listCosting.className = 'costing-suggestion'; 
-                    listCosting.value = suggestion.id;
-                    listCosting.textContent = suggestion.costing_name;
+                    listCosting.value = suggestions1.id;
+                    listCosting.textContent = suggestions1.costing_name;
                     CostingSuggestionsList.appendChild(listCosting);
                     });
 
@@ -485,9 +482,9 @@ const addProductionBOM: React.FC = () => {
                             if(user){
                     
                             axios.get(`${baseUrl}/costing/get_costing/${clickedValue}`,{headers})
-                                .then((response) => {
-                                    const data = response.data;
-                                    addCostingRow(data);
+                                .then((response1) => {
+                                    const data1 = response1.data;
+                                    addCostingRow(data1);
                                 })
                                 .catch((error) => {
                                     console.error('Error fetching data:', error);
@@ -496,17 +493,17 @@ const addProductionBOM: React.FC = () => {
 
 
 
-                            function addCostingRow(data: any){
+                            function addCostingRow(data1: any){
                                 const costingTable = document.querySelector('#costingTable tbody') as HTMLTableElement;
 
                                 const arrayData: any[] = [];
 
-                                var id=data.id;
+                                var id=data1.id;
                                     console.log(id);
                                     const inputId = document.createElement('input');
                                     inputId.type = 'hidden';
                                     inputId.name = 'costingId';
-                                    inputId.value = data.id;
+                                    inputId.value = data1.id;
                                     inputId.autocomplete = 'off';
                                     inputId.disabled = true;
                                     inputId.style.cssText = 'width: 1px;';
@@ -514,7 +511,7 @@ const addProductionBOM: React.FC = () => {
                                     const input = document.createElement('input');
                                     input.type = 'text';
                                     input.name = 'costing_name';
-                                    input.value = data.costingName;
+                                    input.value = data1.costing_name;
                                     input.autocomplete = 'off';
                                     input.disabled = true;
                                     input.style.cssText = 'border: 1px solid black; width: 180px;';
@@ -535,9 +532,11 @@ const addProductionBOM: React.FC = () => {
                                     removeButton.addEventListener('click', () => {
                                         removeCostingRow(newRow);
                                     });
+
+
                                     function removeCostingRow(row: HTMLTableRowElement) {
                                         costingTable.removeChild(row);
-                                        const index = arrayData.findIndex((item) => item.itemName === data.itemName);
+                                        const index = arrayData.findIndex((item) => item.costing_name === data1.costing_name);
                                         if (index !== -1) {
                                             arrayData.splice(index, 1);
                                         }
