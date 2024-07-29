@@ -19,6 +19,8 @@ from app.routes.production.sales.receiveVds_router import ReceiveVds_router
 from app.routes.production.wastage.wastage_router import Wastage_router 
 from app.routes.inventorystock_router import InventoryStock_router
 from app.routes.production.procurement.foreign_purchase_router import Purchase_router  
+from app.routes.production.procurement.local_purchase_router import Purchase_router
+from app.routes.inventorystock_router import InventoryStock_router
 from app.routes.general_settings.cpc_router import cpc_router  
 
 
@@ -48,6 +50,8 @@ router.include_router(ReceiveVds_router)
 router.include_router(Wastage_router)
 router.include_router(InventoryStock_router)
 router.include_router(Purchase_router)
+router.include_router(Purchase_router)
+router.include_router(InventoryStock_router)
 router.include_router(cpc_router)
 
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
-from typing import Union,List,Optional
+from typing import Union,List,Optional,Dict,Any
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.routes.auth_router import get_current_active_user;
@@ -14,6 +14,7 @@ from app.models.Production.Procurement.Purchase_model import Purchase,Purchase_i
 from app.schemas.production.procurement.LocalPurchase_schema import LocalPurchaseInsertSchema,ItemDetailsModel
 from app.models.general_settings.hs_code_model import Hscode
 from app.models.inventory.item_model import Item, ItemSuggest
+from app.models.Production.inventorystock.InventoryStock_model import Stock, StockHistory
 
 Purchase_router = APIRouter()
 
@@ -72,6 +73,21 @@ async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Sessio
                 p_date = srv.entry_date
                 )
             db.add(purchase_item)
+            
+            # Update stock
+            stock_item = db.query(Stock).filter(Stock.item_id == item.item_id).first()
+            if stock_item:
+                stock_item.qty += item.qty
+            else:
+                new_stock_item = Stock(
+                    item_id=item.item_id,
+                    qty=item.qty,
+                    rate=item.rate,
+                    status=1,  # assuming 1 is for active status
+                    user_id=lpurchase.user_id
+                )
+                db.add(new_stock_item)
+            
         db.commit()
         return {"Message": "Successfully Added"}
 
@@ -80,11 +96,6 @@ async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Sessio
         raise HTTPException(status_code=400, detail=f"Error occurred: {e}")
     finally:
         db.close()
-
-
-
-
-
 
 
 

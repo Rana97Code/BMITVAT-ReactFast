@@ -49,7 +49,8 @@ const addLocalPurchase = () => {
     
     const [all_suppliers, setAllSupplier] = useState<suppliers[]>([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
-    const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
+    const [item_Details, setItemDetails] = useState<detailsItem[]>([]);
+    // const [item_Details, setItemDetails] = useState<detailsItem | null>(null);
     const [s_address, setAddress] = useState("");
 
 
@@ -133,7 +134,6 @@ const addLocalPurchase = () => {
                 console.log(suggestions);
                 suggestionsList.innerHTML = '';
                 all_suggestitm.forEach(suggestion => {
-                    console.log(suggestion.item_name)
                     const listItem = document.createElement('li');
                     listItem.style.width = '500px';
                     listItem.style.padding = '10px';
@@ -142,6 +142,7 @@ const addLocalPurchase = () => {
                     listItem.textContent = suggestion.item_name;
                     suggestionsList.appendChild(listItem);
                     });
+
 
                     const selectedLiElements = document.querySelectorAll('.suggestion-item');
                     selectedLiElements.forEach(async(liElement) => {
@@ -186,10 +187,28 @@ const addLocalPurchase = () => {
                                     inputId.disabled = true;
                                     inputId.style.cssText = 'width: 1px;';
 
+                                    
+                                    const inputId1 = document.createElement('input');
+                                    inputId1.type = 'hidden';
+                                    inputId1.name = 'hs_code_id';
+                                    inputId1.value = data.hs_code_id;
+                                    inputId1.autocomplete = 'off';
+                                    inputId1.disabled = true;
+                                    inputId1.style.cssText = 'border: 1px;';
+
+
+                                    const inputId2 = document.createElement('input');
+                                    inputId2.type = 'hidden';
+                                    inputId2.name = 'hs_code';
+                                    inputId2.value = data.hs_code;
+                                    inputId2.autocomplete = 'off';
+                                    inputId2.disabled = true;
+                                    inputId2.style.cssText = 'border: 1px;';
+
                                     const input = document.createElement('input');
                                     input.type = 'text';
                                     input.name = 'item_name';
-                                    input.value = data.itemName;
+                                    input.value = data.item_name;
                                     input.autocomplete = 'off';
                                     input.disabled = true;
                                     input.style.cssText = 'border: 1px solid black; width: 180px;';
@@ -595,6 +614,12 @@ const addLocalPurchase = () => {
 
                                 const cellId = newRow.insertCell();
                                 cellId.appendChild(inputId);
+                                
+                                const hscode = newRow.insertCell();
+                                hscode.appendChild(inputId1);
+
+                                const hscodeId = newRow.insertCell();
+                                hscodeId.appendChild(inputId2);
                                 const cell = newRow.insertCell();
                                 cell.appendChild(input);
                                 const cell1 = newRow.insertCell();
@@ -784,6 +809,8 @@ const addLocalPurchase = () => {
                                         <table id="dataTable" className="whitespace-nowrap table-hover border dataTable">
                                             <thead>
                                                 <tr className="whitespace-nowrap border overflow-x-auto">
+                                                    <th className="w-1"></th>
+                                                    <th className="w-1"></th>
                                                     <th className="w-1"></th>
                                                     <th className="w-14" >Description</th>
                                                     <th className="w-9 border-black" >Quantity</th>
