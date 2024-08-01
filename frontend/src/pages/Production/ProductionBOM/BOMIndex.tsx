@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link,NavLink, useParams,useNavigate } from 'react-router-dom';
 import { useState, Fragment, useEffect } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
@@ -7,26 +7,28 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import IconPlus from '../../../components/Icon/IconPlus';
 import axios from 'axios';
+import UserContex from '../../../context/UserContex';
 
 const BOMIndex = () => {
 
+    const navigate = useNavigate();
     const params = useParams();
+    const [showAlert, setShowAlert] = useState(false);
+    const user = useContext(UserContex);
+        const headers= user.headers;
+        const baseUrl= user.base_url;
+        const token = user.token;
 
 
     useEffect(() => {
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
-  
-        axios.get('http://localhost:8080/bmitvat/api/production-bom/get_all_bom', {headers})
+        if(user){  
+        axios.get(`${baseUrl}/production-bom/get_all_bom`, {headers})
             .then((response) => {
                 setInitialRecords(response.data);
 
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
-
             });
         }
     }, []);
@@ -60,11 +62,11 @@ const BOMIndex = () => {
             return initialRecords.filter((item: any) => {
                 return (
                     item.id.toString().includes(search.toLowerCase()) ||
-                    item.bomNo.toLowerCase().includes(search.toLowerCase()) ||
-                    item.itemName.toLowerCase().includes(search.toLowerCase())||
-                    item.hsCode.toLowerCase().includes(search.toLowerCase())||
-                    item.unitName.toLowerCase().includes(search.toLowerCase())||
-                    item.salesPrice.toLowerCase().includes(search.toLowerCase())
+                    item.bom_no.toLowerCase().includes(search.toLowerCase()) ||
+                    item.item_name.toLowerCase().includes(search.toLowerCase())||
+                    item.hs_code.toLowerCase().includes(search.toLowerCase())||
+                    item.unit_name.toLowerCase().includes(search.toLowerCase())||
+                    item.sales_price.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
@@ -78,12 +80,8 @@ const BOMIndex = () => {
 
 
     const handleClick = async (clickedId: string) => {
-        const token = localStorage.getItem('Token');
-        if(token){
-            const bearer = JSON.parse(token);
-            const headers= { Authorization: `Bearer ${bearer}` }
-  
-        await axios.get(`http://localhost:8080/bmitvat/api/production-bom/activate_bom/${clickedId}`, {headers})
+        if(user){  
+        await axios.get(`${baseUrl}/production-bom/activate_bom/${clickedId}`, {headers})
             .then((response) => {
                 if(response.status == 200){
                     window.location.reload();
@@ -126,30 +124,39 @@ const BOMIndex = () => {
                             className="whitespace-nowrap table-hover"
                             records={recordsData}
                             columns={[
-                                { accessor: 'bomNo',
-                                 title: 'BOM No', 
-                                    sortable: true,
-                                    render: ({ id,bomNo }) => (
-                                        <div >
-                                            <NavLink to={"/pages/invoice/production_bom/"+ id} className="text-cyan-500" target="_blank">
-                                                {bomNo}
-                                            </NavLink>
-                                        </div>
-                                    ),
+                                { accessor: 'bom_no',title: 'BOM NO', sortable: true,
+                                    // render: ({ id,bom_no }) => (
+                                    //     <div >
+                                    //         <NavLink to={"/pages/invoice/production_bom/"+ id} className="text-cyan-500" target="_blank">
+                                    //             {bom_no}
+                                    //         </NavLink>
+                                    //     </div>
+                                    // ),
                                 },
-                                { accessor: 'itemName', title: 'Item Name', sortable: true },
-                                { accessor: 'hsCode', title: 'HS-Code', sortable: true },
-                                { accessor: 'unitName', title: 'Unit Name', sortable: true },
-                                { accessor: 'salesPrice', title: 'Sales Price', sortable: true },
+                                { accessor: 'item_name', title: 'Item Name', sortable: true },
+                                { accessor: 'hs_code', title: 'HS-Code', sortable: true },
+                                { accessor: 'unit_name', title: 'Unit Name', sortable: true },
+                                { accessor: 'sales_price', title: 'Sales Price', sortable: true },
                                 {
                                     accessor: 'status',
                                     title: 'Status',
-                                    sortable: true,
+                                    
                                     render: ({ id, status }) => (
                                         <div className="flex gap-4 items-center w-max mx-auto cursor-pointer">
-                                                <span  onClick={() => handleClick(id)} className={`p-2 badge ${status == 1 ? 'badge-outline-success' : 'badge-outline-danger'} `}>{status == 1 ? 'Active' : 'Inactive'}</span>
+                                                {/* <span  onClick={() => handleClick(id)} className={`p-2 badge ${status == 1 ? 'badge-outline-success' : 'badge-outline-danger'} `}>{status == 1 ? 'Active' : 'Inactive'}</span> */}
+                                                <span className={`p-2 badge ${status == 1 ? 'badge-outline-success' : 'badge-outline-danger'} `}>{status == 1 ? 'Active' : 'Inactive'}</span>
                                         </div>
                                     ),
+                                },
+                                {
+                                    accessor: ' ', title: 'Action', sortable: true,
+                                    render: ({ id, status }) => (
+                                        <div className="flex gap-4 items-center w-max mx-auto cursor-pointer">
+                                              
+                                                <a href="">mushak 4.3</a>
+                                        </div>
+                                    ),
+
                                 },
                             ]}
                             totalRecords={initialRecords.length}

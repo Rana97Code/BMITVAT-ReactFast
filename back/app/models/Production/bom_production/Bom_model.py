@@ -25,10 +25,12 @@ class Bom(Base):
     status = Column(Integer, nullable=True)
     mrp_type = Column(Integer, nullable=True, name="mrp_type")
     bom_type = Column(Integer, nullable=True, name="bom_type")
-    submission_date = Column(Date, nullable=True, name="submission_date")
-    effective_date = Column(Date, nullable=True, name="effective_date")
+    submission_date = Column(DateTime, nullable=True, name="submission_date")
+    effective_date = Column(DateTime, nullable=True, name="effective_date")
     user_id = Column(Integer, nullable=True, name="user_id")
-    created_at = Column(Date, nullable=False, server_default=func.now(), name="created_at")
+    created_at = Column(DateTime, nullable=True, server_default=func.now(), name="created_at")
+
+
 
 
 class BomCosting(Base):
@@ -58,6 +60,6 @@ class BomRawMaterials(Base):
     total_price = Column(Float, nullable=True, name="total_price")
     c_date = Column(Date, nullable=True, name="c_date")
     user_id = Column(Integer, nullable=True, name="user_id")
-    created_at = Column(Date, nullable=False, server_default=func.now(), name="created_at")
+    created_at = Column(Date, nullable=True, server_default=func.now(), name="created_at")
 
 Base.metadata.create_all(bind=engine)

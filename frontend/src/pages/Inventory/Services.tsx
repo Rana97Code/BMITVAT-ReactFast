@@ -4,15 +4,16 @@ import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState, Fragment } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../../store/themeConfigSlice';
-import IconFile from '../../../components/Icon/IconFile';
-import IconEdit from '../../../components/Icon/IconEdit';
+import { setPageTitle } from './../../store/themeConfigSlice';
+import IconFile from './../../components/Icon/IconFile';
+// import IconEdit from '../../../components/Icon/IconEdit';
 import axios from 'axios';
-import UserContex from '../../../context/UserContex';
+import UserContex from '../../context/UserContex';
 
 
 
-const service = () => {
+
+const finishgoods = () => {
 
 
   interface finishgoods {
@@ -116,6 +117,15 @@ const service = () => {
         .catch((error) => {
             console.error('Error fetching data:', error);
         });
+
+        //   .then((response) => {
+        //       setOpeningStock(response.data);
+
+        //   })
+        //   .catch((error) => {
+        //       console.error('Error fetching data:', error);
+
+        //   });
 
 
       axios.get(`${baseUrl}/opening_stock/all_finish_stock`,{headers})
@@ -283,4 +293,4 @@ const recordsDataWithIndex: RecordWithIndex[] = recordsData.map((record: RecordW
   );
 };
 
-export default service;
+export default finishgoods;

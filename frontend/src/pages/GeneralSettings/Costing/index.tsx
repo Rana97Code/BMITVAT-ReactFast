@@ -129,13 +129,8 @@ const index = () => {
      }
      console.log(file);
 
-     const token = localStorage.getItem('Token');
      if(token){
-         const bearer = JSON.parse(token);
-     const headers= { Authorization: `Bearer ${bearer}`,'content-type': 'multipart/form-data' }
-     // console.log(headers);
-
-   await axios.post('http://localhost:8080/bmitvat/api/costing/upload_costing_excel', file, {headers})
+   await axios.post(`${baseUrl}/costing/upload_costing_excel`, file, {headers})
    .then(function (response){
      console.log("Data Inserted");
      if(response.status==200){

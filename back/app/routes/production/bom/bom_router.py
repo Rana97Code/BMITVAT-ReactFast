@@ -10,12 +10,14 @@ import os
 from sqlalchemy.sql.sqltypes import Numeric
 
 from app.models.production.bom_production.Bom_model import Bom,BomCosting,BomRawMaterials
-from app.schemas.production.bom.Bom_schema import AllFinishGoods,SingleFinishGoods,RawItemSuggestSchema, RawItemDetailsSchema, CostingSuggestSchema, BomInsertSchema
+from app.schemas.production.bom.Bom_schema import AllFinishGoods,SingleFinishGoods,RawItemSuggestSchema, RawItemDetailsSchema, CostingSuggestSchema,BomInsertSchema, ProductionBomIndexSchema
 from app.models.general_settings.hs_code_model import Hscode
 from app.models.production.procurement.Purchase_model import Purchase,Purchase_item
 from app.models.inventory.item_model import Item
 from app.models.general_settings.unit_model import Unit
 from app.models.general_settings.costing_model import Costing
+import logging
+logger= logging.getLogger("uvicorn.error")
 
 Bom_router = APIRouter()
 
@@ -28,17 +30,13 @@ async def index(db:Session=Depends(get_db)):
     index=db.query(Item).filter(Item.item_type == 2, Item.stock_status == 1)\
     .add_columns(
         Item.id, 
-        Item.item_name, 
-        # Unit.unit_name, 
-        # Hscode.hs_code
+        Item.item_name
         ).all()
     goods_index_item =[]
     for pp in index:
         goods_index_item.append({
            'id': pp.id,
-           'item_name': pp.item_name,
-        #    'unit_name': pp.unit_name,
-        #    'hs_code': pp.hs_code
+           'item_name': pp.item_name
            })
 
     junit = jsonable_encoder(goods_index_item)
@@ -185,57 +183,95 @@ async def suggest_costing(request: Request,db:Session=Depends(get_db)):
         return []
     
 
-
 @Bom_router.post("/bmitvat/api/production-bom/add-bom", dependencies=[Depends(get_current_active_user)])
-async def create_bom(pBom: BomInsertSchema, db: Session = Depends(get_db)):
-    try:
-        srv = Bom(
-            id =pBom.id,
-            item_sku =pBom.item_sku,
-            bom_no =pBom.bom_no,
-            product_code =pBom.product_code,
-            item_id =pBom.item_id,
-            hs_code =pBom.hs_code,
-            unit_name =pBom.unit_name,
-            remark =pBom.remark,
-            reference =pBom.reference,
-            total_costing =pBom.total_costing,
-            item_price =pBom.item_price,
-            sales_price =pBom.sales_price,
-            service_code =pBom.service_code,
-            status =pBom.status,
-            mrp_type =pBom.mrp_type,
-            bom_type =pBom.bom_type,
-            subbmission_date =pBom.subbmission_date,
-            effective_date =pBom.effective_date,
-            user_id =pBom.user_id,
-            created_at =pBom.created_at
-            )
-        db.add(srv)
-        db.flush()  # Get the srv.id before committing
+async def create(Pbom:BomInsertSchema,db:Session=Depends(get_db)): 
+    # print(Pbom)
+    srv=Bom(
+            item_sku=Pbom.item_sku, 
+            bom_no=Pbom.bom_no, 
+            product_code=Pbom.item_sku, 
+            item_id=Pbom.item_id, 
+            hs_code =Pbom.hs_code, 
+            unit_name=Pbom.unit_name, 
+            remarks =Pbom.remarks, 
+            reference =Pbom.reference,
+            total_costing =Pbom.total_costing, 
+            item_price =Pbom.item_price, 
+            sales_price =Pbom.sales_price, 
+            service_code =Pbom.hs_code,
+            status =Pbom.status,  
+            mrp_type =Pbom.mrp_type, 
+            bom_type =Pbom.bom_type,  
+            submission_date =Pbom.submission_date, 
+            effective_date =Pbom.effective_date, 
+            user_id =Pbom.user_id, 
+        )
+    db.add(srv)
+    print(srv)
+    db.flush()  # Get the srv.id before committing
+    db.commit()
 
-        for item in pBom.items:
-            bom_costing = BomRawMaterials(
-                # item_id=item.item_id,
-                # purchase_id=srv.id,
-                
-                )
-            db.add(bom_costing)
-        db.commit()
+    #Push data in Bom_raw_materials data table
+
+    # for item in Pbom.BRawitems:
+    #     bom_raw_mat_item = BomRawMaterials(
+    #         bom_id = srv.id,
+    #         raw_material_id = item.raw_material_id,
+    #         unit_name = srv.unit_name,
+    #         material_qty = item.material_qty,
+    #         material_rate = item.material_rate,
+    #         material_price = item.material_price,
+    #         wastage_percent = item.wastage_percent ,
+    #         wastage_qty = item.wastage_qty,
+    #         wastage_price = item.wastage_price ,
+    #         total_qty = item.total_qty,
+    #         total_price = item.total_price,
+    #         c_date = item.c_date,
+    #         user_id = 1
+    #         )
+    #     db.add(bom_raw_mat_item)
+
+        #print(bom_raw_mat_item)
+
+    #Push data in Bom_Costing data table
+
+    # for item in Pbom.BCostingitems:
+    #     bom_cost = BomCosting(
+    #         bom_id = srv.id,
+    #         costing_id = item.costing_id,
+    #         cost = item.cost,
+    #         user_id = 1
+    #         )
+    #     db.add(bom_cost)
+
+    
+
+    return {"Message":"Successfully Add"}
 
 
-        for item in pBom.items:
-            bom_costing = BomCosting(
-                # item_id=item.item_id,
-                # purchase_id=srv.id,
-                
-                )
-            db.add(bom_costing)
-        db.commit()
-        return {"Message": "Successfully Added"}
+##get BOM Index value::
 
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=f"Error occurred: {e}")
-    finally:
-        db.close()
+# @Bom_router.get("/bmitvat/api/production-bom/get_all_bom",response_model=List[ProductionBomIndexSchema], dependencies=[Depends(get_current_active_user)])
+# async def index(db:Session=Depends(get_db)):
+#     return db.query(Bom).all()
+
+
+@Bom_router.get("/bmitvat/api/production-bom/get_all_bom",response_model=List[ProductionBomIndexSchema], dependencies=[Depends(get_current_active_user)])
+async def index(db:Session=Depends(get_db)):
+    #In ITEM shows data From unit data table 
+    index=db.query(Bom, Item).join(Item, Bom.item_id == Item.id )\
+        .add_columns(Bom.bom_no, Item.item_name, Bom.hs_code, Bom.unit_name, Bom.sales_price, Bom.status).all()
+    bom_index_item =[]
+    for pp in index:
+        bom_index_item.append({
+            'bom_no': pp.bom_no,
+            'item_name': pp.item_name,
+            'hs_code': pp.hs_code,
+            'unit_name':pp.unit_name,
+            'sales_price':pp.sales_price,
+            'status':pp.status
+           })
+
+    junit = jsonable_encoder(bom_index_item)
+    print(junit)
+    return JSONResponse(content=junit)

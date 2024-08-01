@@ -59,7 +59,6 @@ const addProductionBOM: React.FC = () => {
       }
     
     const [all_finishGoods, setAllFinishGoods] = useState<finishGoods[]>([]);
-    // const [all_finishGoods, setAllFinishGoods] = useState([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
     const [all_suggest_costing, setSuggestCosting] = useState<suggestCosting[]>([]);
     const [itemDetails, setItemDetails] = useState<detailsItem[]>([]);
@@ -114,7 +113,7 @@ const addProductionBOM: React.FC = () => {
 
 
 
-
+///////////////////////////////////////getItemByKeyUp/////////////////////////////////////
 
     async function getItemByKeyUp(event: React.FormEvent<HTMLInputElement>){
         const searchInput = event.currentTarget as HTMLInputElement;
@@ -300,7 +299,7 @@ const addProductionBOM: React.FC = () => {
 
                                     const input7 = document.createElement('input');
                                     input7.type = 'number';
-                                    input7.name = 'wastageRate';
+                                    input7.name = 'wastage_rate';
                                     input7.className = '';
                                     input7.value = data.rate;
                                     input7.autocomplete = 'off';
@@ -347,7 +346,7 @@ const addProductionBOM: React.FC = () => {
                                     function removeRow(row: HTMLTableRowElement) {
                                         dataTable.removeChild(row);
                                         // Remove the corresponding data from the arrayData array
-                                        const index = arrayData.findIndex((item) => item.itemName === data.itemName);
+                                        const index = arrayData.findIndex((item) => item.item_name === data.item_name);
                                         if (index !== -1) {
                                             arrayData.splice(index, 1);
                                         }
@@ -360,22 +359,23 @@ const addProductionBOM: React.FC = () => {
 
                                     function calculateTotalValue(){
                                         // Grand Total VAT Calculation
-                                        let grandTotalVat = 0;
-                                        const VatInput = document.querySelectorAll(`.total_price`) as NodeListOf<HTMLInputElement>;
+                                        let TotalrawPrice = 0;
+                                        const TotalItemsPrice = document.querySelectorAll(`.totalPrice`) as NodeListOf<HTMLInputElement>;
+                                        // const TotalItemsPrice = document.querySelectorAll(`.priceTotal`) as NodeListOf<HTMLInputElement>;
                                     
-                                        if (VatInput) {                                        
-                                            VatInput.forEach((input: HTMLInputElement) => {
+                                        if (TotalItemsPrice) {                                        
+                                            TotalItemsPrice.forEach((input: HTMLInputElement) => {
                                                 const value = parseFloat(input.value) || 0; 
-                                                grandTotalVat += value;
+                                                TotalrawPrice += value;
                                             });
                                             
                                             const grandTotalPriceId = document.getElementById('priceTotal') as HTMLInputElement | null;
                                             if (grandTotalPriceId !== null) {
-                                                grandTotalPriceId.value = grandTotalVat.toString();
+                                                grandTotalPriceId.value = TotalrawPrice.toString();
                                             }
                                             const grandTotalInput = document.getElementById('grandTotal') as HTMLInputElement | null;
                                             if (grandTotalInput !== null) {
-                                            grandTotalInput.value = grandTotalVat.toString();
+                                            grandTotalInput.value = TotalrawPrice.toString();
                                             }
                                         }
 
@@ -421,275 +421,292 @@ const addProductionBOM: React.FC = () => {
         }
     };
 
-    async function getCostingByKeyUp(event: React.FormEvent<HTMLInputElement>) {
 
-        const searchInput = event.currentTarget as HTMLInputElement;
-        const CostingSuggestionsList = document.getElementById('CostingSuggestionsList');
 
-        if (CostingSuggestionsList) {
-            CostingSuggestionsList.style.display = 'block';
-        }
-      
-        if (!CostingSuggestionsList) {
-          return;
-        }
-      
-        if (searchInput.value.trim() === '') {
+
+//////////////////////////////
+
+/////////////////////////////////////////////getCostingByKeyUp///////////////////////////////////////////////////////////////
+async function getCostingByKeyUp(event: React.FormEvent<HTMLInputElement>) {
+
+    const searchInput = event.currentTarget as HTMLInputElement;
+    const CostingSuggestionsList = document.getElementById('CostingSuggestionsList');
+
+    if (CostingSuggestionsList) {
+        CostingSuggestionsList.style.display = 'block';
+    }
+  
+    if (!CostingSuggestionsList) {
+      return;
+    }
+  
+    if (searchInput.value.trim() === '') {
+        CostingSuggestionsList.innerHTML = '';
+      return;
+    }
+
+    if(user){
+
+        //const searchTerm = searchInput.value;
+        const searchTerm1 = encodeURIComponent(searchInput.value);
+        console.log(searchTerm1)
+        try {
+            const response = await axios.post(`${baseUrl}/costing/getAllCostingSuggestions`, searchTerm1,{headers});
+            // <string[]>
+            const suggestions1 = response.data;
+            setSuggestCosting(suggestions1);
+
             CostingSuggestionsList.innerHTML = '';
-          return;
-        }
+            all_suggest_costing.forEach(suggestions1 => {
 
-        if(user){
-
-            //const searchTerm = searchInput.value;
-            const searchTerm1 = encodeURIComponent(searchInput.value);
-            console.log(searchTerm1)
-            try {
-                const response = await axios.post(`${baseUrl}/costing/getAllCostingSuggestions`, searchTerm1,{headers});
-                // <string[]>
-                const suggestions1 = response.data;
-                setSuggestCosting(suggestions1);
-
-                CostingSuggestionsList.innerHTML = '';
-                all_suggest_costing.forEach(suggestions1 => {
-
-                    const listCosting = document.createElement('li');
-                    listCosting.style.width = '500px';
-                    listCosting.style.padding = '10px';
-                    listCosting.className = 'costing-suggestion'; 
-                    listCosting.value = suggestions1.id;
-                    listCosting.textContent = suggestions1.costing_name;
-                    CostingSuggestionsList.appendChild(listCosting);
-                    });
+                const listCosting = document.createElement('li');
+                listCosting.style.width = '500px';
+                listCosting.style.padding = '10px';
+                listCosting.className = 'costing-suggestion'; 
+                listCosting.value = suggestions1.id;
+                listCosting.textContent = suggestions1.costing_name;
+                CostingSuggestionsList.appendChild(listCosting);
+                });
 
 
-                    const selectedLiElements = document.querySelectorAll('.costing-suggestion');
-                    selectedLiElements.forEach(async(liElement) => {
+                const selectedLiElements = document.querySelectorAll('.costing-suggestion');
+                selectedLiElements.forEach(async(liElement) => {
 
-                        liElement.addEventListener('click', () => {
-                          const clickedValue = (liElement as HTMLLIElement).value;
-                          const liElementTyped = liElement as HTMLElement;
-                          liElementTyped.style.backgroundColor = 'green';
-                   
-                          // Now 'clickedValue' contains the value of the clicked li element
-                          console.log('Clicked Item ID:', clickedValue);
-                          if (CostingSuggestionsList) {
-                            CostingSuggestionsList.style.display = 'none';
-                          }
+                    liElement.addEventListener('click', () => {
+                      const clickedValue = (liElement as HTMLLIElement).value;
+                      const liElementTyped = liElement as HTMLElement;
+                      liElementTyped.style.backgroundColor = 'green';
+               
+                      // Now 'clickedValue' contains the value of the clicked li element
+                      console.log('Clicked Item ID:', clickedValue);
+                      if (CostingSuggestionsList) {
+                        CostingSuggestionsList.style.display = 'none';
+                      }
 
-                          if(clickedValue>0){
+                      if(clickedValue>0){
 
-                            if(user){
-                    
-                            axios.get(`${baseUrl}/costing/get_costing/${clickedValue}`,{headers})
-                                .then((response1) => {
-                                    const data1 = response1.data;
-                                    addCostingRow(data1);
-                                })
-                                .catch((error) => {
-                                    console.error('Error fetching data:', error);
+                        if(user){
+                
+                        axios.get(`${baseUrl}/costing/get_costing/${clickedValue}`,{headers})
+                            .then((response1) => {
+                                const data1 = response1.data;
+                                addCostingRow(data1);
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching data:', error);
+                            });
+                        }
+
+
+
+                        function addCostingRow(data1: any){
+                            const costingTable = document.querySelector('#costingTable tbody') as HTMLTableElement;
+
+                            const arrayData: any[] = [];
+
+                            var id=data1.id;
+                                console.log(id);
+                                const inputId = document.createElement('input');
+                                inputId.type = 'hidden';
+                                inputId.name = 'costingId';
+                                inputId.value = data1.id;
+                                inputId.autocomplete = 'off';
+                                inputId.disabled = true;
+                                inputId.style.cssText = 'width: 1px;';
+
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.name = 'costing_name';
+                                input.value = data1.costing_name;
+                                input.autocomplete = 'off';
+                                input.disabled = true;
+                                input.style.cssText = 'border: 1px solid black; width: 180px;';
+
+                                const input1 = document.createElement('input');
+                                input1.type = 'number';
+                                input1.name = 'cost';
+                                input1.className = 'total_costing';
+                                input1.value = '';
+                                input1.autocomplete = 'off';
+                                input1.required = true;
+                                input1.min = '0';
+                                input1.style.cssText = 'border: 1px solid black; width: 100px;';
+
+                                const removeButton = document.createElement('button');
+                                removeButton.textContent = 'Remove';
+                                removeButton.style.cssText = 'border: 1px solid black; background-color:red; width: 100px;';
+                                removeButton.addEventListener('click', () => {
+                                    removeCostingRow(newRow);
                                 });
-                            }
 
 
-
-                            function addCostingRow(data1: any){
-                                const costingTable = document.querySelector('#costingTable tbody') as HTMLTableElement;
-
-                                const arrayData: any[] = [];
-
-                                var id=data1.id;
-                                    console.log(id);
-                                    const inputId = document.createElement('input');
-                                    inputId.type = 'hidden';
-                                    inputId.name = 'costingId';
-                                    inputId.value = data1.id;
-                                    inputId.autocomplete = 'off';
-                                    inputId.disabled = true;
-                                    inputId.style.cssText = 'width: 1px;';
-
-                                    const input = document.createElement('input');
-                                    input.type = 'text';
-                                    input.name = 'costing_name';
-                                    input.value = data1.costing_name;
-                                    input.autocomplete = 'off';
-                                    input.disabled = true;
-                                    input.style.cssText = 'border: 1px solid black; width: 180px;';
-
-                                    const input1 = document.createElement('input');
-                                    input1.type = 'number';
-                                    input1.name = 'cost';
-                                    input1.className = 'total_costing';
-                                    input1.value = '';
-                                    input1.autocomplete = 'off';
-                                    input1.required = true;
-                                    input1.min = '0';
-                                    input1.style.cssText = 'border: 1px solid black; width: 100px;';
-
-                                    const removeButton = document.createElement('button');
-                                    removeButton.textContent = 'Remove';
-                                    removeButton.style.cssText = 'border: 1px solid black; background-color:red; width: 100px;';
-                                    removeButton.addEventListener('click', () => {
-                                        removeCostingRow(newRow);
-                                    });
-
-
-                                    function removeCostingRow(row: HTMLTableRowElement) {
-                                        costingTable.removeChild(row);
-                                        const index = arrayData.findIndex((item) => item.costing_name === data1.costing_name);
-                                        if (index !== -1) {
-                                            arrayData.splice(index, 1);
-                                        }
+                                function removeCostingRow(row: HTMLTableRowElement) {
+                                    costingTable.removeChild(row);
+                                    const index = arrayData.findIndex((item) => item.costing_name === data1.costing_name);
+                                    if (index !== -1) {
+                                        arrayData.splice(index, 1);
                                     }
-
-
-                                    input1.addEventListener('keyup', calculateTotalCosting);
-                                    function calculateTotalCosting(){
-                                           // Grand Total Costing Calculation
-                                           let grandTotalCosting = 0;
-                                           const CostignInput = document.querySelectorAll(`.total_costing`) as NodeListOf<HTMLInputElement>;
-                                          
-                                           if (CostignInput) {                                        
-                                              CostignInput.forEach((input: HTMLInputElement) => {
-                                                   const value = parseFloat(input.value) || 0; 
-                                                   grandTotalCosting += value;
-                                                 });
-                                                               
-                                               const grandTotalCostInput = document.getElementById('costingTotal') as HTMLInputElement | null;
-                                               if (grandTotalCostInput !== null) {
-                                                  grandTotalCostInput.value = grandTotalCosting.toString();
-                                               }
-
-                                               const priceTotal = document.getElementById('priceTotal') as HTMLInputElement;
-                                               const Alltotal = parseFloat(priceTotal.value) + grandTotalCosting;
-
-                                               const grandTotalInput = document.getElementById('grandTotal') as HTMLInputElement | null;
-                                               if (grandTotalInput !== null) {
-                                               grandTotalInput.value = Alltotal.toString();
-                                               }
-                                           }
-                                    }
-
-
-                                    const newRow = costingTable.insertRow();
-
-                                    const cellId = newRow.insertCell();
-                                    cellId.appendChild(inputId);
-                                    const cell = newRow.insertCell();
-                                    cell.appendChild(input);
-                                    const cell1 = newRow.insertCell();
-                                    cell1.appendChild(input1);
-                                    const cell11 = newRow.insertCell();
-                                    cell11.appendChild(removeButton);
                                 }
 
+
+                                input1.addEventListener('keyup', calculateTotalCosting);
+                                function calculateTotalCosting(){
+                                       // Grand Total Costing Calculation
+                                       let grandTotalCosting = 0;
+                                       const CostignInput = document.querySelectorAll(`.total_costing`) as NodeListOf<HTMLInputElement>;
+                                      
+                                       if (CostignInput) {                                        
+                                          CostignInput.forEach((input: HTMLInputElement) => {
+                                               const value = parseFloat(input.value) || 0; 
+                                               grandTotalCosting += value;
+                                             });
+                                                           
+                                           const grandTotalCostInput = document.getElementById('costingTotal') as HTMLInputElement | null;
+                                           if (grandTotalCostInput !== null) {
+                                              grandTotalCostInput.value = grandTotalCosting.toString();
+                                           }
+
+                                           
+
+                                           const priceTotal = document.getElementById('priceTotal') as HTMLInputElement;
+                                           const Alltotal = parseFloat(priceTotal.value) + grandTotalCosting;
+
+                                           const grandTotalInput = document.getElementById('grandTotal') as HTMLInputElement | null;
+                                           if (grandTotalInput !== null) {
+                                           grandTotalInput.value = Alltotal.toString();
+                                           }
+                                       }
+                                }
+
+
+                                const newRow = costingTable.insertRow();
+
+                                const cellId = newRow.insertCell();
+                                cellId.appendChild(inputId);
+                                const cell = newRow.insertCell();
+                                cell.appendChild(input);
+                                const cell1 = newRow.insertCell();
+                                cell1.appendChild(input1);
+                                const cell11 = newRow.insertCell();
+                                cell11.appendChild(removeButton);
                             }
-                        });
-                      });
-            } catch (error) {
-                console.error('Error fetching suggestions:', error);
-            }
+
+                        }
+                    });
+                  });
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
         }
-    };
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////////
 
 
-      
-        const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
 
-                const dataTable = document.querySelector('#dataTable tbody') as HTMLTableElement;
-                const costingTable = document.querySelector('#costingTable tbody') as HTMLTableElement;
-                const arrayData: any[] = [];
-                const costignArray: any[] = [];
-                if (dataTable) {
-                dataTable.querySelectorAll('tr').forEach((row) => {
-                    const rowData: any = {};
 
-                    row.querySelectorAll('td input').forEach((input) => {
-                        const inputElement = input as HTMLInputElement;
-                        rowData[inputElement.name || 'raw_material_id']  = inputElement.value;
-                        rowData[inputElement.name || 'item_name']       = inputElement.value;
-                        rowData[inputElement.name || 'material_qty']    = inputElement.value;
-                        rowData[inputElement.name || 'unit_name']       = inputElement.value;
-                        rowData[inputElement.name || 'material_rate']   = inputElement.value;
-                        rowData[inputElement.name || 'material_price']  = inputElement.value;
-                        rowData[inputElement.name || 'wastage_percent'] = inputElement.value;
-                        rowData[inputElement.name || 'wastage_qty']     = inputElement.value;
-                        rowData[inputElement.name || 'wastageRate']     = inputElement.value;
-                        rowData[inputElement.name || 'wastage_price']   = inputElement.value;
-                        rowData[inputElement.name || 'total_qty']       = inputElement.value;
-                        rowData[inputElement.name || 'total_price']     = inputElement.value;
-                    });
-            
-                    arrayData.push(rowData);
-                  
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+            const dataTable = document.querySelector('#dataTable tbody') as HTMLTableElement;
+            const costingTable = document.querySelector('#costingTable tbody') as HTMLTableElement;
+            const arrayData: any[] = [];
+            const costignArray: any[] = [];
+            if (dataTable) {
+            dataTable.querySelectorAll('tr').forEach((row) => {
+                const rowData: any = {};
+
+                row.querySelectorAll('td input').forEach((input) => {
+                    const inputElement = input as HTMLInputElement;
+                    rowData[inputElement.name || 'raw_material_id']  = inputElement.value;
+                    rowData[inputElement.name || 'item_name']       = inputElement.value;
+                    rowData[inputElement.name || 'material_qty']    = inputElement.value;
+                    rowData[inputElement.name || 'unit_name']       = inputElement.value;
+                    rowData[inputElement.name || 'material_rate']   = inputElement.value;
+                    rowData[inputElement.name || 'material_price']  = inputElement.value;
+                    rowData[inputElement.name || 'wastage_percent'] = inputElement.value;
+                    rowData[inputElement.name || 'wastage_qty']     = inputElement.value;
+                    rowData[inputElement.name || 'wastageRate']     = inputElement.value;
+                    rowData[inputElement.name || 'wastage_price']   = inputElement.value;
+                    rowData[inputElement.name || 'total_qty']       = inputElement.value;
+                    rowData[inputElement.name || 'total_price']     = inputElement.value;
                 });
-
-            } else {
-                console.error("Could not find #dataTable tbody element");
-            }
-
-            if(costingTable){
-                costingTable.querySelectorAll('tr').forEach((row) => {
-                    const rowData: any = {};
-
-                    row.querySelectorAll('td input').forEach((input) => {
-                        const inputElement = input as HTMLInputElement;
-                        rowData[inputElement.name || 'costing_id']      = inputElement.value;
-                        rowData[inputElement.name || 'costing_name']    = inputElement.value;
-                        rowData[inputElement.name || 'cost']           = inputElement.value;
-                    });
-            
-                    costignArray.push(rowData);
-                  
-                });
-            }
-
-
-            // const jsonAllItemsData = JSON.stringify(arrayData);
-            const priceTotal = document.getElementById('priceTotal') as HTMLInputElement;
-            const costingTotal = document.getElementById('costingTotal') as HTMLInputElement;
-            const AllTotal = document.getElementById('grandTotal') as HTMLInputElement;
-
-            if (priceTotal || costingTotal || AllTotal) {
-                const totalPrice = priceTotal.value;
-                const totalCosting = costingTotal.value;
-                const ALLTotal = AllTotal.value;
-             
-
-            const bom = {
-                item_sku: sku,
-                submission_date: submitDate,
-                effective_date: effectiveDate,
-                item_id: FGItemId,
-                unit_name: Unit_name,
-                hs_code: HsCode,
-                remarks: remarks,
-                reference: reference,
-                bomItemsArray: arrayData,
-                costingArray: costignArray,
-                item_price: totalPrice,
-                total_costing: totalCosting,
-                sales_price: ALLTotal,
-              }
         
+                arrayData.push(rowData);
+              
+            });
 
-                if(user){
-                try {
-                   await axios.post(`${baseUrl}/production-bom/add-bom`, bom, {headers})
-                  .then(function (response){
-                    navigate("/pages/production_bom/index");
-                  })
-          
-                } catch (err) {
-                  console.log(err);
-                }
-                }
-            } 
-        };
+        } else {
+            console.error("Could not find #dataTable tbody element");
+        }
 
-    
-    
+        if(costingTable){
+            costingTable.querySelectorAll('tr').forEach((row) => {
+                const rowData: any = {};
+
+                row.querySelectorAll('td input').forEach((input) => {
+                    const inputElement = input as HTMLInputElement;
+                    rowData[inputElement.name || 'costing_id']      = inputElement.value;
+                    rowData[inputElement.name || 'costing_name']    = inputElement.value;
+                    rowData[inputElement.name || 'cost']           = inputElement.value;
+                });
+        
+                costignArray.push(rowData);
+              
+            });
+        }
+
+
+        // const jsonAllItemsData = JSON.stringify(arrayData);
+        const priceTotal = document.getElementById('priceTotal') as HTMLInputElement;
+        const costingTotal = document.getElementById('costingTotal') as HTMLInputElement;
+        const AllTotal = document.getElementById('grandTotal') as HTMLInputElement;
+
+        if (priceTotal || costingTotal || AllTotal) {
+            const totalPrice = priceTotal.value;
+            const totalCosting = costingTotal.value;
+            const ALLTotal = AllTotal.value;
+         
+
+        const bom = {
+            item_sku: sku,
+            bom_no: "123",
+            submission_date: submitDate,
+            effective_date: effectiveDate,
+            item_id: FGItemId,
+            unit_name: Unit_name,
+            hs_code: HsCode,
+            remarks: remarks,
+            reference: reference,
+            BRawitems: arrayData,
+            BCostingitems: costignArray,
+            item_price: totalPrice,
+            total_costing: totalCosting,
+            sales_price: ALLTotal,
+            status: "1",
+            mrp_type :"1", 
+            bom_type :"1",
+            user_id :"1"
+          }
+        console.log(bom)
+
+            if(user){
+            try {
+               await axios.post(`${baseUrl}/production-bom/add-bom`, bom, {headers})
+              .then(function (response){
+                navigate("/pages/production_bom/index");
+              })
+      
+            } catch (err) {
+              console.log(err);
+            }
+            }
+        } 
+    };
 
     return (
         <div>
@@ -777,6 +794,8 @@ const addProductionBOM: React.FC = () => {
                                             </thead>
 
                                             <tbody>
+
+
                                             </tbody>
                                         </table>
 
@@ -799,6 +818,8 @@ const addProductionBOM: React.FC = () => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+
+                                                    
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -816,7 +837,9 @@ const addProductionBOM: React.FC = () => {
                                             <tr className="h-10 border border-black form-input">
                                                <td className="border-r-2 w-3/5" align="right"><strong>Total Sales Price(BDT)</strong></td>
                                                <td align="left"><strong><input type="number" id="grandTotal" disabled/></strong>
-                                                  <p></p>
+                                                  <p>
+                                                    
+                                                  </p>
                                                </td>
                                             </tr>
                                          </table>
@@ -842,5 +865,4 @@ const addProductionBOM: React.FC = () => {
 };
 
 export default addProductionBOM;
-
 
