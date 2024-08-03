@@ -49,18 +49,21 @@ const addLocalPurchase = () => {
     
     const [all_suppliers, setAllSupplier] = useState<suppliers[]>([]);
     const [all_suggestitm, setSuggestItem] = useState<suggestItem[]>([]);
-    const [item_Details, setItemDetails] = useState<detailsItem[]>([]);
-    // const [item_Details, setItemDetails] = useState<detailsItem | null>(null);
+    const [itemdDetails, setItemDetails] = useState<detailsItem[]>([]);
+
     const [s_address, setAddress] = useState("");
 
 
-    const [supplier, setSupplier] = useState("");
-    const [entryDate, setEntryDate] = useState(getTodayDate());
-    const [chalanNo, setChalanNo] = useState("");
-    const [chalanDate, setChalanDate] = useState(getTodayDate());
-    const [fiscalYear, setFiscalYear] = useState("");
+    const [supplier_name, setSupplier] = useState("");
+    const [entry_date, setEntryDate] = useState(getTodayDate());
+    const [chalan_no, setChalanNo] = useState("");
+    const [chalan_date, setChalanDate] = useState(getTodayDate());
+    const [fiscal_year, setFiscalYear] = useState("");
 
     const [note, setNote] = useState('');
+    const formattedEntryDate = entry_date ? new Date(entry_date).toISOString().split('T')[0] : null;
+    const formattedChalanDate = chalan_date ? new Date(chalan_date).toISOString().split('T')[0] : null;
+   
 
 
 
@@ -123,7 +126,7 @@ const addLocalPurchase = () => {
         }
         if(user){
 
-            let selectElement = document.getElementById('fiscalYear') as HTMLSelectElement;
+            let selectElement = document.getElementById('fiscal_year') as HTMLSelectElement;
             let fiscal_year = selectElement.value;
 
             const searchTerm = fiscal_year + '/' + encodeURIComponent(searchInput.value);
@@ -215,7 +218,7 @@ const addLocalPurchase = () => {
 
                                     const input1 = document.createElement('input');
                                     input1.type = 'number';
-                                    input1.name = 'quantity';
+                                    input1.name = 'qty';
                                     input1.className = '';
                                     input1.value = '';
                                     input1.id = 'qtyId';
@@ -711,39 +714,72 @@ const addLocalPurchase = () => {
              
 
             const purchase = {
-                supplierId: supplier,
-                entryDate: entryDate,
-                chalanNumber: chalanNo,
-                chalanDate: chalanDate,
-                fiscalYear: fiscalYear,
-                purchaseItems: arrayData,
+                invoice_no:chalan_no,
+                supplier_id: supplier_name,
+                purchase_type: 2,
+                purchase_category: 2,
+                entry_date: formattedEntryDate,//entryDate,
+                //chalan_number: chalanNo,
+                chalan_date: formattedChalanDate,//chalanDate,
+                fiscal_year: fiscal_year,
+                items:arrayData,
                 totalTax: Vat,
                 totalSd: SD,
                 grandTotal: ALL,
                 note: note
+
             
-              }
+              };
+           
+                console.log('Sending purchase data:', JSON.stringify(purchase, null, 2));
+                console.log(purchase.items);
+
+
+                // if(user){
+
+                //     try {
+                //         // process.exit();
+    
+                //        await axios.post(`${baseUrl}/purchase/add-local-purchase`, purchase, {headers})
+                //       .then(function (response){
+                //         navigate("/pages/procurment/local_purchase/index");
+                //       })
+              
+                //     } catch (err) {
+                //       console.log(err);
+                //     }
+                // }
+
+            
+                if (token) {
+                    const headers = { Authorization: `Bearer ${token}` };
+            
+                    try {
+                        const response = await axios.post(`${baseUrl}/purchase/add-local-purchase`, purchase, { headers });
+                        console.log('Response:', response);
+                        navigate("/pages/procurment/local_purchase/index");
+                    } catch (err: any) {
+                        if (err?.response) {
+                            // The server responded with a status other than 2xx
+                            console.error('Error response data:', JSON.stringify(err.response.data, null, 2));
+                            console.error('Error response status:', err.response.status);
+                            console.error('Error response headers:', err.response.headers);
+                        } else if (err?.request) {
+                            // The request was made but no response was received
+                            console.error('Error request data:', err.request);
+                        } else {
+                            // Something happened in setting up the request that triggered an error
+                            console.error('Error message:', err.message);
+                        }
+                        console.error('Error config:', err.config);
+                    }
+                } else {
+                    console.error('No token found in local storage');
+                }
+
+            }
+        }
         
-                console.log(purchase);
-
-                const token = localStorage.getItem('Token');
-                if(token){
-                    const bearer = JSON.parse(token);
-                    const headers= { Authorization: `Bearer ${bearer}` }
-                try {
-                    // process.exit();
-
-                   await axios.post("http://localhost:8080/bmitvat/api/purchase/add-local-purchase", purchase, {headers})
-                  .then(function (response){
-                    navigate("/pages/procurment/local_purchase/index");
-                  })
-          
-                } catch (err) {
-                  console.log(err);
-                }
-                }
-            } 
-        };
 
     
     
@@ -779,20 +815,20 @@ const addLocalPurchase = () => {
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Entry Date</label>
-                                            <input id="browserLname" type="date" className="form-input" value={entryDate} onChange={(e) => setEntryDate(e.target.value)}  />
+                                            <input id="browserLname" type="date" className="form-input" value={entry_date} onChange={(e) => setEntryDate(e.target.value)}  />
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Chalan Number</label>
-                                            <input id="browserLname" type="text" placeholder="" className="form-input" onChange={(e) => setChalanNo(e.target.value)} required />
+                                            <input id="invoice_no" type="text" placeholder="" className="form-input" onChange={(e) => setChalanNo(e.target.value)} required />
                                         </div>
                                         <div>
                                             <label htmlFor="browserLname">Chalan Date</label>
-                                            <input id="browserLname" type="date" className="form-input" value={chalanDate} onChange={(e) => setChalanDate(e.target.value)} />
+                                            <input id="browserLname" type="date" className="form-input" value={chalan_date} onChange={(e) => setChalanDate(e.target.value)} />
                                         </div>
                                         <div>
     
                                             <label htmlFor="fiscalYear">Fiscal Year</label>
-                                            <select id="fiscalYear" className="form-select text-dark col-span-4 text-sm" onChange={(e) => setFiscalYear(e.target.value)} required>
+                                            <select id="fiscal_year" className="form-select text-dark col-span-4 text-sm" onChange={(e) => setFiscalYear(e.target.value)} required>
                                                 <option >Please Select</option>
                                                 <option value={"2024"} >2023-2024</option>
                                                 <option value={"2023"} >2022-2023</option>

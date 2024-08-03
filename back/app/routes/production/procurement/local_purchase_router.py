@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, requests,Request, File, UploadFile
 from typing import Union,List,Optional,Dict,Any
 from sqlalchemy.orm import Session
@@ -11,12 +12,17 @@ from sqlalchemy.sql.sqltypes import Numeric
 from app.models.inventory.opening_stock_model import OpeningStock, OpeningInsertSchema , OpeningStockSchema
 from app.models.relationship.supplier_model import Supplier, supplierBase, SupplierSchema
 from app.models.Production.Procurement.Purchase_model import Purchase,Purchase_item
+from app.schemas.production.procurement.LocalPurchase_schema import PurchaseTableDetailsModel
 from app.schemas.production.procurement.LocalPurchase_schema import LocalPurchaseInsertSchema,ItemDetailsModel
 from app.models.general_settings.hs_code_model import Hscode
 from app.models.inventory.item_model import Item, ItemSuggest
 from app.models.Production.inventorystock.InventoryStock_model import Stock, StockHistory
 
+
 Purchase_router = APIRouter()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @Purchase_router.post("/bmitvat/api/purchase/add-local-purchase", dependencies=[Depends(get_current_active_user)])
 async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Session = Depends(get_db)):
@@ -59,8 +65,9 @@ async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Sessio
                 item_at = item.item_at,
                 item_rd = item.item_rd,
                 item_sd = item.item_sd,
-                qty = item.qty,
-                rate = item.rate,
+                qty=float(item.qty) if item.qty is not None else 0.0,
+                rate=float(item.rate) if item.rate is not None else 0.0,
+                vds = item.vds,
                 rd_amount = item.rd_amount,
                 rebate = item.rebate,
                 sd_amount = item.sd_amount,
@@ -73,16 +80,20 @@ async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Sessio
                 p_date = srv.entry_date
                 )
             db.add(purchase_item)
-            
+           
             # Update stock
             stock_item = db.query(Stock).filter(Stock.item_id == item.item_id).first()
             if stock_item:
-                stock_item.qty += item.qty
+                if stock_item.qty is None:
+                    stock_item.qty = 0.0
+                logger.info(f"Updating stock for item_id {item.item_id}. Old qty: {stock_item.qty}, Purchase qty: {float(item.qty)}")
+                stock_item.qty = float(stock_item.qty) + float(item.qty)
             else:
+                logger.info(f"Adding new stock entry for item_id {item.item_id} with qty {float(item.qty)}")
                 new_stock_item = Stock(
                     item_id=item.item_id,
-                    qty=item.qty,
-                    rate=item.rate,
+                    qty=float(item.qty),
+                    rate=float(item.rate),
                     status=1,  # assuming 1 is for active status
                     user_id=lpurchase.user_id
                 )
@@ -96,6 +107,59 @@ async def create_local_purchase(lpurchase: LocalPurchaseInsertSchema, db: Sessio
         raise HTTPException(status_code=400, detail=f"Error occurred: {e}")
     finally:
         db.close()
+
+@Purchase_router.get("/bmitvat/api/local_purchase/all-purchase", response_model=List[PurchaseTableDetailsModel], dependencies=[Depends(get_current_active_user)])
+async def index(db: Session = Depends(get_db)):
+    try:
+        # Check Purchase Table Data
+        purchases = db.query(Purchase).all()
+        print("Purchase Table Data:", purchases)
+
+        # Check Supplier Table Data
+        suppliers = db.query(Supplier).all()
+        print("Supplier Table Data:", suppliers)
+
+        # Log each Purchase entry's supplier_id
+        for purchase in purchases:
+            print(f"Purchase ID: {purchase.id}, Supplier ID: {purchase.supplier_id}")
+
+        # Log each Supplier entry's id
+        for supplier in suppliers:
+            print(f"Supplier ID: {supplier.id}, Supplier Name: {supplier.supplier_name}")
+
+        # Query the database with join
+        index = db.query(Purchase, Supplier).join(Supplier, Purchase.supplier_id == Supplier.id)\
+            .add_columns(Purchase.id, Purchase.invoice_no, Supplier.supplier_name).all()
+
+        if not index:
+            print("Query returned no results")
+
+        # Log the query results
+        print("Query Results:", index)
+
+        pur_index_item = []
+        for pp in index:
+            print("Processing record:", pp)
+            pur_index_item.append({
+                'id': pp.id,
+                'invoice_no': pp.invoice_no,
+                'supplier_name': pp.supplier_name,
+            })
+
+        if not pur_index_item:
+            print("Parsed results are empty")
+
+        # Log the parsed results
+        print("Parsed Results:", pur_index_item)
+
+        junit = jsonable_encoder(pur_index_item)
+        return JSONResponse(content=junit)
+
+    except Exception as e:
+        # Log any errors
+        print("Error:", str(e))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 
 
 

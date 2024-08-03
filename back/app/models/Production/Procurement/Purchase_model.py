@@ -25,9 +25,9 @@ class Purchase(Base):
     fiscal_year=Column(Integer,nullable=True)
     notes=Column(String(255),nullable=True)
     user_id=Column(Integer,nullable=True)
-    lc_date = Column(DateTime, default=True, index=datetime.utcnow)
-    entry_date = Column(DateTime, default=True, index=datetime.utcnow)
-    chalan_date = Column(DateTime, default=True, index=datetime.utcnow)
+    lc_date = Column(DateTime, nullable=True, index=datetime.utcnow)
+    entry_date = Column(DateTime, nullable=True, index=datetime.utcnow)
+    chalan_date = Column(DateTime, nullable=True, index=datetime.utcnow)
     
    
 
@@ -49,14 +49,15 @@ class Purchase_item(Base):
     qty=Column(Float,nullable=True)
     rate=Column(Float,nullable=True)
     rd_amount=Column(Float,nullable=True)
+    vds=Column(Integer,nullable=True)
     rebate=Column(Integer,nullable=True)
     sd_amount=Column(Float,nullable=True)
     t_amount=Column(Float,nullable=True)
     vat_rate=Column(Float,nullable=True)
     vat_type=Column(Integer,nullable=True)
     vatable_value=Column(Float,nullable=True)
-    purchase_date = Column(DateTime, default=True, index=datetime.utcnow)
-    entry_date = Column(DateTime, default=True, index=datetime.utcnow)
-    p_date = Column(DateTime, default=True, index=datetime.utcnow)
+    purchase_date = Column(DateTime, nullable=True, index=datetime.utcnow)
+    entry_date = Column(DateTime, nullable=True, index=datetime.utcnow)
+    p_date = Column(DateTime, nullable=True, index=datetime.utcnow)
     
 Base.metadata.create_all(bind=engine)

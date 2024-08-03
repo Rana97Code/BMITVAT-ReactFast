@@ -17,6 +17,7 @@ class LocalPurchaseItemInsertSchema(BaseModel):
     qty: Optional[float] = None
     rate: Optional[float] = None
     rd_amount: Optional[float] = None
+    vds:Optional[int]=None
     rebate: Optional[int] = None
     sd_amount: Optional[float] = None
     t_amount: Optional[float] = None
