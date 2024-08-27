@@ -11,33 +11,33 @@ const LoginCover = () => {
     const navigate = useNavigate();
 
     const user = useContext(UserContex);
-    const baseUrl= user.base_url;
-    if(user.email){
+    const baseUrl = user.base_url;
+    if (user.email) {
         navigate("/index");
     }
 
-  const [username, setUser] = useState("")
-  const [password, setPassword] = useState("")
+    const [username, setUser] = useState("")
+    const [password, setPassword] = useState("")
 
 
 
-  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) =>{
-    e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('password', password);
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
 
-     await axios.post(`${baseUrl}/auth`, formData)
-      .then(function (response) {
-        if (response) {
-            localStorage.setItem('Token', JSON.stringify(response.data));
-         navigate("/index");
-        } else {
-         console.log('Email or Password Error')
-       }
-      })
-  
+        await axios.post(`${baseUrl}/auth`, formData)
+            .then(function (response) {
+                if (response) {
+                    localStorage.setItem('Token', JSON.stringify(response.data));
+                    navigate("/index");
+                } else {
+                    console.log('Email or Password Error')
+                }
+            })
+
     };
 
 
@@ -74,12 +74,12 @@ const LoginCover = () => {
                                     <label htmlFor="userName">Username</label>
                                     <div className="relative text-white-dark">
                                         <input id="UserName" type="text"
-                                        placeholder="Enter Username"
-                                        className="form-input ps-10 placeholder:text-white-dark"
-                                        onChange={e => setUser(e.target.value)} required
-                                         />
+                                            placeholder="Enter Username"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            onChange={e => setUser(e.target.value)} required
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
-                                        <IconUser />
+                                            <IconUser />
                                         </span>
                                     </div>
                                 </div>
@@ -87,10 +87,10 @@ const LoginCover = () => {
                                     <label htmlFor="password">Password</label>
                                     <div className="relative text-white-dark">
                                         <input id="Password" type="password"
-                                        placeholder="Enter Password"
-                                        className="form-input ps-10 placeholder:text-white-dark"
-                                        onChange={e => setPassword(e.target.value)}
-                                        required
+                                            placeholder="Enter Password"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            onChange={e => setPassword(e.target.value)}
+                                            required
                                         />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots />
@@ -98,8 +98,8 @@ const LoginCover = () => {
                                     </div>
                                 </div>
                                 {/* <Link  type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]"> */}
-                                <button type='submit'  className="btn bg-[linear-gradient(225deg,rgba(0,18,98,1)_0%,rgba(32,4,238,1)_100%)] !mt-6 w-full border-0 uppercase text-white">Sign in</button>
-                                
+                                <button type='submit' className="btn bg-[linear-gradient(225deg,rgba(0,18,98,1)_0%,rgba(32,4,238,1)_100%)] !mt-6 w-full border-0 uppercase text-white">Sign in</button>
+
                                 {/* </Link> */}
                             </form>
                         </div>
