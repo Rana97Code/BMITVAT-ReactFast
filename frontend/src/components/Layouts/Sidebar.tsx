@@ -314,13 +314,13 @@ const Sidebar = () => {
                                                         <a href="/pages/reports/payble91/index">{t('Payable 9.1')}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="/pages/error503" target="_blank">{t('Payable Voucher')}</a>
+                                                        <a href="/pages/reports/payble_voucher/index">{t('Payable Voucher')}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="/pages/error404" target="_blank">{t('Receivable Voucher')}</a>
+                                                        <a href="/pages/reports/receivable_voucher/index">{t('Receivable Voucher')}</a>
                                                     </li>
                                                     <li>
-                                                        <a href="/pages/error404" target="_blank">{t('Waste Management')}</a>
+                                                        <a href="/pages/reports/waste_management/index">{t('Waste Management')}</a>
                                                     </li>
                                                 </ul>
                                             </AnimateHeight>

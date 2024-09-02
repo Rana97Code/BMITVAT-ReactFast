@@ -80,7 +80,13 @@ const AddTreasuryChallan = lazy(() => import('../pages/Reports/TreasuryChallan/c
 
 const Payble91 = lazy(() => import('../pages/Reports/Payble91/index'));
 const AddPayble91 = lazy(() => import('../pages/Reports/Payble91/components/AddPayble91'));
+const PaybleVoucher = lazy(() => import('../pages/Reports/PaybleVoucher/index'));
+const AddPaybleVoucher = lazy(() => import('../pages/Reports/PaybleVoucher/components/AddPaybleVoucher'));
+const ReceviableVoucher = lazy(() => import('../pages/Reports/ReceivableVoucher/index'));
+const AddReceviableVoucher = lazy(() => import('../pages/Reports/ReceivableVoucher/components/AddReceivableVoucher'));
 
+const WasteManagemnet = lazy(() => import('../pages/Reports/WasteManagement/index'));
+//const AddWasteManagemnet = lazy(() => import('../pages/Reports/WasteManagement/components/'));
 
 
 const GenerateMushak = lazy(() => import('../pages/Reports/Generate_Mushak/index'));
@@ -498,6 +504,30 @@ const routes = [
         path: '/pages/reports/payble91/add',
         element: <AddPayble91 />,
     },
+    {
+        path: '/pages/reports/payble_voucher/index',
+        element: <PaybleVoucher />,
+    },
+    {
+        path: '/pages/reports/payble_voucher/add',
+        element: <AddPaybleVoucher />,
+    },
+    {
+        path: '/pages/reports/receivable_voucher/index',
+        element: <ReceviableVoucher />,
+    },
+    {
+        path: '/pages/reports/receivable_voucher/add',
+        element: <AddReceviableVoucher />,
+    },
+    {
+        path: '/pages/reports/waste_management/index',
+        element: <WasteManagemnet />,
+    },
+    // {
+    //     path: '/pages/reports/waste_management/add',
+    //     element: <AddReceviableVoucher />,
+    // },
 
 
     //Company Settings
